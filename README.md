@@ -179,6 +179,7 @@ This option is for more Advanced Users.
 To setup Services to your need you have to take a closer look to the documentation of the Projects named above.\
 As a pointer in the right direction:
 
+
 - mjpg
     - This one is a bit more complex due the fact it depends on your cam type.
     - For 'Raspicam' see [Plugin: input_raspicam](https://github.com/jacksonliam/mjpg-streamer/blob/master/mjpg-streamer-experimental/plugins/input_raspicam/README.md)
@@ -188,6 +189,9 @@ As a pointer in the right direction:
 - ustreamer
     - For sake of simplicity I converted ustreamers manpage to
     [ustreamer's manpage](./ustreamer_manpage.md)
+
+- v4l2rtspserver
+    - Please visit [v4l2rtspserver Usage](https://github.com/mpromonet/v4l2rtspserver#usage)
     
 
 If you use custom_flags, we try to help you out but it is really a feature for Advanced Users and your a kind of on your own.
