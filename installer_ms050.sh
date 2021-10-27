@@ -113,6 +113,7 @@ if [ "${update_section}" -eq 0 ]; then
   echo -e "\n" >> ${HOME}/klipper_config/moonraker.conf
 else
   echo -e "[update_manager webcamd] already exist in moonraker.conf [SKIPPED]"
+fi
 
 echo -e "Finished Installation..."
 echo -e "Please reboot the PI."
