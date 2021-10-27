@@ -196,5 +196,18 @@ As a pointer in the right direction:
 
 If you use custom_flags, we try to help you out but it is really a feature for Advanced Users and your a kind of on your own.
 
-So, with all that said, get your position seaman! Prepare to get wet feets on your Journey.\
-ARRRR yooo rrready to sail?
+---
+## CustomPIOS Module
+
+I have decided to provide an [CustomPiOS Module](https://github.com/guysoft/CustomPiOS) to make it easier to integrate to other Distributions like MainsailOS or similar.
+Please see [README.md](./custompios/README.md) in the module folder for\
+further Informations.
+
+
+---
+
+![Mainsail Logo](https://raw.githubusercontent.com/meteyou/mainsail/master/docs/assets/img/logo.png)
+
+**So, with all that said, get your position seaman! Prepare to get wet feets on your Journey.**
+
+## ARRRR yooo rrready to sail?

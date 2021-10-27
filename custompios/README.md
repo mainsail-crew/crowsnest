@@ -5,6 +5,12 @@ A multiple Cam and Stream Service for mainsailOS
 
 The folder 'crowsnest' is made to add to your existing CustomPIOS Structure.
 
+If you are not already familiar with this, copy 'crowsnest' folder to
+
+    /src/modules
+
+## Configuration
+
 Please take a closer look to the 'config' File and set it up to your specific needs.
 This is pretty much self explantory.
 
@@ -29,7 +35,7 @@ _Please take note, that moonraker.conf has to be in your CROWSNEST_DEFAULT_CONF_
 Finally add crowsnest to your config!
 As example:
 
-    export MODULES="base(network,(klipper,moonraker,mainsail,crowsnest))"
+    export MODULES="base(network,raspicam(klipper,moonraker,mainsail,crowsnest))"
 
 Make sure it is barely the last one, because it mangles cmake quiet often
 unfortunatly.\
