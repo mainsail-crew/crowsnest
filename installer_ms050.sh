@@ -104,7 +104,7 @@ cat >> ${HOME}/klipper_config/moonraker.conf << EOF
 
 [update_manager webcamd]
 type: git_repo
-path: ~/webcamtest
+path: ~/crowsnest
 origin: https://github.com/mainsail-crew/crowsnest.git
 
 EOF
