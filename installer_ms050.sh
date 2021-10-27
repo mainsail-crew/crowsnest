@@ -106,7 +106,6 @@ cat >> ${HOME}/klipper_config/moonraker.conf << EOF
 type: git_repo
 path: ~/webcamtest
 origin: https://github.com/mainsail-crew/crowsnest.git
-primary_branch: main
 
 EOF
 

@@ -3,4 +3,4 @@
 type: git_repo
 path: ~/webcamd
 origin: https://github.com/mainsail-crew/crowsnest.git
-primary_branch: master
+
