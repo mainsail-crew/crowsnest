@@ -1,0 +1,12 @@
+# Ignore ustreamer static for now.
+ustreamer-www/
+
+#Ignore ERRORS.txt
+ERRORS.txt
+
+# Ignore leftover
+leftover*
+
+#Ignore Test Files
+test*
+

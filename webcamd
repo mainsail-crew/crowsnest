@@ -1,0 +1,472 @@
+#!/bin/bash
+
+#### webcamd - A webcam Service for multiple Cams and Stream Services.
+#### 
+#### written by Stephan Wendel aka KwadFan
+#### Copyright 2021
+#### https://github.com/mainsail-crew/crowsnest 
+####
+#### This File is distributed under GPLv3
+
+### Disable shellcheck Errors
+# shellcheck disable=SC2012,SC2206
+
+# Exit upon Errors
+set -e
+
+## Functions
+
+## Version of webcamd
+function self_version {
+    pushd $(dirname $(readlink -f "${0}")) &> /dev/null
+    git describe --always --tags
+    popd &> /dev/null
+}
+
+
+## Message Helpers
+function missing_args_msg {
+    echo -e "webcamd: Missing Arguments!"
+    echo -e "\n\tTry: webcamd -h\n"
+}
+
+function wrong_args_msg {
+    echo -e "webcamd: Wrong Arguments!"
+    echo -e "\n\tTry: webcamd -h\n"
+}
+
+function help_msg {
+    echo -e "webcamd - webcam deamon\nUsage:"
+    echo -e "\t webcamd [Options]"
+    echo -e "\n\t\t-h Prints this help."
+    echo -e "\n\t\t-v Prints Version of webcamd."
+    echo -e "\n\t\t-c </path/to/configfile>\n\t\t\tPath to your webcam.conf\n"
+}
+
+## Logging
+function init_log_entry {
+    log_msg "webcamd - A webcam Service for multiple Cams and Stream Services."
+    log_msg "Version: $(self_version)"
+    log_msg "Prepare Startup ..."
+}
+
+function log_method {
+    local method logfile
+    logfile="$(get_param webcamd log_path | sed "s#^~#$HOME#gi")"
+    method="$(get_param "webcamd" log_method 2> /dev/null)"
+    if [ "${method}" = "debug" ]; then
+        rm -rf "${logfile}"
+    fi
+}
+
+function log_msg {
+    local msg logfile prefix
+    msg="${1}"
+    prefix="$(date +'[%D %T]') webcamd:"
+    #Workaround sed ~ to BASH VAR $HOME 
+    logfile="$(get_param webcamd log_path | sed "s#^~#$HOME#gi")"
+    #Workaround: Make Dir if not exist
+    if [ ! -d "${logfile}" ]; then
+        mkdir -p "$(dirname "${logfile}")"
+    fi
+    echo -e "${prefix} ${msg}" | tr -s ' ' >> "${logfile}" 2>&1
+}
+
+#call '| log_output "<prefix>"'
+function log_output {
+    local prefix debug
+    prefix="DEBUG: ${1}"
+    debug="$(get_param "webcamd" debug_log 2> /dev/null)"
+    if [ "${debug}" == "true" ]; then
+        while read -r line; do
+            log_msg "${prefix}: ${line}"
+        done
+    fi
+}
+
+function print_cfg {
+    local prefix
+    prefix="\t\t"
+    log_msg "INFO: Print Configfile: '${WEBCAMD_CFG}'"
+    while read -r line; do
+        log_msg "${prefix}${line}"
+    done < "${WEBCAMD_CFG}"
+}
+
+function print_cams {
+    local count raspicam total debug
+    debug="$(get_param "webcamd" debug_log 2> /dev/null)"
+    count="$(find /dev/v4l/by-id/ 2> /dev/null | sed '1d;1~2d' | wc -l)" 
+    total="$((count+$(detect_raspicam)))"
+    if [ "${total}" -eq 0 ]; then
+        log_msg "ERROR: No usable Cameras Found. Stopping $(basename "$0")."
+        exit 1
+    else
+        log_msg "INFO: Found ${total} available Camera(s)"
+    fi
+    if [ -d "/dev/v4l/by-id/" ]; then
+        detect_avail_cams
+    fi
+    if [ "$(detect_raspicam)" -ne 0 ]; then
+        raspicam="$(v4l2-ctl --list-devices |  grep -A1 -e 'mmal' | \
+        awk 'NR==2 {print $1}')"
+        log_msg "Detected 'Raspicam' Device -> ${raspicam}"
+        if [ "${debug}" == "true" ]; then
+            list_cam_formats "${raspicam}"
+        fi
+    fi
+} 2> /dev/null
+
+## Sanity Checks
+function initial_check {
+    log_msg "INFO: Checking Dependencys"
+    check_dep "crudini"
+    check_dep "mjpg_streamer"
+    check_dep "ustreamer"
+    check_dep "v4l2rtspserver"
+    log_msg "INFO: Checking Configfile"
+    if [ -z "$(check_cfg "${WEBCAMD_CFG}")" ]; then
+        print_cfg
+    fi
+    log_msg "INFO: Detect available Cameras"
+    print_cams
+}
+
+function check_cfg {
+    if [ ! -r "${1}" ]; then
+        log_msg "ERROR: No Configuration File found. Exiting!"
+        exit 1
+    fi
+}
+
+function check_section {
+    local section param must_exist missing
+    section="cam ${1}"
+    # Ignore missing custom flags
+    param="$(crudini --existing=param --get "${WEBCAMD_CFG}" "${section}" \
+    2> /dev/null | sed '/custom_flags/d')"
+    must_exist="streamer port device resolution max_fps"
+    missing="$(echo "${param}" "${must_exist}" | \
+    tr ' ' '\n' | sort | uniq -u)"
+    if [ -n "${missing}" ]; then
+        log_msg "ERROR: Parameter ${missing} not found in \
+        Section [${section}]. Start skipped!"
+        exit 1
+    else
+        log_msg "INFO: Configuration of Section [${section}] looks good. \
+        Continue..."
+    fi
+}
+
+function check_dep {
+    local dep
+    dep="$(whereis "${1}" | awk '{print $2}')"
+    if [ -z "${dep}" ]; then
+        log_msg "Dependency: '${1}' not found. Exiting!"
+        exit 1
+    else
+        log_msg "Dependency: '${1}' found in ${dep}."
+    fi
+}
+
+### Detect Hardware
+function detect_avail_cams {
+    local avail realpath
+    avail="$(find /dev/v4l/by-id/ 2> /dev/null | sort -n | sed '1d;1~2d')"
+    if [ -d "/dev/v4l/by-id/" ]; then
+        echo "${avail}" | while read -r i; do
+            realpath=$(readlink -e ${i})
+            log_msg "${i} -> ${realpath}"
+            if [ "${debug}" == "true" ]; then
+                list_cam_formats "${i}"
+            fi
+        done
+    else
+        log_msg "ERROR: No usable Cameras found. Exiting."
+        exit 1
+    fi
+}
+
+function list_cam_formats {
+    local device
+    device="${1}"
+    formats="$(v4l2-ctl -d "${device}" --list-formats-ext | sed '1,3d')"
+    log_msg "Supported Formats:"
+    echo "${formats}" | while read -r i; do
+        log_msg "\t\t${i}"
+    done
+}
+
+function detect_raspicam {
+    local avail
+    if [ "$(cat /proc/device-tree/model | cut -d ' ' -f1)" = "Raspberry" ]; then
+        avail="$(vcgencmd get_camera | awk -F '=' '{ print $3 }')"
+    else
+        avail="0"
+    fi
+    echo "${avail}"
+} 
+
+## Spits out all [cam <nameornumber>] configured sections
+function configured_cams {
+    local cam_count cfg
+    cfg="${WEBCAMD_CFG}"
+    cams="$(crudini --existing=file --get "${cfg}" | \
+    sed '/webcamd/d;s/cam//')"
+    echo "${cams}"
+}
+
+
+## Start Stream Service
+# sleep to prevent cpu cycle spikes
+function construct_streamer {
+    local stream_server cams
+    cams=($(configured_cams))
+    log_msg "Try to start configured Cams / Services..."
+    for (( i=0; i<"${#cams[@]}"; i++ )); do
+        stream_server="$(get_param "cam ${cams[$i]}" streamer 2> /dev/null)"
+        if [ "${stream_server}" == "mjpg" ]; then
+            run_mjpg "${cams[$i]}" & 
+            sleep 8 & sleep_pid="$!" 
+            wait "${sleep_pid}"
+        elif [ "${stream_server}" == "ustreamer" ]; then
+            run_ustreamer "${cams[$i]}" &
+            sleep 8 & sleep_pid="$!" 
+            wait "${sleep_pid}"
+        elif [ "${stream_server}" == "rtsp" ]; then
+            run_rtsp "${cams[$i]}" &
+            sleep 8 & sleep_pid="$!" 
+            wait "${sleep_pid}"
+        else 
+            log_msg "ERROR: Missing 'streamer' parameter in [cam ${cams[$i]}]. Skipping."
+        fi
+    done
+    log_msg "... Done!"
+}
+
+function run_mjpg {
+    local cam_section mjpg_bin device port resolution fps custom
+    local raspicam split_res output input wwwroot
+    cam_section="${1}"
+    mjpg_bin="$(whereis mjpg_streamer | awk '{print $2}')"
+    # shellcheck disable=2046
+    ld_so="$(dirname $(readlink -qe $(whereis mjpg_streamer)))"
+    device="$(get_param "cam ${cam_section}" device)"
+    port=$(get_param "cam ${cam_section}" port)
+    resolution=$(get_param "cam ${cam_section}" resolution)
+    fps=$(get_param "cam ${cam_section}" max_fps)
+    custom="$(get_param "cam ${cam_section}" custom_flags 2> /dev/null)"
+    check_section "${cam_section}"
+    raspicam="$(v4l2-ctl --list-devices |  grep -A1 -e 'mmal' | \
+    awk 'NR==2 {print $1}')"
+    output="output_http.so -l 127.0.0.1 -p ${port}"
+    #construct input raspicam/usb cam
+    if [ "${device}" == "${raspicam}" ]; then
+        split_res="$(echo "${resolution}" | \
+        awk -F 'x' '{print "-x "$1 " -y "$2}')"
+        input="input_raspicam.so ${split_res} -fps ${fps}"
+    else
+        input="input_uvc.so -d ${device} -r ${resolution} -f ${fps}"
+    fi
+    wwwroot="$(dirname $(readlink -qe $(whereis webcamd)))/mjpg-www"
+    log_msg "Starting mjpeg-streamer with Device ${device} ..."
+    echo "Parameters: -i "${input}" -o "${output}" -n -w ${wwwroot}" | \
+    log_output "mjpg_streamer [cam ${cam_section}]"
+    
+    export LD_LIBRARY_PATH="${ld_so}"
+    # Custom Flag Handling
+    if [ -n "${custom}" ]; then
+        "${mjpg_bin}" "${custom}"  2>&1 | \
+        log_output "mjpg_streamer [cam ${cam_section}]"
+    else
+        "${mjpg_bin}" -i "${input}" -o "${output} -n -w ${wwwroot}"  2>&1 | \
+        log_output "mjpg_streamer [cam ${cam_section}]"
+    fi
+    log_msg "ERROR: Start of mjpg_streamer [cam ${cam_section}] failed!"
+}
+
+function run_ustreamer {
+    local cam_section ustreamer_bin device port resolution fps custom
+    local raspicam start_param wwwroot dev_exist
+    cam_section="${1}"
+    ustreamer_bin="$(whereis ustreamer | awk '{print $2}')"
+    device="$(get_param "cam ${cam_section}" device)"
+    port=$(get_param "cam ${cam_section}" port)
+    resolution=$(get_param "cam ${cam_section}" resolution)
+    fps=$(get_param "cam ${cam_section}" max_fps)
+    custom="$(get_param "cam ${cam_section}" custom_flags 2> /dev/null)"
+    raspicam="$(v4l2-ctl --list-devices |  grep -A1 -e 'mmal' | \
+    awk 'NR==2 {print $1}')"
+    check_section "${cam_section}"
+    wwwroot="$(dirname $(readlink -qe $(whereis webcamd)))/ustreamer-www"
+    #Raspicam Workaround
+    if [ "${device}" == "${raspicam}" ]; then
+        start_param=(
+                    --host 127.0.0.1 -p "${port}" -m MJPEG --device-timeout=5
+                    --buffers=3 -r "${resolution}" -f "${fps}" --allow-origin=\*
+                    --static "${wwwroot}"
+                    )
+    else
+        start_param=(
+                    -d "${device}" -r "${resolution}" -f "${fps}"
+                    --host 127.0.0.1 -p "${port}" --allow-origin=\*
+                    --device-timeout=2 --encoder=omx --static "${wwwroot}"
+                    )
+    fi
+    # Custom Flag Handling
+    if [ -n "${custom}" ]; then
+        start_param=("${custom}") 
+    fi
+    log_msg "Starting ustreamer with Device ${device} ..."
+    echo "Parameters: ${start_param[*]}" | \
+    log_output "ustreamer [cam ${cam_section}]"
+    # Ustreamer is designed to run even if the device is not ready or readable.
+    # I dont like that! ustreamer has to exit if Cam isnt there.
+    if [ -e "${device}" ]; then
+        "${ustreamer_bin}" ${start_param[*]} 2>&1 | \
+        log_output "ustreamer [cam ${cam_section}]"
+    else
+        log_msg "ERROR: Start of ustreamer [cam ${cam_section}] failed!"
+    fi
+} 
+
+function run_rtsp {
+    local cam_section rtsp_bin device port resolution fps custom
+    local raspicam start_param
+    cam_section="${1}"
+    rtsp_bin="$(whereis v4l2rtspserver | awk '{print $2}')"
+    device="$(get_param "cam ${cam_section}" device)"
+    port=$(get_param "cam ${cam_section}" port)
+    resolution=$(get_param "cam ${cam_section}" resolution)
+    fps=$(get_param "cam ${cam_section}" max_fps)
+    custom="$(get_param "cam ${cam_section}" custom_flags 2> /dev/null)"
+    check_section "${cam_section}"
+    split_res="$(echo "${resolution}" | \
+        awk -F 'x' '{print "-W "$1 " -H "$2}')"
+    start_param=(
+                    -I 0.0.0.0 -P "${port}" "${split_res}" -F "${fps}" \
+                    "${device}" 
+                )
+    # Custom Flag Handling
+    if [ -n "${custom}" ]; then
+        start_param=("${custom}") 
+    fi
+    log_msg "Starting v4l2rtspserver with Device ${device} ..."
+    echo "Parameters: ${start_param[*]}" | \
+    log_output "v4l2rtspserver [cam ${cam_section}]"
+    
+    "${rtsp_bin}" ${start_param[*]} 2>&1 | \
+    log_output "v4l2rtspserver [cam ${cam_section}]"
+    log_msg "ERROR: Start of v4l2rtspserver [cam ${cam_section}] failed!"
+}
+
+## MISC
+
+# Read Configuration File
+# call get_param section param
+# spits out raw value
+function get_param {
+    local cfg
+    local section
+    local param
+    cfg="${WEBCAMD_CFG}"
+    section="${1}"
+    param="${2}"
+    crudini --get "${cfg}" "${section}" "${param}" | \
+    sed 's/\#.*//;s/[[:space:]]*$//'
+} 2> /dev/null
+
+function err_exit {
+    if [ "${1}" != "0" ]; then
+        log_msg "ERROR: Error ${1} occured on line ${2}"
+        log_msg "ERROR: Stopping $(basename "$0")."
+        log_msg "Goodbye..."
+    fi
+    if [ -n "$(jobs -pr)" ]; then
+        kill $(jobs -pr)
+    fi
+    exit 1    
+}
+
+function shutdown {
+    log_msg "Shutdown or Killed by User!"
+    log_msg "Please come again :)"
+    if [ -n "$(jobs -pr)" ]; then
+        kill $(jobs -pr)
+    fi
+    log_msg "Goodbye..."
+    exit 0
+}
+
+#### Watchdog Functions and Variables
+## Do not reuse previous functions!
+function get_cam_count {
+    local cam_count cfg
+    cfg="${WEBCAMD_CFG}"
+    cam_count="$(crudini --existing=file --get "${cfg}" | \
+    sed '/webcamd/d' | wc -l)"
+    echo "${cam_count}"
+}
+
+function get_cam_avail {
+    local conf_cam avail missing
+    for (( i=1; i<="$(get_cam_count)"; i++ )); do
+        conf_cam="$(get_param "cam $i" device 2> /dev/null)"
+        avail="$(find ${conf_cam} 2> /dev/null | wc -l)"
+        if [ "${avail}" -eq 0 ]; then
+            missing+=("${conf_cam}")            
+        fi
+    done
+    echo "${missing[@]}"
+}
+
+#### MAIN
+## Args given?
+if [ "$#" -eq 0 ]; then
+    missing_args_msg
+    exit 1
+fi
+## Parse Args
+while getopts ":Vhc:" arg; do
+    case "${arg}" in
+        v )
+            echo -e "\nwebcamd Version: $(self_version)\n"
+            exit 0
+        ;;
+        h )
+            help_msg
+            exit 0
+        ;;
+        c )
+            check_cfg "${OPTARG}"
+            WEBCAMD_CFG="${OPTARG}"
+        ;;
+        \?)
+            wrong_args_msg
+            exit 1
+        ;;
+    esac
+done
+
+# Init Traps
+trap 'shutdown' 1 2 3 15
+trap 'err_exit $? $LINENO' ERR
+
+log_method
+init_log_entry
+initial_check
+construct_streamer
+
+## Loop and Watchdog
+while true ; do
+    log_msg "WATCHDOG: Gather Informations"
+    log_msg "WATCHDOG: Configured Cam(s): $(get_cam_count)"
+    if [ -n "$(get_cam_avail)" ]; then
+        log_msg "WATCHDOG: Lost Device(s): $(get_cam_avail)"
+    else
+        log_msg "WATCHDOG: All Device(s) present!"
+    fi
+    log_msg "WATCHDOG: Next Check in 2 minutes..."
+    sleep 120 & sleep_pid="$!"
+    wait "${sleep_pid}"
+done

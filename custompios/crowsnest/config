@@ -1,0 +1,26 @@
+[ -n "$CROWSNEST_CROWSNEST_REPO_SHIP" ] || CROWSNEST_CROWSNEST_REPO_SHIP=https://github.com/mainsail-crew/crowsnest.git
+[ -n "$CROWSNEST_CROWSNEST_REPO_BRANCH" ] || CROWSNEST_CROWSNEST_REPO_BRANCH=main
+[ -n "$CROWSNEST_CROWSNEST_DEPS" ] || CROWSNEST_DEPS="git crudini"
+[ -n "$CROWSNEST_DEFAULT_CONF" ] || CROWSNEST_DEFAULT_CONF="mainsail_default.conf"
+[ -n "$CROWSNEST_DEFAULT_CONF_DIR" ] || CROWSNEST_DEFAULT_CONF_DIR="/home/${BASE_USER}/klipper_config"
+[ -n "$CROWSNEST_MOONRAKER_SUPPORT" ] || CROWSNEST_MOONRAKER_SUPPORT="y"
+
+# mjpg-streamer
+[ -n "$CROWSNEST_MJPG_REPO_SHIP" ] || CROWSNEST_MJPG_REPO_SHIP=https://github.com/jacksonliam/mjpg-streamer.git
+[ -n "$CROWSNEST_MJPG_REPO_BRANCH" ] || CROWSNEST_MJPG_REPO_BRANCH=master
+[ -n "$CROWSNEST_MJPG_REPO_DEPTH" ] || CROWSNEST_MJPG_REPO_DEPTH=1
+[ -n "$CROWSNEST_MJPG_DEPS" ] || CROWSNEST_MJPG_DEPS="git build-essential libv4l-dev imagemagick ffmpeg"
+
+# ustreamer
+[ -n "$CROWSNEST_USTREAMER_REPO_SHIP" ] || CROWSNEST_USTREAMER_REPO_SHIP=https://github.com/pikvm/ustreamer.git
+[ -n "$CROWSNEST_USTREAMER_REPO_BRANCH" ] || CROWSNEST_USTREAMER_REPO_BRANCH=master
+[ -n "$CROWSNEST_USTREAMER_REPO_DEPTH" ] || CROWSNEST_USTREAMER_REPO_DEPTH=1
+[ -n "$CROWSNEST_USTREAMER_DEPS" ] || CROWSNEST_USTREAMER_DEPS="git build-essential libevent-dev libjpeg8-dev \
+libbsd-dev libraspberrypi-dev libgpiod-dev cmake cmake-data"
+[ -n "$CROWSNEST_USTREAMER_WITH_OMX" ] || CROWSNEST_USTREAMER_WITH_OMX="y"
+[ -n "$CROWSNEST_USTREAMER_WITH_GPIO" ] || CROWSNEST_USTREAMER_WITH_GPIO="n"
+
+# v4l2rtspserver
+[ -n "$CROWSNEST_V4L2RTSP_REPO_SHIP" ] || CROWSNEST_V4L2RTSP_REPO_SHIP=https://github.com/mpromonet/v4l2rtspserver.git
+[ -n "$CROWSNEST_V4L2RTSP_REPO_BRANCH" ] || CROWSNEST_V4L2RTSP_REPO_BRANCH=master
+[ -n "$CROWSNEST_V4L2RTSP_DEPS" ] || CROWSNEST_V4L2RTSP_DEPS="git build-essential liblivemedia-dev liblog4cpp5-dev"

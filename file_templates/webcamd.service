@@ -1,0 +1,19 @@
+[UNIT]
+Description=webcamd - Multi Webcam/Streamer Control Deamon
+After=udev.service network-online.target
+Wants=udev.service network-online.target
+StartLimitBurst=3
+StartLimitIntervalSec=600
+
+[Install]
+Alias=crowsnest
+WantedBy=multi-user.target
+
+[Service]
+Environment=WEBCAMD_CONFIG=/home/pi/klipper_config/webcam.conf
+Type=Forking
+User=pi
+RemainAfterExit=Yes
+ExecStart= /usr/local/bin/webcamd -c ${WEBCAMD_CONFIG}
+Restart=on-failure
+RestartSec=10
