@@ -32,7 +32,7 @@ cd /home/${BASE_USER}
 
 ### Install crowsnest
 ## Clone Repo
-gitclone CROWSNEST_CROWSNEST_REPO webcamd
+gitclone CROWSNEST_CROWSNEST_REPO crowsnest
 
 # Check succsessfull clone.
 if [ -d "/home/${BASE_USER}/webcamd" ]; then

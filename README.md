@@ -14,7 +14,7 @@ So, this will be the 'lookout point' for your Printer.
 ### Install on MainsailOS 0.5.0 as update
     cd ~
     git clone https://github.com/mainsail-crew/crowsnest.git
-    cd webcamtest
+    cd crowsnest
     ./installer_ms050.sh
 
 An installer for other Distribution than MainsailOS will come.
