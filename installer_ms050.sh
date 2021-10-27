@@ -61,6 +61,7 @@ cd ~
 git clone https://github.com/pikvm/ustreamer.git
 cd ustreamer
 if [[ "$(cat /proc/device-tree/model | cut -d ' ' -f1)" = "Raspberry" ]]; then
+    sudo apt update
     sudo apt install build-essential libevent-dev libjpeg-dev libbsd-dev \
     libraspberrypi-dev libgpiod-dev -y
     export WITH_OMX=1
@@ -68,6 +69,7 @@ if [[ "$(cat /proc/device-tree/model | cut -d ' ' -f1)" = "Raspberry" ]]; then
     echo -e "Create symlink..."
     sudo ln -sf ${HOME}/ustreamer/ustreamer /usr/local/bin/
 else
+    sudo apt update
     sudo apt install build-essential libevent-dev libjpeg-dev libbsd-dev \
     libgpiod-dev -y
     make -j $(nproc)
