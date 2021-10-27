@@ -102,14 +102,17 @@ sudo systemctl start webcamd
 
 # webcamd to moonraker.conf
 echo -e "Adding update manager to moonraker.conf"
-cat >> ${HOME}/klipper_config/moonraker.conf << EOF
 
-[update_manager webcamd]
-type: git_repo
-path: ~/crowsnest
-origin: https://github.com/mainsail-crew/crowsnest.git
-
-EOF
+update_section=$(grep -c '\[update_manager webcamd\]' \ 
+${HOME}/klipper_config/moonraker.conf)
+if [ "${update_section}" -eq 0 ]; then
+  echo -e "\n" >> ${HOME}/klipper_config/moonraker.conf
+  while read -r line; do
+    echo -e "${line}" >> ${HOME}/klipper_config/moonraker.conf
+  done < "$PWD/file_templates/moonraker_update.txt"
+  echo -e "\n" >> ${HOME}/klipper_config/moonraker.conf
+else
+  echo -e "[update_manager webcamd] already exist in moonraker.conf [SKIPPED]"
 
 echo -e "Finished Installation..."
 echo -e "Please reboot the PI."
