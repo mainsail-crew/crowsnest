@@ -255,30 +255,30 @@ function run_mjpg {
     port=$(get_param "cam ${cam_section}" port)
     resolution=$(get_param "cam ${cam_section}" resolution)
     fps=$(get_param "cam ${cam_section}" max_fps)
+    wwwroot="$(dirname $(readlink -qe $(whereis webcamd)))/mjpg-www"
     custom="$(get_param "cam ${cam_section}" custom_flags 2> /dev/null)"
     check_section "${cam_section}"
     raspicam="$(v4l2-ctl --list-devices |  grep -A1 -e 'mmal' | \
     awk 'NR==2 {print $1}')"
-    output="output_http.so -l 127.0.0.1 -p ${port}"
+    output="${ld_so}/output_http.so -l 127.0.0.1 -p ${port} -n -w ${wwwroot}"
     #construct input raspicam/usb cam
     if [ "${device}" == "${raspicam}" ]; then
         split_res="$(echo "${resolution}" | \
         awk -F 'x' '{print "-x "$1 " -y "$2}')"
-        input="input_raspicam.so ${split_res} -fps ${fps}"
+        input="${ld_so}/input_raspicam.so ${split_res} -fps ${fps}"
     else
-        input="input_uvc.so -d ${device} -r ${resolution} -f ${fps}"
+        input="${ld_so}/input_uvc.so -d ${device} -r ${resolution} -f ${fps}"
     fi
-    wwwroot="$(dirname $(readlink -qe $(whereis webcamd)))/mjpg-www"
     log_msg "Starting mjpeg-streamer with Device ${device} ..."
-    echo "Parameters: -i "${input}" -o "${output}" -n -w ${wwwroot}" | \
-    log_output "mjpg_streamer [cam ${cam_section}]"
-    
-    export LD_LIBRARY_PATH="${ld_so}"
     # Custom Flag Handling
     if [ -n "${custom}" ]; then
-        "${mjpg_bin}" "${custom}"  2>&1 | \
+        echo "Parameters: -i "${input} ${custom}" -o "${output}"" | \
+        log_output "mjpg_streamer [cam ${cam_section}]"
+        "${mjpg_bin}" -i "${input} ${custom}" -o "${output}" 2>&1 | \
         log_output "mjpg_streamer [cam ${cam_section}]"
     else
+        echo -e "Parameters: -i "${input}" -o "${output}" -n -w ${wwwroot}" | \
+        log_output "mjpg_streamer [cam ${cam_section}]"
         "${mjpg_bin}" -i "${input}" -o "${output} -n -w ${wwwroot}"  2>&1 | \
         log_output "mjpg_streamer [cam ${cam_section}]"
     fi
@@ -287,7 +287,7 @@ function run_mjpg {
 
 function run_ustreamer {
     local cam_section ustreamer_bin device port resolution fps custom
-    local raspicam start_param wwwroot dev_exist
+    local raspicam start_param wwwroot
     cam_section="${1}"
     ustreamer_bin="$(whereis ustreamer | awk '{print $2}')"
     device="$(get_param "cam ${cam_section}" device)"
