@@ -168,13 +168,14 @@ So, truly made for Debugging purposes.
 
 ---
 
-As the last option and the most tricky one:
+As the last option:\
+This needs some to read further Information.
 
     custom_flags:
 
 If you enable this in your [cam whatevernameyouset],\
 you can add parameters according to your needs.\
-Those will be appended to the default/preconfigured parameters.\
+Those will be appended to the default/preconfigured parameters.
 
 _In case of mjpg_streamer you could (at this Point) only add parameters\
 to the "input_" section!_ 
