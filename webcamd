@@ -315,7 +315,7 @@ function run_ustreamer {
     fi
     # Custom Flag Handling
     if [ -n "${custom}" ]; then
-        start_param=("${custom}") 
+        start_param=(${start_param[@]} "${custom}" ) 
     fi
     log_msg "Starting ustreamer with Device ${device} ..."
     echo "Parameters: ${start_param[*]}" | \
@@ -349,7 +349,7 @@ function run_rtsp {
                 )
     # Custom Flag Handling
     if [ -n "${custom}" ]; then
-        start_param=("${custom}") 
+        start_param=(${start_param[@]} "${custom}" )
     fi
     log_msg "Starting v4l2rtspserver with Device ${device} ..."
     echo "Parameters: ${start_param[*]}" | \
