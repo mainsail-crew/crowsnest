@@ -173,8 +173,11 @@ As the last option and the most tricky one:
     custom_flags:
 
 If you enable this in your [cam whatevernameyouset],\
-you gain the full control over your choosen streamservice.\
-This option is for more Advanced Users.
+you can add parameters according to your needs.\
+Those will be appended to the default/preconfigured parameters.\
+
+_In case of mjpg_streamer you could (at this Point) only add parameters\
+to the "input_" section!_ 
 
 To setup Services to your need you have to take a closer look to the documentation of the Projects named above.\
 As a pointer in the right direction:
@@ -184,7 +187,6 @@ As a pointer in the right direction:
     - This one is a bit more complex due the fact it depends on your cam type.
     - For 'Raspicam' see [Plugin: input_raspicam](https://github.com/jacksonliam/mjpg-streamer/blob/master/mjpg-streamer-experimental/plugins/input_raspicam/README.md)
     - For USB Type Cams see [Plugin: input_uvc](https://github.com/jacksonliam/mjpg-streamer/blob/master/mjpg-streamer-experimental/plugins/input_uvc/README.md)
-    - For the output is ,in this case, only used [Plugin: output_http](https://github.com/jacksonliam/mjpg-streamer/tree/master/mjpg-streamer-experimental/plugins/output_http)
 
 - ustreamer
     - For sake of simplicity I converted ustreamers manpage to
@@ -193,8 +195,6 @@ As a pointer in the right direction:
 - v4l2rtspserver
     - Please visit [v4l2rtspserver Usage](https://github.com/mpromonet/v4l2rtspserver#usage)
     
-
-If you use custom_flags, we try to help you out but it is really a feature for Advanced Users and your a kind of on your own.
 
 ---
 ## CustomPIOS Module
