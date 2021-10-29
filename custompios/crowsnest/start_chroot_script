@@ -35,8 +35,8 @@ cd /home/${BASE_USER}
 gitclone CROWSNEST_CROWSNEST_REPO crowsnest
 
 # Check succsessfull clone.
-if [ -d "/home/${BASE_USER}/webcamd" ]; then
-  pushd webcamd > /dev/null
+if [ -d "/home/${BASE_USER}/crowsnest" ]; then
+  pushd /home/${BASE_USER}/crowsnest > /dev/null
   if [ -d "$CROWSNEST_DEFAULT_CONF_DIR" ]; then
     copy_config
   else
