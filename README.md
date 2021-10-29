@@ -177,8 +177,8 @@ If you enable this in your [cam whatevernameyouset],\
 you can add parameters according to your needs.\
 Those will be appended to the default/preconfigured parameters.
 
-_In case of mjpg_streamer you could (at this Point) only add parameters\
-to the "input_" section!_ 
+_In case of mjpg_streamer you could (at this Point) only add parameters
+to the "input\_*.so" section!_ 
 
 To setup Services to your need you have to take a closer look to the documentation of the Projects named above.\
 As a pointer in the right direction:
