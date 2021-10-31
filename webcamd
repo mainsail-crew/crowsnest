@@ -400,24 +400,30 @@ function shutdown {
 
 #### Watchdog Functions and Variables
 ## Do not reuse previous functions!
-function get_cam_count {
-    local cam_count cfg
-    cfg="${WEBCAMD_CFG}"
-    cam_count="$(crudini --existing=file --get "${cfg}" | \
-    sed '/webcamd/d' | wc -l)"
-    echo "${cam_count}"
-}
-
-function get_cam_avail {
-    local conf_cam avail missing
-    for (( i=1; i<="$(get_cam_count)"; i++ )); do
-        conf_cam="$(get_param "cam $i" device 2> /dev/null)"
-        avail="$(find ${conf_cam} 2> /dev/null | wc -l)"
-        if [ "${avail}" -eq 0 ]; then
-            missing+=("${conf_cam}")            
-        fi
+function webcamd_watchdog {
+    # Helper Functions
+    function available {
+    find ${1} &> /dev/null
+    echo $?
+    }
+    # local Vars
+    local get_conf_devices conf_cams avail_cams
+    # Init empty Arrays
+    get_conf_devices=()
+    conf_cams=()
+    # Grab devices from config file
+    get_conf_devices=("$(crudini --existing=file --get "${WEBCAMD_CFG}" | \
+    sed '/webcamd/d' | cut -d ' ' -f2)")
+    # Construct Array with configured Devices
+    for gcd in ${get_conf_devices[*]}; do
+        conf_cams+=("$(crudini --get "${WEBCAMD_CFG}" "cam ${gcd}" "device" \
+        | awk '{print $1}')")
     done
-    echo "${missing[@]}"
+    for cc in ${conf_cams[*]}; do
+    if [ "$(available ${cc})" -ne 0 ]; then
+        log_msg "WATCHDOG: Lost Device: "${cc}""
+    fi
+    done
 }
 
 #### MAIN
@@ -458,15 +464,10 @@ initial_check
 construct_streamer
 
 ## Loop and Watchdog
+## In this case watchdog acts more like a "cable defect detector"
+## The User gets a message if Device is lost.
 while true ; do
-    log_msg "WATCHDOG: Gather Informations"
-    log_msg "WATCHDOG: Configured Cam(s): $(get_cam_count)"
-    if [ -n "$(get_cam_avail)" ]; then
-        log_msg "WATCHDOG: Lost Device(s): $(get_cam_avail)"
-    else
-        log_msg "WATCHDOG: All Device(s) present!"
-    fi
-    log_msg "WATCHDOG: Next Check in 2 minutes..."
+    webcamd_watchdog
     sleep 120 & sleep_pid="$!"
     wait "${sleep_pid}"
 done
