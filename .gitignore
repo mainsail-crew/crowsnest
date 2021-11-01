@@ -7,3 +7,5 @@ leftover*
 #Ignore Test Files
 test*
 
+# tmp file workaround
+lost*
