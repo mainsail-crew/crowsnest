@@ -414,20 +414,20 @@ function webcamd_watchdog {
     function lost_dev {
         local lostfile
         lostfile="$(echo ${1} | awk -F '/' '{print $NF}')"
-        touch $PWD/lost-${lostfile}
+        touch /tmp/lost-${lostfile}
     }
 
     function is_lost {
         local lostdev
         lostdev="$(echo ${1} | awk -F '/' '{print $NF}')"
-        find $PWD/lost-${lostdev} &> /dev/null
+        find /tmp/lost-${lostdev} &> /dev/null
         echo $?
     }
 
     function returned_dev {
         local lostdev
         lostdev="$(echo ${1} | awk -F '/' '{print $NF}')"
-        rm -f $PWD/lost-${lostdev} &> /dev/null
+        rm -f /tmp/lost-${lostdev} &> /dev/null
     }
 
     # local Vars
