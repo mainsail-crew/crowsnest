@@ -400,12 +400,36 @@ function shutdown {
 
 #### Watchdog Functions and Variables
 ## Do not reuse previous functions!
+function clean_watchdog {
+    rm -f $PWD/lost-*
+}
+
 function webcamd_watchdog {
     # Helper Functions
     function available {
     find ${1} &> /dev/null
     echo $?
     }
+
+    function lost_dev {
+        local lostfile
+        lostfile="$(echo ${1} | awk -F '/' '{print $NF}')"
+        touch $PWD/lost-${lostfile}
+    }
+
+    function is_lost {
+        local lostdev
+        lostdev="$(echo ${1} | awk -F '/' '{print $NF}')"
+        find $PWD/lost-${lostdev} &> /dev/null
+        echo $?
+    }
+
+    function returned_dev {
+        local lostdev
+        lostdev="$(echo ${1} | awk -F '/' '{print $NF}')"
+        rm -f $PWD/lost-${lostdev} &> /dev/null
+    }
+
     # local Vars
     local get_conf_devices conf_cams avail_cams
     # Init empty Arrays
@@ -419,9 +443,14 @@ function webcamd_watchdog {
         conf_cams+=("$(crudini --get "${WEBCAMD_CFG}" "cam ${gcd}" "device" \
         | awk '{print $1}')")
     done
+    # Send Message if Device available or returned.
     for cc in ${conf_cams[*]}; do
-    if [ "$(available ${cc})" -ne 0 ]; then
+    if [ "$(available ${cc})" -ne 0 ] && [ "$(is_lost ${cc})" -ne 0 ]; then
         log_msg "WATCHDOG: Lost Device: "${cc}""
+        lost_dev "${cc}"
+    elif [ "$(is_lost ${cc})" -eq 0 ] && [ "$(available ${cc})" -eq 0 ]; then
+        log_msg "WATCHDOG: Device ${cc} returned."
+        returned_dev "${cc}"
     fi
     done
 }
@@ -466,6 +495,7 @@ construct_streamer
 ## Loop and Watchdog
 ## In this case watchdog acts more like a "cable defect detector"
 ## The User gets a message if Device is lost.
+clean_watchdog
 while true ; do
     webcamd_watchdog
     sleep 120 & sleep_pid="$!"
