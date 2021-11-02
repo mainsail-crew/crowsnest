@@ -36,7 +36,7 @@ By default it look like this:
 
     [webcamd]
     log_path: ~/klipper_logs/webcamd.log
-    debug_log: false                        
+    log_level: quiet                        
 
     [cam 1]
     streamer: mjpg                          
@@ -50,80 +50,6 @@ What that basicly means is:
     log_path: ~/klipper_logs/webcamd.log
 
 Where crowsnest (webcamd) should store its Logfile.
-
-    debug_log: false
-
-You can set this to true or false.\
-In case of true you get an more verbose output in the log file.
-Useful to DEBUG your setup.
-
-Now the more interessting part.
-
-    [cam 1]
-    streamer: mjpg                          
-    port: 8080                              
-    device: /dev/video0                     
-    resolution: 640x480                     
-    max_fps: 15
-
-> _Note: You can name the cam, how you want!_\
-_ex.: [cam raspicam]_
-
----
-
-This section should be pretty much self explantory.
-
-    streamer: mjpg
-
-means your choosen streamservice will be mjpg_streamer.\
-You can choose:
-- mjpg - well known [Jacksonliam's mjpg-streamer-experimental](https://github.com/jacksonliam/mjpg-streamer)
-
-- ustreamer - A streamserver from Pi-KVM Project\
-active maintained by [Maxim Devaev](https://github.com/mdevaev)\
-[ustreamer on github](https://github.com/pikvm/ustreamer)
-
-- rtsp - v4l2rtspserver with Multiprotocol Support\
-active maintained by [Michel Promonet](https://github.com/mpromonet) \
-[v4l2rtspserver on github](https://github.com/mpromonet/v4l2rtspserver)
-
-More Services will come in the (hopefully, near) future.
-
----
-
-    port: 8080
-
-The port where the choosen service will listen on\
-**_NOTE: If you choose 'rtsp' use Port 8554!_**
-
-**_NOTE: Ports 8080 - 8084 are covered by nginx reverse proxy! \
-According to that 8080 will be /webcam, port 8081 will be /webcam1 and so on._**
-
----
-
-    device: /dev/video0
-
-The Videodevice (Camera) what should be used by choosen Streamservice.
-
-    device: /dev/v4l/by-id/usb-PixArt_Imaging_Inc._USB2.0_Camera-video-index0
-
-is also valid. Your devices are listed in your log-file on every run.\
-So, you can easily copy it from there.
-
----
-
-    resolution: 640x480                     
-    max_fps: 15
-
-This last 2 should be pretty obvious :)
-
----
-
-There are two more existing parameters,
-
-    log_level:
-
-**This parameter _has_ to reside under [webcamd] section!**
 
 You can choose:
     
@@ -214,7 +140,67 @@ Another Option that affects the 'logging' behavior is
 
 If you enable that option, everytime you restart, your existing log file will be deleted.
 
+
+Now the more interessting part.
+
+    [cam 1]
+    streamer: mjpg                          
+    port: 8080                              
+    device: /dev/video0                     
+    resolution: 640x480                     
+    max_fps: 15
+
+> _Note: You can name the cam, how you want!_\
+_ex.: [cam raspicam]_
+
 ---
+
+This section should be pretty much self explantory.
+
+    streamer: mjpg
+
+means your choosen streamservice will be mjpg_streamer.\
+You can choose:
+- mjpg - well known [Jacksonliam's mjpg-streamer-experimental](https://github.com/jacksonliam/mjpg-streamer)
+
+- ustreamer - A streamserver from Pi-KVM Project\
+active maintained by [Maxim Devaev](https://github.com/mdevaev)\
+[ustreamer on github](https://github.com/pikvm/ustreamer)
+
+- rtsp - v4l2rtspserver with Multiprotocol Support\
+active maintained by [Michel Promonet](https://github.com/mpromonet) \
+[v4l2rtspserver on github](https://github.com/mpromonet/v4l2rtspserver)
+
+More Services will come in the (hopefully, near) future.
+
+---
+
+    port: 8080
+
+The port where the choosen service will listen on\
+**_NOTE: If you choose 'rtsp' use Port 8554!_**
+
+**_NOTE: Ports 8080 - 8084 are covered by nginx reverse proxy! \
+According to that 8080 will be /webcam, port 8081 will be /webcam1 and so on._**
+
+---
+
+    device: /dev/video0
+
+The Videodevice (Camera) what should be used by choosen Streamservice.
+
+    device: /dev/v4l/by-id/usb-PixArt_Imaging_Inc._USB2.0_Camera-video-index0
+
+is also valid. Your devices are listed in your log-file on every run.\
+So, you can easily copy it from there.
+
+---
+
+    resolution: 640x480                     
+    max_fps: 15
+
+This last 2 should be pretty obvious :)
+
 
 As the last option:\
 This needs some to read further Information.
