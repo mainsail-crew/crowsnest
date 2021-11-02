@@ -121,11 +121,43 @@ This last 2 should be pretty obvious :)
 
 There are two more existing parameters,
 
-    log_method: debug
+    log_level:
 
 **This parameter _has_ to reside under [webcamd] section!**
 
-This forces webcamd to spit out more camera informations.\
+You can choose:
+    
+    log_level: quiet
+
+This Option shows a bare minimum Logfile.\
+For example:
+
+    [11/02/21 20:47:52] webcamd: webcamd - A webcam Service for multiple Cams and Stream Services.
+    [11/02/21 20:47:53] webcamd: Version: v0.1.3-9-g7e278cd
+    [11/02/21 20:47:53] webcamd: Prepare Startup ...
+    [11/02/21 20:47:53] webcamd: INFO: Checking Dependencys
+    [11/02/21 20:47:53] webcamd: Dependency: 'crudini' found in /usr/bin/crudini.
+    [11/02/21 20:47:53] webcamd: Dependency: 'mjpg_streamer' found in /usr/local/bin/mjpg_streamer.
+    [11/02/21 20:47:53] webcamd: Dependency: 'ustreamer' found in /usr/local/bin/ustreamer.
+    [11/02/21 20:47:53] webcamd: Dependency: 'v4l2rtspserver' found in /usr/local/bin/v4l2rtspserver.
+    [11/02/21 20:47:54] webcamd: INFO: Detect available Cameras
+    [11/02/21 20:47:54] webcamd: INFO: Found 2 available Camera(s)
+    [11/02/21 20:47:54] webcamd: /dev/v4l/by-id/usb-USB_Camera_USB_Camera_SN0001-video-index0 -> /dev/video1
+    [11/02/21 20:47:54] webcamd: Detected 'Raspicam' Device -> /dev/video0
+    [11/02/21 20:47:54] webcamd: Try to start configured Cams / Services...
+    [11/02/21 20:47:55] webcamd: INFO: Configuration of Section [cam 1] looks good. Continue...
+    [11/02/21 20:47:55] webcamd: Starting mjpeg-streamer with Device /dev/video0 ...
+    [11/02/21 20:48:03] webcamd: INFO: Configuration of Section [cam usb_black] looks good. Continue...
+    [11/02/21 20:48:04] webcamd: Starting ustreamer with Device /dev/v4l/by-id/usb-USB_Camera_USB_Camera_SN0001-video-index0 ...
+    [11/02/21 20:48:11] webcamd: ... Done!
+
+The next option is
+
+    log_level: verbose
+
+This gives you a little more Informations.
+It prints out you existing webcam.conf and shows
+a detailed info about your configured ( and connected ) cams.\
 Like that:
 
     [10/24/21 02:46:00] webcamd: INFO: Detect available Cameras
@@ -163,8 +195,24 @@ Like that:
 
 This is useful to determine what the Hardware Encoder of your Camera is capable of.\
 In this case a "cheap" raspicam for about 7€ was used.\
-But it has a downside, everytime you restart webcamd, it will delete the Logfile!
-So, truly made for Debugging purposes.
+So, truly made for 'Helper for Setup' purposes.
+
+If you want to get the full Details, please use
+
+    log_level: debug
+
+This will show you barely the same as 'verbose' but it prints also your\
+configured Start Parameters ( and the defaults ), also it shows\
+the Output of your choosen Streamer.\
+This option ist more for debugging purposes and has a tendency to overwhelm you if you are not familiar with that.
+
+---
+
+Another Option that affects the 'logging' behavior is
+
+    develop_log: true
+
+If you enable that option, everytime you restart, your existing log file will be deleted.
 
 ---
 
