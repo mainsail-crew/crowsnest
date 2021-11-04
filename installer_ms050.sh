@@ -39,7 +39,7 @@ sudo rm -rf /var/log/webcamd.log
 
 # Install Dependency
 sudo apt update
-sudo apt install crudini -y
+sudo apt install crudini logger -y
 
 # Install Project "crowsnest"
 echo -e "Installing webcamd and enable Service"
