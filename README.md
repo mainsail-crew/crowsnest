@@ -1,6 +1,6 @@
 # crowsnest
 
-A webcam daemon for Raspi Lite images like mainsailOS
+A webcam daemon for Raspberry Pi OS Lite images like mainsailOS
 
 ---
 
@@ -11,15 +11,30 @@ See https://en.wikipedia.org/wiki/Crow's_nest
 
 So, this will be the 'lookout point' for your Printer.
 
-### Install on MainsailOS 0.5.0 as update
+### Install on Raspberry Pi OS
     cd ~
     git clone https://github.com/mainsail-crew/crowsnest.git
     cd crowsnest
-    ./installer_ms050.sh
+    ./install.sh
 
-An installer for other Distribution than MainsailOS will come.
-Give me some time to prepare!
+_This is not tested on other Distributions. If you test that on other Distributions,\
+feel free to open a Pull Request to enhance Documentation._
 
+After successful Instalation you should consider to add
+
+    [update_manager webcamd]
+    type: git_repo
+    path: ~/crowsnest
+    origin: https://github.com/mainsail-crew/crowsnest.git
+
+to your moonraker.conf, to get latest and possibly greatest Features.
+
+### To unsinstall 'crowsnest'
+    cd crowsnest
+    ./uninstall.sh
+
+
+### 
 _NOTE: This project has WIP Status! Changes may occure and possibly break things!_
 --- 
 
@@ -39,7 +54,7 @@ By default it look like this:
     log_level: quiet                        
 
     [cam 1]
-    streamer: mjpg                          
+    streamer: ustreamer                          
     port: 8080                              
     device: /dev/video0                     
     resolution: 640x480                     
@@ -144,7 +159,7 @@ If you enable that option, everytime you restart, your existing log file will be
 Now the more interessting part.
 
     [cam 1]
-    streamer: mjpg                          
+    streamer: ustreamer                         
     port: 8080                              
     device: /dev/video0                     
     resolution: 640x480                     
@@ -161,7 +176,6 @@ This section should be pretty much self explantory.
 
 means your choosen streamservice will be mjpg_streamer.\
 You can choose:
-- mjpg - well known [Jacksonliam's mjpg-streamer-experimental](https://github.com/jacksonliam/mjpg-streamer)
 
 - ustreamer - A streamserver from Pi-KVM Project\
 active maintained by [Maxim Devaev](https://github.com/mdevaev)\
@@ -211,17 +225,9 @@ If you enable this in your [cam whatevernameyouset],\
 you can add parameters according to your needs.\
 Those will be appended to the default/preconfigured parameters.
 
-_In case of mjpg_streamer you could (at this Point) only add parameters
-to the "input\_*.so" section!_ 
-
 To setup Services to your need you have to take a closer look to the documentation of the Projects named above.\
 As a pointer in the right direction:
 
-
-- mjpg
-    - This one is a bit more complex due the fact it depends on your cam type.
-    - For 'Raspicam' see [Plugin: input_raspicam](https://github.com/jacksonliam/mjpg-streamer/blob/master/mjpg-streamer-experimental/plugins/input_raspicam/README.md)
-    - For USB Type Cams see [Plugin: input_uvc](https://github.com/jacksonliam/mjpg-streamer/blob/master/mjpg-streamer-experimental/plugins/input_uvc/README.md)
 
 - ustreamer
     - For sake of simplicity I converted ustreamers manpage to

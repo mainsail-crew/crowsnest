@@ -5,6 +5,7 @@
 # Copyright 2021
 # https://github.com/mainsail-crew/crowsnest
 # GPL V3
+# Version 2
 ########
 
 
@@ -70,59 +71,12 @@ if [ -d "/home/${BASE_USER}/crowsnest" ]; then
   to '/etc/systemd/system/webcamd.service'.. "
   cp -p file_templates/webcamd.service /etc/systemd/system/
   ## Make sure raspicam become /dev/video0 Workaround
-  sudo sh -c "echo bcm2835-v4l2 >> /etc/modules"
+  sudo sh -c 'echo "bcm2835-v4l2" >> /etc/modules'
   ## Enable systemd service
   echo_green "Enable webcamd.service ..."
   systemctl_if_exists enable webcamd.service
   popd > /dev/null
 fi
-
-echo_green "Installing mjpeg-streamer ..."
-### Clone and compile mjpg_streamer
-## Due the fact that used mjpg_streamer has a weird folder structure
-## We need some 'magic' to workaround that.
-echo_green "Cloning mjpg-streamer Sources."
-gitclone CROWSNEST_MJPG_REPO mjpg_tmp
-sudo -u ${BASE_USER} mkdir -p mjpg-streamer
-sudo -u ${BASE_USER} mv mjpg_tmp/mjpg-streamer-experimental/* mjpg-streamer/
-
-## This Part is out of the original mjpg-streamer Module
-## Credits to: Raymond Himle
-## (Adapted from the OctoPi image creation scripts. Thanks Gina and Guysoft!)
-echo_green "Installing mjpg-streamer Dependencies."
-apt update
-check_install_pkgs ${CROWSNEST_MJPG_DEPS}
-apt install -y --allow-downgrades cmake=3.13.4-1 cmake-data=3.13.4-1
-if [ $( is_in_apt libjpeg62-turbo-dev ) -eq 1 ]; then
-  apt-get -y --force-yes install libjpeg62-turbo-dev
-elif [ $( is_in_apt libjpeg8-dev ) -eq 1 ]; then 
-  apt-get -y --force-yes install libjpeg8-dev
-fi
-
-## Compile mjpg_streamer
-echo_green "Compiling mjpg-streamer"
-pushd mjpg-streamer > /dev/null
-MJPG_STREAMER_BUILD_DIR=_build
-[ -d ${MJPG_STREAMER_BUILD_DIR} ] || (mkdir ${MJPG_STREAMER_BUILD_DIR} && \
-  chown ${BASE_USER}:${BASE_USER} ${MJPG_STREAMER_BUILD_DIR})
-[ -f ${MJPG_STREAMER_BUILD_DIR}/Makefile ] || (cd ${MJPG_STREAMER_BUILD_DIR} && \
-  sudo -u ${BASE_USER} cmake -DCMAKE${MJPG_STREAMER_BUILD_DIR}_TYPE=Release ..)
-  sudo -u ${BASE_USER} make -j $(nproc) -C ${MJPG_STREAMER_BUILD_DIR}
-  sudo -u ${BASE_USER} cp ${MJPG_STREAMER_BUILD_DIR}/mjpg_streamer .
-  sudo -u ${BASE_USER} find ${MJPG_STREAMER_BUILD_DIR} -name "*.so" -type f -exec cp {} . \;
-popd > /dev/null
-
-## Cleanup
-echo_green "Removing temporary Repo Folder."
-rm -rf mjpg_tmp
-## Due the fact mjpg uses an older version of cmake we have to upgrade it.
-apt install cmake cmake-data
-## Create sym links
-echo_green "Creating sym links..."
-sudo ln -sf $PWD/mjpg-streamer/mjpg_streamer /usr/local/bin/
-# Finished
-echo_green "Successful installed mjpg-streamer."
-
 
 ### Install ustreamer
 echo_green "Installing ustreamer ..."
@@ -130,8 +84,7 @@ echo_green "Installing ustreamer ..."
 echo_green "Cloning ustreamer Sources."
 gitclone CROWSNEST_USTREAMER_REPO ustreamer
 echo_green "Installing ustreamer Dependencies."
-apt update
-apt --yes install ${CROWSNEST_USTREAMER_DEPS}
+check_install_pkgs ${CROWSNEST_USTREAMER_DEPS}
 ## Compile ustreamer
 echo_green "Compiling ustreamer"
 pushd ustreamer > /dev/null
@@ -144,7 +97,7 @@ elif [ "${CROWSNEST_USTREAMER_WITH_OMX}" = "y" ] && \
   echo_green "Compile ustreamer with OMX Support..."
   WITH_OMX=1 make -j $(nproc)
 else
-  "Compile ustreamer without OMX and GPIO Support..."
+  echo_green "Compile ustreamer without OMX and GPIO Support..."
   make -j $(nproc)
 fi
 popd > /dev/null
@@ -152,20 +105,35 @@ popd > /dev/null
 ## Create sym links
 echo_green "Creating sym links..."
 sudo ln -sf $PWD/ustreamer/ustreamer /usr/local/bin/
+sudo ln -sf $PWD/ustreamer/ustreamer-dump /usr/local/bin/
 # Finished
 echo_green "Successful installed ustreamer."
 
+### Stay for possibly later use.
+# ### Install rtsp-simple-server
+# echo_green "Installing 'rtsp-simple-server' ..."
+# # Install Dependencies
+# echo_green "Installing 'rtsp-simple-server' Dependencies ..."
+# check_install_pkgs "${CROWSNEST_RTSPSIMPLE_DEPS}"
+# # Download Release Binary
+# echo_green "Download 'rtsp-simple-server' ..."
+# curl -o /tmp/rtsp-simple-server.tar.gz -L "${CROWSNEST_SIMPLERTSP_RELEASE}"
+# sudo -u ${BASE_USER} mkdir -p "${CROWSNEST_RTSPSIMPLE_DIR}"
+# sudo -u ${BASE_USER} tar xfz /tmp/rtsp-simple-server.tar.gz -C "${CROWSNEST_RTSPSIMPLE_DIR}"
+# ## Create sym links
+# echo_green "Creating sym links..."
+# sudo ln -sf ${CROWSNEST_RTSPSIMPLE_DIR}/rtsp-simple-server /usr/local/bin/
+# # Finished
+# echo_green "Successful installed 'rtsp-simple-server'."
+
 ### Install v4l2rtspserver
 echo_green "Installing v4l2rtspserver ..."
-### Clone and compile ustreamer
+### Clone and compile v4l2rtspserver
 echo_green "Cloning v4l2rtspserver Sources."
 gitclone CROWSNEST_V4L2RTSP_REPO v4l2rtspserver
 echo_green "Installing v4l2rtspserv Dependencies."
-apt update
-apt --yes install ${CROWSNEST_V4L2RTSP_DEPS}
-# It seems v4l2rtspserver has trouble to compile with cmake 3.16
-apt install -y --allow-downgrades cmake=3.13.4-1 cmake-data=3.13.4-1
-## Compile ustreamer
+check_install_pkgs ${CROWSNEST_V4L2RTSP_DEPS}
+## Compile v4l2rtspserver
 echo_green "Compiling v4l2rtspserver"
 pushd v4l2rtspserver > /dev/null
 cmake -j $(nproc) . && make -j $(nproc)

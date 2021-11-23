@@ -1,0 +1,19 @@
+#####
+# webcamd logrotate file
+# written by Stephan Wendel aka KwadFan
+# <me@stephanwe.de>
+# GPL v3
+#####
+
+
+/home/pi/kliper_logs/webcamd.log {
+    rotate 3
+    missingok
+    notifempty
+    compress
+    delaycompress
+    daily
+    dateext
+    dateformat %F
+    maxsize 32M
+}

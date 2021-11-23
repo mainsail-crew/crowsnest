@@ -7,6 +7,8 @@
 #### https://github.com/mainsail-crew/crowsnest 
 ####
 #### This File is distributed under GPLv3
+####
+#### Version 2
 
 ### Disable shellcheck Errors
 # shellcheck disable=SC2012,SC2206
@@ -139,9 +141,9 @@ function initial_check {
     log_msg "INFO: Checking Dependencys"
     check_dep "logger"
     check_dep "crudini"
-    check_dep "mjpg_streamer"
     check_dep "ustreamer"
     check_dep "v4l2rtspserver"
+    # check_dep "rtsp-simple-server" # Stay for later use.
     if [ -z "$(check_cfg "${WEBCAMD_CFG}")" ]; then
         if [ "$(log_level)" != "quiet" ]; then
             print_cfg
@@ -246,11 +248,7 @@ function construct_streamer {
     log_msg "Try to start configured Cams / Services..."
     for (( i=0; i<"${#cams[@]}"; i++ )); do
         stream_server="$(get_param "cam ${cams[$i]}" streamer 2> /dev/null)"
-        if [ "${stream_server}" == "mjpg" ]; then
-            run_mjpg "${cams[$i]}" & 
-            sleep 8 & sleep_pid="$!" 
-            wait "${sleep_pid}"
-        elif [ "${stream_server}" == "ustreamer" ]; then
+        if [ "${stream_server}" == "ustreamer" ]; then
             run_ustreamer "${cams[$i]}" &
             sleep 8 & sleep_pid="$!" 
             wait "${sleep_pid}"
@@ -263,47 +261,6 @@ function construct_streamer {
         fi
     done
     log_msg "... Done!"
-}
-
-function run_mjpg {
-    local cam_section mjpg_bin device port resolution fps custom
-    local raspicam split_res output input wwwroot
-    cam_section="${1}"
-    mjpg_bin="$(whereis mjpg_streamer | awk '{print $2}')"
-    # shellcheck disable=2046
-    ld_so="$(dirname $(readlink -qe $(whereis mjpg_streamer)))"
-    device="$(get_param "cam ${cam_section}" device)"
-    port=$(get_param "cam ${cam_section}" port)
-    resolution=$(get_param "cam ${cam_section}" resolution)
-    fps=$(get_param "cam ${cam_section}" max_fps)
-    wwwroot="$(dirname $(readlink -qe $(whereis webcamd)))/mjpg-www"
-    custom="$(get_param "cam ${cam_section}" custom_flags 2> /dev/null)"
-    check_section "${cam_section}"
-    raspicam="$(v4l2-ctl --list-devices |  grep -A1 -e 'mmal' | \
-    awk 'NR==2 {print $1}')"
-    output="${ld_so}/output_http.so -l 127.0.0.1 -p ${port} -n -w ${wwwroot}"
-    #construct input raspicam/usb cam
-    if [ "${device}" == "${raspicam}" ]; then
-        split_res="$(echo "${resolution}" | \
-        awk -F 'x' '{print "-x "$1 " -y "$2}')"
-        input="${ld_so}/input_raspicam.so ${split_res} -fps ${fps}"
-    else
-        input="${ld_so}/input_uvc.so -d ${device} -r ${resolution} -f ${fps}"
-    fi
-    log_msg "Starting mjpeg-streamer with Device ${device} ..."
-    # Custom Flag Handling
-    if [ -n "${custom}" ]; then
-        echo "Parameters: -i "${input} ${custom}" -o "${output}"" | \
-        log_output "mjpg_streamer [cam ${cam_section}]"
-        "${mjpg_bin}" -i "${input} ${custom}" -o "${output}" 2>&1 | \
-        log_output "mjpg_streamer [cam ${cam_section}]"
-    else
-        echo -e "Parameters: -i "${input}" -o "${output}" -n -w ${wwwroot}" | \
-        log_output "mjpg_streamer [cam ${cam_section}]"
-        "${mjpg_bin}" -i "${input}" -o "${output} -n -w ${wwwroot}"  2>&1 | \
-        log_output "mjpg_streamer [cam ${cam_section}]"
-    fi
-    log_msg "ERROR: Start of mjpg_streamer [cam ${cam_section}] failed!"
 }
 
 function run_ustreamer {
@@ -331,7 +288,7 @@ function run_ustreamer {
         start_param=(
                     -d "${device}" -r "${resolution}" -f "${fps}"
                     --host 127.0.0.1 -p "${port}" --allow-origin=\*
-                    --device-timeout=2 --encoder=omx --static "${wwwroot}"
+                    --device-timeout=2 --static "${wwwroot}"
                     )
     fi
     # Custom Flag Handling
