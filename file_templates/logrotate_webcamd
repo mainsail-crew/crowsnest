@@ -6,7 +6,7 @@
 #####
 
 
-/home/pi/kliper_logs/webcamd.log {
+/home/pi/klipper_logs/webcamd.log {
     rotate 3
     missingok
     notifempty
