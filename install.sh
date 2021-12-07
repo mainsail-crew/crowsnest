@@ -193,11 +193,11 @@ function install_crowsnest {
     fi
     ## Link webcamd.service
     echo -en "Copying webcamd.service file ...\r"
-    sudo ln -sf "${servicefile}" /etc/systemd/system/webcamd.service > /dev/null
+    sudo cp -rf "${servicefile}" /etc/systemd/system/webcamd.service > /dev/null
     echo -e "Copying webcamd.service file ... [OK]\r"
     ## Link logrotate
     echo -en "Linking logrotate file ...\r"
-    sudo ln -sf "${logrotatefile}" /etc/logrotate.d/webcamd
+    sudo cp -rf "${logrotatefile}" /etc/logrotate.d/webcamd
     echo -e "Linking logrotate file ... [OK]\r"
     echo -en "Reload systemd to enable new deamon ...\r"
     sudo systemctl daemon-reload
