@@ -3,10 +3,10 @@
 #### Logging library
 
 #### webcamd - A webcam Service for multiple Cams and Stream Services.
-#### 
+####
 #### written by Stephan Wendel aka KwadFan
 #### Copyright 2021
-#### https://github.com/mainsail-crew/crowsnest 
+#### https://github.com/mainsail-crew/crowsnest
 ####
 #### This File is distributed under GPLv3
 ####
@@ -47,14 +47,14 @@ function log_msg {
     local msg logfile prefix
     msg="${1}"
     prefix="$(date +'[%D %T]') webcamd:"
-    #Workaround sed ~ to BASH VAR $HOME 
+    #Workaround sed ~ to BASH VAR $HOME
     logfile="$(get_param webcamd log_path | sed "s#^~#$HOME#gi")"
     #Workaround: Make Dir if not exist
     if [ ! -d "${logfile}" ]; then
         mkdir -p "$(dirname "${logfile}")"
     fi
     echo -e "${prefix} ${msg}" | tr -s ' ' >> "${logfile}" 2>&1
-    echo -e "${msg}" | logger -t webcamd 
+    echo -e "${msg}" | logger -t webcamd
 }
 
 #call '| log_output "<prefix>"'
@@ -84,7 +84,7 @@ function print_cfg {
 function print_cams {
     local count raspicam total debug
     debug="$(get_param "webcamd" debug_log 2> /dev/null)"
-    count="$(find /dev/v4l/by-id/ 2> /dev/null | sed '1d;1~2d' | wc -l)" 
+    count="$(find /dev/v4l/by-id/ 2> /dev/null | sed '1d;1~2d' | wc -l)"
     total="$((count+$(detect_raspicam)))"
     if [ "${total}" -eq 0 ]; then
         log_msg "ERROR: No usable Cameras Found. Stopping $(basename "$0")."
