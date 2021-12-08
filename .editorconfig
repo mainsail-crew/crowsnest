@@ -2,7 +2,7 @@
 # This should help contributors and save time for my sometimes cheesy Brain xD
 # Stephan Wendel <me@stephanwe.de>
 
-[*]
+[*.sh]
 charset = utf-8
 end_of_line = lf
 insert_final_newline = true
