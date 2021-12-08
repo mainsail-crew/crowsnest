@@ -29,6 +29,7 @@ function get_param {
 } 2> /dev/null
 
 # Check for existing file
+# Exit with error if not exist
 function check_cfg {
     if [ ! -r "${1}" ]; then
         log_msg "ERROR: No Configuration File found. Exiting!"
@@ -36,6 +37,17 @@ function check_cfg {
     fi
 }
 
+## Spits out all [cam <nameornumber>] configured sections
+function configured_cams {
+    local cam_count cfg
+    cfg="${WEBCAMD_CFG}"
+    cams="$(crudini --existing=file --get "${cfg}" | \
+    sed '/webcamd/d;s/cam//')"
+    echo "${cams}"
+}
+
+# Checks [cam <nameornumber>] if all needed configuration sections are present
+# call check_section <nameornumber> ex.: check_section foobar
 function check_section {
     local section param must_exist missing
     section="cam ${1}"
@@ -53,13 +65,4 @@ function check_section {
         log_msg "INFO: Configuration of Section [${section}] looks good. \
         Continue..."
     fi
-}
-
-## Spits out all [cam <nameornumber>] configured sections
-function configured_cams {
-    local cam_count cfg
-    cfg="${WEBCAMD_CFG}"
-    cams="$(crudini --existing=file --get "${cfg}" | \
-    sed '/webcamd/d;s/cam//')"
-    echo "${cams}"
 }
