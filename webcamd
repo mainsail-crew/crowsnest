@@ -3,17 +3,17 @@
 #### Webcamd Core Application.
 
 #### webcamd - A webcam Service for multiple Cams and Stream Services.
-#### 
+####
 #### written by Stephan Wendel aka KwadFan
 #### Copyright 2021
-#### https://github.com/mainsail-crew/crowsnest 
+#### https://github.com/mainsail-crew/crowsnest
 ####
 #### This File is distributed under GPLv3
 ####
 #### Version 3
 
 ### Disable shellcheck Errors
-# shellcheck disable=SC2012,SC2206
+# shellcheck disable=1091
 
 # Exit upon Errors
 set -e
@@ -39,13 +39,13 @@ function construct_streamer {
         stream_server="$(get_param "cam ${cams[$i]}" streamer 2> /dev/null)"
         if [ "${stream_server}" == "ustreamer" ]; then
             run_ustreamer "${cams[$i]}" &
-            sleep 8 & sleep_pid="$!" 
+            sleep 8 & sleep_pid="$!"
             wait "${sleep_pid}"
         elif [ "${stream_server}" == "rtsp" ]; then
             run_rtsp "${cams[$i]}" &
-            sleep 8 & sleep_pid="$!" 
+            sleep 8 & sleep_pid="$!"
             wait "${sleep_pid}"
-        else 
+        else
             log_msg "ERROR: Missing 'streamer' parameter in [cam ${cams[$i]}]. Skipping."
         fi
     done
@@ -82,7 +82,7 @@ function run_ustreamer {
     fi
     # Custom Flag Handling
     if [ -n "${custom}" ]; then
-        start_param=(${start_param[@]} "${custom}" ) 
+        start_param=(${start_param[@]} "${custom}" )
     fi
     log_msg "Starting ustreamer with Device ${device} ..."
     echo "Parameters: ${start_param[*]}" | \
@@ -95,7 +95,7 @@ function run_ustreamer {
     else
         log_msg "ERROR: Start of ustreamer [cam ${cam_section}] failed!"
     fi
-} 
+}
 
 function run_rtsp {
     local cam_section rtsp_bin device port resolution fps custom
@@ -112,7 +112,7 @@ function run_rtsp {
         awk -F 'x' '{print "-W "$1 " -H "$2}')"
     start_param=(
                     -I 0.0.0.0 -P "${port}" "${split_res}" -F "${fps}" \
-                    "${device}" 
+                    "${device}"
                 )
     # Custom Flag Handling
     if [ -n "${custom}" ]; then
@@ -121,7 +121,7 @@ function run_rtsp {
     log_msg "Starting v4l2rtspserver with Device ${device} ..."
     echo "Parameters: ${start_param[*]}" | \
     log_output "v4l2rtspserver [cam ${cam_section}]"
-    
+
     "${rtsp_bin}" ${start_param[*]} 2>&1 | \
     log_output "v4l2rtspserver [cam ${cam_section}]"
     log_msg "ERROR: Start of v4l2rtspserver [cam ${cam_section}] failed!"
@@ -133,8 +133,9 @@ if [ "$#" -eq 0 ]; then
     missing_args_msg
     exit 1
 fi
+
 ## Parse Args
-while getopts ":Vhc:" arg; do
+while getopts ":vhc:" arg; do
     case "${arg}" in
         v )
             echo -e "\nwebcamd Version: $(self_version)\n"
@@ -146,7 +147,7 @@ while getopts ":Vhc:" arg; do
         ;;
         c )
             check_cfg "${OPTARG}"
-            WEBCAMD_CFG="${OPTARG}"
+            export WEBCAMD_CFG="${OPTARG}"
         ;;
         \?)
             wrong_args_msg
