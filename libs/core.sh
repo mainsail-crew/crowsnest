@@ -25,6 +25,11 @@ function self_version {
 trap 'shutdown' 1 2 3 15
 trap 'err_exit $? $LINENO' ERR
 
+# Behavior of traps
+# log_msg, see libs/logging.sh L#46
+
+# Print Error Code and Line to Log
+# and kill running jobs
 function err_exit {
     if [ "${1}" != "0" ]; then
         log_msg "ERROR: Error ${1} occured on line ${2}"
@@ -37,6 +42,8 @@ function err_exit {
     exit 1
 }
 
+# Print Goodbye Message
+# and kill running jobs
 function shutdown {
     log_msg "Shutdown or Killed by User!"
     log_msg "Please come again :)"
@@ -49,6 +56,7 @@ function shutdown {
 
 ## Sanity Checks
 # Dependency Check
+# call check_dep <programm>, ex.: check_dep vim
 function check_dep {
     local dep
     dep="$(whereis "${1}" | awk '{print $2}')"
@@ -60,7 +68,10 @@ function check_dep {
     fi
 }
 
-# Check for Dependency
+# Check all needed Dependencies
+# If pass print your set configfile to log.
+# print_cfg, see libs/logging.sh L#75
+# pint_cams, see libs/logging.sh L#84
 function initial_check {
     log_msg "INFO: Checking Dependencys"
     check_dep "logger"
