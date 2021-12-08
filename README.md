@@ -4,14 +4,15 @@ A webcam daemon for Raspberry Pi OS Lite images like mainsailOS
 
 ---
 
-It inherited his name from Sail ships Crow's nest.
----
+## It inherited his name from Sail ships Crow's nest.
+
 > A crow's nest is a structure in the upper part of the main mast of a ship or a structure that is used as a lookout point.\
-See https://en.wikipedia.org/wiki/Crow's_nest
+> See https://en.wikipedia.org/wiki/Crow's_nest
 
 So, this will be the 'lookout point' for your Printer.
 
 ### Install on Raspberry Pi OS
+
     cd ~
     git clone https://github.com/mainsail-crew/crowsnest.git
     cd crowsnest
@@ -30,17 +31,18 @@ After successful Instalation you should consider to add
 to your moonraker.conf, to get latest and possibly greatest Features.
 
 ### To unsinstall 'crowsnest'
+
     cd crowsnest
     ./uninstall.sh
 
+###
 
-### 
-_NOTE: This project has WIP Status! Changes may occure and possibly break things!_
---- 
+## _NOTE: This project has WIP Status! Changes may occure and possibly break things!_
 
 ---
 
 ## Simple Configuration
+
 ---
 
 All you need to get your Camera up and running is a small block of code in your _webcam.conf_\
@@ -51,13 +53,13 @@ By default it look like this:
 
     [webcamd]
     log_path: ~/klipper_logs/webcamd.log
-    log_level: quiet                        
+    log_level: quiet
 
     [cam 1]
-    streamer: ustreamer                          
-    port: 8080                              
-    device: /dev/video0                     
-    resolution: 640x480                     
+    streamer: ustreamer
+    port: 8080
+    device: /dev/video0
+    resolution: 640x480
     max_fps: 15
 
 What that basicly means is:
@@ -67,7 +69,7 @@ What that basicly means is:
 Where crowsnest (webcamd) should store its Logfile.
 
 You can choose:
-    
+
     log_level: quiet
 
 This Option shows a bare minimum Logfile.\
@@ -155,18 +157,17 @@ Another Option that affects the 'logging' behavior is
 
 If you enable that option, everytime you restart, your existing log file will be deleted.
 
-
 Now the more interessting part.
 
     [cam 1]
-    streamer: ustreamer                         
-    port: 8080                              
-    device: /dev/video0                     
-    resolution: 640x480                     
+    streamer: ustreamer
+    port: 8080
+    device: /dev/video0
+    resolution: 640x480
     max_fps: 15
 
 > _Note: You can name the cam, how you want!_\
-_ex.: [cam raspicam]_
+> _ex.: [cam raspicam]_
 
 ---
 
@@ -178,12 +179,12 @@ means your choosen streamservice will be mjpg_streamer.\
 You can choose:
 
 - ustreamer - A streamserver from Pi-KVM Project\
-active maintained by [Maxim Devaev](https://github.com/mdevaev)\
-[ustreamer on github](https://github.com/pikvm/ustreamer)
+  active maintained by [Maxim Devaev](https://github.com/mdevaev)\
+  [ustreamer on github](https://github.com/pikvm/ustreamer)
 
 - rtsp - v4l2rtspserver with Multiprotocol Support\
-active maintained by [Michel Promonet](https://github.com/mpromonet) \
-[v4l2rtspserver on github](https://github.com/mpromonet/v4l2rtspserver)
+  active maintained by [Michel Promonet](https://github.com/mpromonet) \
+  [v4l2rtspserver on github](https://github.com/mpromonet/v4l2rtspserver)
 
 More Services will come in the (hopefully, near) future.
 
@@ -210,11 +211,10 @@ So, you can easily copy it from there.
 
 ---
 
-    resolution: 640x480                     
+    resolution: 640x480
     max_fps: 15
 
 This last 2 should be pretty obvious :)
-
 
 As the last option:\
 This needs some to read further Information.
@@ -228,22 +228,21 @@ Those will be appended to the default/preconfigured parameters.
 To setup Services to your need you have to take a closer look to the documentation of the Projects named above.\
 As a pointer in the right direction:
 
-
 - ustreamer
-    - For sake of simplicity I converted ustreamers manpage to
+
+  - For sake of simplicity I converted ustreamers manpage to
     [ustreamer's manpage](./ustreamer_manpage.md)
 
 - v4l2rtspserver
-    - Please visit [v4l2rtspserver Usage](https://github.com/mpromonet/v4l2rtspserver#usage)
-    
+  - Please visit [v4l2rtspserver Usage](https://github.com/mpromonet/v4l2rtspserver#usage)
 
 ---
+
 ## CustomPIOS Module
 
 I have decided to provide an [CustomPiOS Module](https://github.com/guysoft/CustomPiOS) to make it easier to integrate to other Distributions like MainsailOS or similar.
 Please see [README.md](./custompios/README.md) in the module folder for\
 further Informations.
-
 
 ---
 
