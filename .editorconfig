@@ -1,0 +1,11 @@
+# Editor Config
+# This should help contributors and save time for my sometimes cheesy Brain xD
+# Stephan Wendel <me@stephanwe.de>
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+indent_style = space
+indent_size = 4
+trim_trailing_whitespace = true
