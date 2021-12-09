@@ -28,29 +28,8 @@ source "${BASE_CN_PATH}/libs/hwhandler.sh"
 source "${BASE_CN_PATH}/libs/logging.sh"
 source "${BASE_CN_PATH}/libs/messages.sh"
 source "${BASE_CN_PATH}/libs/watchdog.sh"
-
-## Start Stream Service
-# sleep to prevent cpu cycle spikes
-function construct_streamer {
-    local stream_server cams
-    cams=($(configured_cams))
-    log_msg "Try to start configured Cams / Services..."
-    for (( i=0; i<"${#cams[@]}"; i++ )); do
-        stream_server="$(get_param "cam ${cams[$i]}" streamer 2> /dev/null)"
-        if [ "${stream_server}" == "ustreamer" ]; then
-            run_ustreamer "${cams[$i]}" &
-            sleep 8 & sleep_pid="$!"
-            wait "${sleep_pid}"
-        elif [ "${stream_server}" == "rtsp" ]; then
-            run_rtsp "${cams[$i]}" &
-            sleep 8 & sleep_pid="$!"
-            wait "${sleep_pid}"
-        else
-            log_msg "ERROR: Missing 'streamer' parameter in [cam ${cams[$i]}]. Skipping."
-        fi
-    done
-    log_msg "... Done!"
-}
+source "${BASE_CN_PATH}/libs/init_stream.sh"
+# source "${BASE_CN_PATH}/libs/v4l2_control.sh"
 
 function run_ustreamer {
     local cam_section ustreamer_bin device port resolution fps custom
