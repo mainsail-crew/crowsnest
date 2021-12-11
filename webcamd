@@ -29,7 +29,7 @@ source "${BASE_CN_PATH}/libs/logging.sh"
 source "${BASE_CN_PATH}/libs/messages.sh"
 source "${BASE_CN_PATH}/libs/watchdog.sh"
 source "${BASE_CN_PATH}/libs/init_stream.sh"
-# source "${BASE_CN_PATH}/libs/v4l2_control.sh"
+source "${BASE_CN_PATH}/libs/v4l2_control.sh"
 
 function run_ustreamer {
     local cam_section ustreamer_bin device port resolution fps custom
@@ -138,6 +138,7 @@ done
 develop
 init_log_entry
 initial_check
+v4l2_control
 construct_streamer
 
 ## Loop and Watchdog

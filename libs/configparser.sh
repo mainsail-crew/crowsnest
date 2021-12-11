@@ -18,15 +18,13 @@ set -e
 # call get_param section param
 # spits out raw value
 function get_param {
-    local cfg
-    local section
-    local param
+    local cfg section param
     cfg="${WEBCAMD_CFG}"
     section="${1}"
     param="${2}"
     crudini --get "${cfg}" "${section}" "${param}" | \
-    sed 's/\#.*//;s/[[:space:]]*$//'
-} 2> /dev/null
+    sed 's/\#.*//;s/[[:space:]]*$//' || echo ""
+}
 
 # Check for existing file
 # Exit with error if not exist
@@ -39,11 +37,13 @@ function check_cfg {
 
 ## Spits out all [cam <nameornumber>] configured sections
 function configured_cams {
-    local cam_count cfg
+    local cams cfg
     cfg="${WEBCAMD_CFG}"
-    cams="$(crudini --existing=file --get "${cfg}" | \
-    sed '/webcamd/d;s/cam//')"
-    echo "${cams}"
+    for i in $(crudini --existing=file --get "${cfg}" | \
+    sed '/webcamd/d;s/cam//'); do
+        cams+=("${i}")
+    done
+    echo "${cams[@]}"
 }
 
 # Checks [cam <nameornumber>] if all needed configuration sections are present
@@ -53,7 +53,7 @@ function check_section {
     section="cam ${1}"
     # Ignore missing custom flags
     param="$(crudini --existing=param --get "${WEBCAMD_CFG}" "${section}" \
-    2> /dev/null | sed '/custom_flags/d')"
+    2> /dev/null | sed '/custom_flags/d;/v4l2ctl/d')"
     must_exist="streamer port device resolution max_fps"
     missing="$(echo "${param}" "${must_exist}" | \
     tr ' ' '\n' | sort | uniq -u)"
