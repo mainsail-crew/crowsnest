@@ -10,10 +10,9 @@
     rotate 3
     missingok
     notifempty
-    compress
-    delaycompress
+    copy
     daily
     dateext
-    dateformat %F
-    maxsize 32M
+    dateformat .%Y-%m-%d
+    maxsize 4M
 }
