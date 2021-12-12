@@ -33,10 +33,10 @@ function log_level {
     fi
 }
 
-function develop {
+function delete_log {
     local devel logfile
     logfile="$(get_param "webcamd" log_path | sed "s#^~#$HOME#gi")"
-    devel="$(get_param "webcamd" develop_log 2> /dev/null)"
+    devel="$(get_param "webcamd" delete_log 2> /dev/null)"
     if [ "${devel}" = "true" ]; then
         rm -rf "${logfile}"
     fi

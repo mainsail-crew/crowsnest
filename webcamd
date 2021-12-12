@@ -135,7 +135,7 @@ while getopts ":vhc:" arg; do
     esac
 done
 
-develop
+delete_log
 init_log_entry
 initial_check
 v4l2_control

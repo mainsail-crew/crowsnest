@@ -153,7 +153,7 @@ This option ist more for debugging purposes and has a tendency to overwhelm you 
 
 Another Option that affects the 'logging' behavior is
 
-    develop_log: true
+    delete_log: true
 
 If you enable that option, everytime you restart, your existing log file will be deleted.
 
