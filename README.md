@@ -173,7 +173,7 @@ Now the more interessting part.
 
 This section should be pretty much self explantory.
 
-    streamer: mjpg
+    streamer: ustreamer
 
 means your choosen streamservice will be mjpg_streamer.\
 You can choose:
@@ -234,7 +234,54 @@ As a pointer in the right direction:
     [ustreamer's manpage](./ustreamer_manpage.md)
 
 - v4l2rtspserver
-  - Please visit [v4l2rtspserver Usage](https://github.com/mpromonet/v4l2rtspserver#usage)
+  - Please visit [v4l2rtspserver Usage](https://github.com/mpromonet/v4l2rtspserver#usage)\
+
+---
+
+### Feature V4L2 Control:
+
+    v4l2ctl:
+
+This optional parameter allows you to setup your Cam due v4l2-ctl options.
+Unfortunatly this is a complex topic. But I try to explain it, as good I can.
+
+### As an Example
+
+You own a Logitech C920 Camera, these camera needs some tweaks to get a sharp picture.\
+A solution was to use a cronjob (timed actions due scripts) that runs a script with some v4l2-ctl commands.
+
+    v4l2-ctl -d /dev/video0 -c focus_auto=0
+    v4l2-ctl -d /dev/video0 -c focus_absolute=30
+
+That script gets executed when th Pi boots up.\
+Not a comfortable solution.
+
+alexz from the mainsail-crew mentioned it would be a good move when \
+this could happen by crowsnest, hassle free for the user.
+
+So, here we go.
+Simply add
+
+    v4l2ctl: focus_auto=0,focus_absolute=30
+
+to your camera setup section. \
+Restart webcamd via mainsail (or your used UI) and you're good to go.
+
+To determine which options or better said parameters your Webcam provides, \
+login to your Pi via ssh and type
+
+    v4l2-ctl -d <yourdevice> -L
+
+_Note: Replace \<yourdevice> with the according string. ex.:_
+
+    v4l2-ctl -d /dev/video0 -L
+
+This will show you a list with available options.
+
+You have to "play around" with those settings if it matches your needs.
+simply repeat the commands as mentioned earlier in your ssh connection.
+
+If you have discoverd your setup write that to your webcam.conf as described.
 
 ---
 
@@ -243,6 +290,16 @@ As a pointer in the right direction:
 I have decided to provide an [CustomPiOS Module](https://github.com/guysoft/CustomPiOS) to make it easier to integrate to other Distributions like MainsailOS or similar.
 Please see [README.md](./custompios/README.md) in the module folder for\
 further Informations.
+
+---
+
+## Credits
+
+I want to give a huge shoutout to _lixxbox_ and _alexz_ from the mainsail-crew.\
+Without these guys it simply were not possible to get that done.
+
+They both mentioned improvements and tested a heck out of there machines to get this all functioning well.\
+Thank you, mates :) Proud to be a part of.
 
 ---
 
