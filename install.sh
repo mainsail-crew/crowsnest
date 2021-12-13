@@ -8,6 +8,9 @@
 # Version 2
 ########
 
+# shellcheck enable=requires-variable-braces
+## disabeld SC2086 for some lines because there we want 'word splitting'
+
 set -e
 
 ## Debug
@@ -63,9 +66,9 @@ function install_cleanup_trap() {
 
 function cleanup() {
     # make sure that all child processed die when we die
-    local pids=$(jobs -pr)
     echo -e "Killed by user ...\r\nGoodBye ...\r"
-    [ -n "$pids" ] && kill $pids && sleep 5 && kill -9 $pids
+    # shellcheck disable=2046
+    [ -n "$(jobs -pr)" ] && kill $(jobs -pr) && sleep 5 && kill -9 $(jobs -pr)
 }
 ##
 
@@ -75,10 +78,9 @@ function err_exit {
         echo -e "ERROR: Stopping $(basename "$0")."
         echo -e "Goodbye..."
     fi
-    if [ -n "$(jobs -pr)" ]; then
-        kill $(jobs -pr)
-    fi
-    exit 1    
+    # shellcheck disable=2046
+    [ -n "$(jobs -pr)" ] && kill $(jobs -pr) && sleep 5 && kill -9 $(jobs -pr)
+    exit 1
 }
 
 ### Init ERR Trap
@@ -87,7 +89,8 @@ trap 'err_exit $? $LINENO' ERR
 ### Import config from custompios.
 function import_config {
     if [ -f "${HOME}/crowsnest/custompios/crowsnest/config" ]; then
-        source ${HOME}/crowsnest/custompios/crowsnest/config
+        # shellcheck source-path=file_templates/custompios/crowsnest/config
+        source "$PWD"/custompios/crowsnest/config
     else
         echo -e "${TITLE}\n"
         echo -e "OOPS!\nConfiguration File missing! Exiting..."
@@ -124,7 +127,7 @@ function remove_existing_webcamd {
     fi
     if [ -d "${HOME}/mjpg-streamer" ]; then
         echo -en "Removing 'mjpg-streamer' ...\r"
-        sudo rm -rf ${HOME}/mjpg-streamer > /dev/null
+        sudo rm -rf "${HOME}"/mjpg-streamer > /dev/null
         echo -e "Removing 'mjpg-streamer' ... \t[OK]\r"
     fi
     if [ -f "/etc/systemd/system/webcamd.service" ]; then
@@ -135,7 +138,7 @@ function remove_existing_webcamd {
     if [ -f "/var/log/webcamd.log" ]; then
         echo -en "Removing 'webcamd.log' ...\r"
         sudo rm -f /var/log/webcamd.log > /dev/null
-        sudo rm -f ${HOME}/klipper_logs/webcamd.log > /dev/null
+        sudo rm -f "${HOME}"/klipper_logs/webcamd.log > /dev/null
         echo -e "Removing 'webcamd.log' ... \t[OK]\r"
     fi
     if [ -f "/etc/logrotate.d/webcamd" ]; then
@@ -178,6 +181,7 @@ function install_crowsnest {
     echo -e "\nInstall webcamd Service ..."
     ## Install Dependencies
     echo -e "Installing 'crowsnest' Dependencies ..."
+    # shellcheck disable=2086
     sudo apt install --yes --no-install-recommends $CROWSNEST_DEPS > /dev/null
     echo -e "Installing 'crowsnest' Dependencies ... [OK]"
     ## Link webcamd to $PATH
@@ -188,6 +192,7 @@ function install_crowsnest {
     # Make sure not to overwrite existing!
     if [ ! -f "${CROWSNEST_DEFAULT_CONF_DIR}/webcam.conf" ]; then
         echo -en "Copying webcam.conf ...\r"
+        # shellcheck disable=2086
         sudo -u "${BASE_USER}" cp -rf $PWD/sample_configs/${CROWSNEST_DEFAULT_CONF} "${CROWSNEST_DEFAULT_CONF_DIR}"/webcam.conf
         echo -e "Copying webcam.conf ... [OK]\r"
     fi
@@ -214,26 +219,27 @@ function install_ustreamer {
     bin_path="/usr/local/bin"
     echo -e "\nInstalling ustreamer ..."
     echo -e "Installing ustreamer Dependencies ..."
+    # shellcheck disable=2086
     sudo apt install --yes --no-install-recommends $CROWSNEST_USTREAMER_DEPS > /dev/null
     echo -e "Installing ustreamer Dependencies ... \t[OK]"
     echo -e "Cloning ustreamer Repo ..."
-    pushd ${HOME} > /dev/null
+    pushd "${HOME}" > /dev/null
     git clone "${CROWSNEST_USTREAMER_REPO_SHIP}" --depth=1
     popd > /dev/null
     echo -e "Cloning ustreamer Repo ... [OK]"
-    pushd ${HOME}/ustreamer > /dev/null
+    pushd "${HOME}"/ustreamer > /dev/null
     echo -e "Compiling ustreamer ..."
     if [ "${CROWSNEST_USTREAMER_WITH_OMX}" = "y" ] && \
         [ "${CROWSNEST_USTREAMER_WITH_GPIO}" = "y" ]; then
         echo -e "Compile ustreamer with OMX and GPIO Support..."
-        WITH_OMX=1 WITH_GPIO=1 make -j$(nproc)
+        WITH_OMX=1 WITH_GPIO=1 make -j"$(nproc)"
     elif [ "${CROWSNEST_USTREAMER_WITH_OMX}" = "y" ] && \
         [ "${CROWSNEST_USTREAMER_WITH_GPIO}" = "n" ]; then
         echo -e "Compile ustreamer with OMX Support..."
-        WITH_OMX=1 make -j $(nproc)
+        WITH_OMX=1 make -j"$(nproc)"
     else
         echo -e"Compile ustreamer without OMX and GPIO Support..."
-        make -j $(nproc)
+        make -j"$(nproc)"
     fi
     popd > /dev/null
     echo -en "Linking ustreamer ...\r"
@@ -249,16 +255,17 @@ function install_v4l2rtspserver {
     bin_path="/usr/local/bin"
     echo -e "\nInstalling v4l2rtspserver ..."
     echo -e "Installing v4l2rtspserver Dependencies ..."
+    # shellcheck disable=2086
     sudo apt install --yes --no-install-recommends $CROWSNEST_V4L2RTSP_DEPS > /dev/null
     echo -e "Installing v4l2rtspserver Dependencies ... \t[OK]"
     echo -e "Cloning v4l2rtspserver Repo ..."
-    pushd ${HOME} > /dev/null
+    pushd "${HOME}" > /dev/null
     git clone "${CROWSNEST_V4L2RTSP_REPO_SHIP}" --depth=1
     popd > /dev/null
     echo -e "Cloning v4l2rtspserver Repo ... [OK]"
-    pushd ${HOME}/v4l2rtspserver > /dev/null
+    pushd "${HOME}"/v4l2rtspserver > /dev/null
     echo -e "Compiling v4l2rtspserver ..."
-    cmake . && make -j $(nproc)
+    cmake . && make -j"$(nproc)"
     popd > /dev/null
     echo -en "Linking v4l2rtspserver ...\r"
     sudo ln -sf "${v4l2rtsp_bin}" "${bin_path}" > /dev/null
@@ -301,7 +308,7 @@ detect_existing_webcamd
 ## Golang not needed for now!
 # enable_backports
 echo -e "Running apt update first ..."
-sudo apt update 
+sudo apt update
 install_crowsnest
 install_ustreamer
 install_v4l2rtspserver

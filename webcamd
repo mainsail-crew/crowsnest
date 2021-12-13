@@ -12,9 +12,6 @@
 ####
 #### Version 3
 
-### Disable shellcheck Errors
-# shellcheck disable=1091
-
 # Exit upon Errors
 set -e
 
@@ -22,89 +19,17 @@ set -e
 BASE_CN_PATH="$(dirname "$(readlink -f "${0}")")"
 
 ## Import Librarys
-source "${BASE_CN_PATH}/libs/core.sh"
+# shellcheck source-path=SCRIPTDIR/libs/
 source "${BASE_CN_PATH}/libs/configparser.sh"
+source "${BASE_CN_PATH}/libs/core.sh"
 source "${BASE_CN_PATH}/libs/hwhandler.sh"
+source "${BASE_CN_PATH}/libs/init_stream.sh"
 source "${BASE_CN_PATH}/libs/logging.sh"
 source "${BASE_CN_PATH}/libs/messages.sh"
-source "${BASE_CN_PATH}/libs/watchdog.sh"
-source "${BASE_CN_PATH}/libs/init_stream.sh"
+source "${BASE_CN_PATH}/libs/v4l2rtspserver.sh"
+source "${BASE_CN_PATH}/libs/ustreamer.sh"
 source "${BASE_CN_PATH}/libs/v4l2_control.sh"
-
-function run_ustreamer {
-    local cam_section ustreamer_bin device port resolution fps custom
-    local raspicam start_param wwwroot
-    cam_section="${1}"
-    ustreamer_bin="$(whereis ustreamer | awk '{print $2}')"
-    device="$(get_param "cam ${cam_section}" device)"
-    port=$(get_param "cam ${cam_section}" port)
-    resolution=$(get_param "cam ${cam_section}" resolution)
-    fps=$(get_param "cam ${cam_section}" max_fps)
-    custom="$(get_param "cam ${cam_section}" custom_flags 2> /dev/null)"
-    raspicam="$(v4l2-ctl --list-devices |  grep -A1 -e 'mmal' | \
-    awk 'NR==2 {print $1}')"
-    check_section "${cam_section}"
-    wwwroot="$(dirname $(readlink -qe $(whereis webcamd)))/ustreamer-www"
-    #Raspicam Workaround
-    if [ "${device}" == "${raspicam}" ]; then
-        start_param=(
-                    --host 127.0.0.1 -p "${port}" -m MJPEG --device-timeout=5
-                    --buffers=3 -r "${resolution}" -f "${fps}" --allow-origin=\*
-                    --static "${wwwroot}"
-                    )
-    else
-        start_param=(
-                    -d "${device}" -r "${resolution}" -f "${fps}"
-                    --host 127.0.0.1 -p "${port}" --allow-origin=\*
-                    --device-timeout=2 --static "${wwwroot}"
-                    )
-    fi
-    # Custom Flag Handling
-    if [ -n "${custom}" ]; then
-        start_param=(${start_param[@]} "${custom}" )
-    fi
-    log_msg "Starting ustreamer with Device ${device} ..."
-    echo "Parameters: ${start_param[*]}" | \
-    log_output "ustreamer [cam ${cam_section}]"
-    # Ustreamer is designed to run even if the device is not ready or readable.
-    # I dont like that! ustreamer has to exit if Cam isnt there.
-    if [ -e "${device}" ]; then
-        "${ustreamer_bin}" ${start_param[*]} 2>&1 | \
-        log_output "ustreamer [cam ${cam_section}]"
-    else
-        log_msg "ERROR: Start of ustreamer [cam ${cam_section}] failed!"
-    fi
-}
-
-function run_rtsp {
-    local cam_section rtsp_bin device port resolution fps custom
-    local raspicam start_param
-    cam_section="${1}"
-    rtsp_bin="$(whereis v4l2rtspserver | awk '{print $2}')"
-    device="$(get_param "cam ${cam_section}" device)"
-    port=$(get_param "cam ${cam_section}" port)
-    resolution=$(get_param "cam ${cam_section}" resolution)
-    fps=$(get_param "cam ${cam_section}" max_fps)
-    custom="$(get_param "cam ${cam_section}" custom_flags 2> /dev/null)"
-    check_section "${cam_section}"
-    split_res="$(echo "${resolution}" | \
-        awk -F 'x' '{print "-W "$1 " -H "$2}')"
-    start_param=(
-                    -I 0.0.0.0 -P "${port}" "${split_res}" -F "${fps}" \
-                    "${device}"
-                )
-    # Custom Flag Handling
-    if [ -n "${custom}" ]; then
-        start_param=(${start_param[@]} "${custom}" )
-    fi
-    log_msg "Starting v4l2rtspserver with Device ${device} ..."
-    echo "Parameters: ${start_param[*]}" | \
-    log_output "v4l2rtspserver [cam ${cam_section}]"
-
-    "${rtsp_bin}" ${start_param[*]} 2>&1 | \
-    log_output "v4l2rtspserver [cam ${cam_section}]"
-    log_msg "ERROR: Start of v4l2rtspserver [cam ${cam_section}] failed!"
-}
+source "${BASE_CN_PATH}/libs/watchdog.sh"
 
 #### MAIN
 ## Args given?

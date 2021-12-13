@@ -8,13 +8,15 @@
 # Version 1.1
 ########
 
+# shellcheck enable=requires-variable-braces
+
+## Exit on Error
 set -e
 
 ## Debug
 # set -x
 
 # Global Vars
-BASE_USER=$(whoami)
 TITLE="crowsnest - A Webcam Daemon for Raspberry Pi OS"
 
 ### Functions
@@ -45,9 +47,9 @@ function install_cleanup_trap() {
 
 function cleanup() {
     # make sure that all child processed die when we die
-    local pids=$(jobs -pr)
     echo -e "Killed by user ...\r\nGoodBye ...\r"
-    [ -n "$pids" ] && kill $pids && sleep 5 && kill -9 $pids
+    # shellcheck disable=2046
+    [ -n "$(jobs -pr)" ] && kill $(jobs -pr) && sleep 5 && kill -9 $(jobs -pr)
 }
 ##
 
@@ -57,10 +59,9 @@ function err_exit {
         echo -e "ERROR: Stopping $(basename "$0")."
         echo -e "Goodbye..."
     fi
-    if [ -n "$(jobs -pr)" ]; then
-        kill $(jobs -pr)
-    fi
-    exit 1    
+    # shellcheck disable=2046
+    [ -n "$(jobs -pr)" ] && kill $(jobs -pr) && sleep 5 && kill -9 $(jobs -pr)
+    exit 1
 }
 
 ### Init ERR Trap
