@@ -13,7 +13,7 @@
 #### Description: Configure Cam with v4l2-ctl options
 #### ex.: v4l2-ctl -c brightness=100
 
-# shellcheck enable=requires-variable-braces
+# shellcheck enable=require-variable-braces
 
 # Exit upon Errors
 set -e
