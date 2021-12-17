@@ -68,7 +68,7 @@ function log_output {
             log_msg "${prefix}: ${line}"
         fi
         if [ -n "${line}" ]; then
-            # sed is needed to prettify ustreamers output
+            # needed to prettify ustreamers output
             echo "${line//^--/ustreamer}" | logger -t webcamd
         fi
     done
