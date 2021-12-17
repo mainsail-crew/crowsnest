@@ -11,6 +11,8 @@
 #### This File is distributed under GPLv3
 ####
 
+# shellcheck enable=requires-variable-braces
+
 # Exit upon Errors
 set -e
 
