@@ -20,7 +20,7 @@ function detect_avail_cams {
     avail="$(find /dev/v4l/by-id/ 2> /dev/null | sort -n | sed '1d;1~2d')"
     if [ -d "/dev/v4l/by-id/" ]; then
         echo "${avail}" | while read -r i; do
-            realpath=$(readlink -e ${i})
+            realpath=$(readlink -e "${i}")
             log_msg "${i} -> ${realpath}"
             if [ "$(log_level)" != "quiet" ]; then
                 list_cam_formats "${i}"
@@ -46,7 +46,7 @@ function list_cam_formats {
 # Determine connected "raspicam" device
 function detect_raspicam {
     local avail
-    if [ "$(cat /proc/device-tree/model | cut -d ' ' -f1)" = "Raspberry" ]; then
+    if [ "$(cut -d ' ' -f1 < /proc/device-tree/model)" = "Raspberry" ]; then
         avail="$(vcgencmd get_camera | awk -F '=' '{ print $3 }')"
     else
         avail="0"
