@@ -37,7 +37,9 @@ function err_exit {
         log_msg "Goodbye..."
     fi
     if [ -n "$(jobs -pr)" ]; then
-        kill $(jobs -pr)
+        jobs -pr | while IFS='' read -r job_id; do
+            kill "${job_id}"
+        done
     fi
     exit 1
 }
@@ -48,7 +50,9 @@ function shutdown {
     log_msg "Shutdown or Killed by User!"
     log_msg "Please come again :)"
     if [ -n "$(jobs -pr)" ]; then
-        kill $(jobs -pr)
+        jobs -pr | while IFS='' read -r job_id; do
+            kill "${job_id}"
+        done
     fi
     log_msg "Goodbye..."
     exit 0
