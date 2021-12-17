@@ -16,7 +16,7 @@ set -e
 
 function run_rtsp {
     local cam_section rtsp_bin device port resolution fps custom
-    local raspicam start_param
+    local start_param
     cam_section="${1}"
     rtsp_bin="$(whereis v4l2rtspserver | awk '{print $2}')"
     device="$(get_param "cam ${cam_section}" device)"
@@ -33,13 +33,13 @@ function run_rtsp {
                 )
     # Custom Flag Handling
     if [ -n "${custom}" ]; then
-        start_param=(${start_param[@]} "${custom}" )
+        start_param+=("${custom}")
     fi
     log_msg "Starting v4l2rtspserver with Device ${device} ..."
     echo "Parameters: ${start_param[*]}" | \
     log_output "v4l2rtspserver [cam ${cam_section}]"
 
-    "${rtsp_bin}" ${start_param[*]} 2>&1 | \
+    echo "${start_param[*]}" | xargs "${rtsp_bin}" 2>&1 | \
     log_output "v4l2rtspserver [cam ${cam_section}]"
     log_msg "ERROR: Start of v4l2rtspserver [cam ${cam_section}] failed!"
 }
