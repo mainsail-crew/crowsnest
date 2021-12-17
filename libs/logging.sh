@@ -67,7 +67,7 @@ function log_output {
         fi
         if [ -n "${line}" ]; then
             # sed is needed to prettify ustreamers output
-            logger -t webcamd "$(echo ${line} | sed 's/^--/ustreamer/')"
+            echo "${line//^--/ustreamer}" | logger -t webcamd
         fi
     done
 }
@@ -82,12 +82,11 @@ function print_cfg {
 }
 
 function print_cams {
-    local count raspicam total debug
-    debug="$(get_param "webcamd" debug_log 2> /dev/null)"
+    local count raspicam total
     count="$(find /dev/v4l/by-id/ 2> /dev/null | sed '1d;1~2d' | wc -l)"
     total="$((count+$(detect_raspicam)))"
     if [ "${total}" -eq 0 ]; then
-        log_msg "ERROR: No usable Cameras Found. Stopping $(basename "$0")."
+        log_msg "ERROR: No usable Cameras Found. Stopping $(basename "${0}")."
         exit 1
     else
         log_msg "INFO: Found ${total} available Camera(s)"
@@ -103,4 +102,4 @@ function print_cams {
             list_cam_formats "${raspicam}"
         fi
     fi
-} 2> /dev/null
+}
