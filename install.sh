@@ -182,7 +182,7 @@ function install_crowsnest {
     ## Install Dependencies
     echo -e "Installing 'crowsnest' Dependencies ..."
     # shellcheck disable=2086
-    sudo apt install --yes --no-install-recommends $CROWSNEST_DEPS > /dev/null
+    sudo apt install --yes --no-install-recommends $CROWSNEST_CROWSNEST_DEPS > /dev/null
     echo -e "Installing 'crowsnest' Dependencies ... [OK]"
     ## Link webcamd to $PATH
     echo -en "Linking webcamd ...\r"

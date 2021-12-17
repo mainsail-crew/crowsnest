@@ -3,7 +3,7 @@
 # crowsnest
 [ -n "$CROWSNEST_CROWSNEST_REPO_SHIP" ] || CROWSNEST_CROWSNEST_REPO_SHIP=https://github.com/mainsail-crew/crowsnest.git
 [ -n "$CROWSNEST_CROWSNEST_REPO_BRANCH" ] || CROWSNEST_CROWSNEST_REPO_BRANCH=master
-[ -n "$CROWSNEST_CROWSNEST_DEPS" ] || CROWSNEST_DEPS="git crudini bsdutils"
+[ -n "$CROWSNEST_CROWSNEST_DEPS" ] || CROWSNEST_CROWSNEST_DEPS="git crudini bsdutils findutils v4l-utils"
 [ -n "$CROWSNEST_DEFAULT_CONF" ] || CROWSNEST_DEFAULT_CONF="mainsail_default.conf"
 [ -n "$CROWSNEST_DEFAULT_CONF_DIR" ] || CROWSNEST_DEFAULT_CONF_DIR="/home/${BASE_USER}/klipper_config"
 [ -n "$CROWSNEST_MOONRAKER_SUPPORT" ] || CROWSNEST_MOONRAKER_SUPPORT="y"
