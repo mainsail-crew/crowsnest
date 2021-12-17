@@ -32,18 +32,18 @@ function v4l2_control {
             # if not empty do
             if [ -n "${v4l2ctl}" ]; then
                 # Write configured options to Log
-                log_msg "Device: [cam $cam]"
+                log_msg "Device: [cam ${cam}]"
                 log_msg "Options: ${v4l2ctl}"
                 # Split options to array
-                IFS=',' read -a opt < <(echo "${v4l2ctl}"); unset IFS
+                IFS=',' read -ra opt < <(echo "${v4l2ctl}"); unset IFS
                 # loop through options
                 for param in "${opt[@]}"; do
                     # parameter available for device
                     # needs || true to prevent script to exit
                     valueless="$(echo "${param}" | cut -d "=" -f1)"
-                    opt_avail="$(v4l2-ctl -d ${device} -L | \
-                    grep -c ${valueless} || true)"
-                    if [ "$opt_avail" -eq "0" ]; then
+                    opt_avail="$(v4l2-ctl -d "${device}" -L | \
+                    grep -c "${valueless}" || true)"
+                    if [ "${opt_avail}" -eq "0" ]; then
                         log_msg "Parameter '${param}' not available for '${device}'. Skipped."
                     else
                         v4l2-ctl -d "${device}" -c "${param}" 2> /dev/null

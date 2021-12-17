@@ -37,7 +37,7 @@ function log_level {
 
 function delete_log {
     local devel logfile
-    logfile="$(get_param "webcamd" log_path | sed "s#^~#$HOME#gi")"
+    logfile="$(get_param "webcamd" log_path | sed "s#^~#${HOME}#gi")"
     devel="$(get_param "webcamd" delete_log 2> /dev/null)"
     if [ "${devel}" = "true" ]; then
         rm -rf "${logfile}"
@@ -50,7 +50,7 @@ function log_msg {
     msg="${1}"
     prefix="$(date +'[%D %T]') webcamd:"
     #Workaround sed ~ to BASH VAR $HOME
-    logfile="$(get_param webcamd log_path | sed "s#^~#$HOME#gi")"
+    logfile="$(get_param webcamd log_path | sed "s#^~#${HOME}#gi")"
     #Workaround: Make Dir if not exist
     if [ ! -d "${logfile}" ]; then
         mkdir -p "$(dirname "${logfile}")"
