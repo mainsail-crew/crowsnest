@@ -11,6 +11,8 @@
 #### This File is distributed under GPLv3
 ####
 
+# shellcheck enable=requires-variable-braces
+
 # Exit upon Errors
 set -e
 
@@ -78,10 +80,12 @@ function check_dep {
 # pint_cams, see libs/logging.sh L#84
 function initial_check {
     log_msg "INFO: Checking Dependencys"
-    check_dep "logger"
     check_dep "crudini"
+    check_dep "find"
+    check_dep "logger"
     check_dep "ustreamer"
     check_dep "v4l2rtspserver"
+    check_dep "xargs"
     # check_dep "rtsp-simple-server" # Stay for later use.
     if [ -z "$(check_cfg "${WEBCAMD_CFG}")" ]; then
         if [ "$(log_level)" != "quiet" ]; then
