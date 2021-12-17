@@ -28,7 +28,7 @@ function run_ustreamer {
     raspicam="$(v4l2-ctl --list-devices |  grep -A1 -e 'mmal' | \
     awk 'NR==2 {print $1}')"
     check_section "${cam_section}"
-    wwwroot="$(dirname $(readlink -qe $(whereis webcamd)))/ustreamer-www"
+    wwwroot="${BASE_CN_PATH}/ustreamer-www"
     #Raspicam Workaround
     if [ "${device}" == "${raspicam}" ]; then
         start_param=(
@@ -45,7 +45,7 @@ function run_ustreamer {
     fi
     # Custom Flag Handling
     if [ -n "${custom}" ]; then
-        start_param=(${start_param[@]} "${custom}" )
+        start_param+=("${custom}")
     fi
     log_msg "Starting ustreamer with Device ${device} ..."
     echo "Parameters: ${start_param[*]}" | \
@@ -53,7 +53,7 @@ function run_ustreamer {
     # Ustreamer is designed to run even if the device is not ready or readable.
     # I dont like that! ustreamer has to exit if Cam isnt there.
     if [ -e "${device}" ]; then
-        "${ustreamer_bin}" ${start_param[*]} 2>&1 | \
+        echo "${start_param[*]}" | xargs "${ustreamer_bin}" 2>&1 | \
         log_output "ustreamer [cam ${cam_section}]"
     else
         log_msg "ERROR: Start of ustreamer [cam ${cam_section}] failed!"
