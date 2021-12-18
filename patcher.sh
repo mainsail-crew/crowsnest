@@ -42,7 +42,6 @@ function welcome_msg {
 
 }
 
-
 function goodbye_msg {
     echo -e "\nInstallation complete.\n\tPlease reboot your machine!"
     echo -e "I hope you enjoy crowsnest, GoodBye ..."
@@ -64,7 +63,6 @@ function cleanup() {
     # shellcheck disable=2046
     [ -n "$(jobs -pr)" ] && kill $(jobs -pr) && sleep 5 && kill -9 $(jobs -pr)
 }
-##
 
 function err_exit {
     if [ "${1}" != "0" ]; then
@@ -80,7 +78,6 @@ function err_exit {
 ### Init ERR Trap
 trap 'err_exit $? $LINENO' ERR
 
-
 function stop_webcamd {
     if [ "$(sudo systemctl is-active webcamd.service)" = "active" ]; then
         sudo systemctl stop webcamd
@@ -88,7 +85,7 @@ function stop_webcamd {
 }
 
 function diff_files {
-    diff -s "${1}" "${2}"
+    diff "${1}" "${2}"
 }
 
 function copy_service {
@@ -122,14 +119,6 @@ function daemon_reload {
     sudo systemctl daemon-reload
     echo -e "Reload systemd to enable new daemon ... [OK]"
 }
-
-
-
-
-
-
-
-
 
 #### MAIN
 install_cleanup_trap
