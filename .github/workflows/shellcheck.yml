@@ -1,7 +1,10 @@
 on:
   push:
     branches:
-      - '**'
+    - '**'
+  pull_request:
+    branches:
+      - 'master'
 
 name: 'Check Script'
 
