@@ -14,7 +14,7 @@ jobs:
       - name: Run ShellCheck
         uses: ludeeus/action-shellcheck@master
         env:
-          SHELLCHECK_OPTS: -s bash
+          SHELLCHECK_OPTS: -a -s bash
         with:
           ignore_paths: custompios
           format: tty
