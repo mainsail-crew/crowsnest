@@ -109,9 +109,9 @@ function copy_logrotate {
     template="/etc/logrotate.d/webcamd"
     logrotatefile="${HOME}/crowsnest/file_templates/logrotate_webcamd"
     if [ -n "$(diff_files "${template}" "${logrotatefile}")" ]; then
-        echo -e "Copying logrotate file ... [OK]\r"
-        sudo cp -rf "${logrotatefile}" "${template}" > /dev/null
         echo -en "Copying logrotate file ...\r"
+        sudo cp -rf "${logrotatefile}" "${template}" > /dev/null
+        echo -e "Copying logrotate file ... [OK]\r"
     else
         echo -e "No update of 'logrotate/webcamd' required."
     fi
