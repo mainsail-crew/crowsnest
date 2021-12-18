@@ -1,0 +1,20 @@
+on:
+  push:
+    branches:
+      - '**'
+
+name: 'Check Script'
+
+jobs:
+  shellcheck:
+    name: Shellcheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run ShellCheck
+        uses: ludeeus/action-shellcheck@master
+        env:
+          SHELLCHECK_OPTS: -s bash
+        with:
+          ignore_paths: custompios
+          format: tty
