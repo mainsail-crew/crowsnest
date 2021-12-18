@@ -1,3 +1,5 @@
+![license](https://img.shields.io/github/license/mainsail-crew/crowsnest?style=flat-square&color=green) ![language](https://img.shields.io/github/languages/top/mainsail-crew/crowsnest?style=flat-square&logo=gnubash&logoColor=white) ![commit-activity](https://img.shields.io/github/commit-activity/m/mainsail-crew/crowsnest?style=flat-square) ![issue-search](https://img.shields.io/github/issues/mainsail-crew/crowsnest?style=flat-square) ![downloads](https://img.shields.io/github/downloads/mainsail-crew/crowsnest/total?style=flat-square) [![discord](https://img.shields.io/discord/758059413700345988?color=%235865F2&label=discord&logo=discord&logoColor=white&style=flat-square)](https://discord.gg/skWTwTD)
+
 # crowsnest
 
 A webcam daemon for Raspberry Pi OS Lite images like mainsailOS
