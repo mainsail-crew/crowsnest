@@ -1,7 +1,8 @@
 [Unit]
 Description=webcamd - Multi Webcam/Streamer Control Deamon
-After=udev.service network-online.target
+After=udev.service network-online.target nss-lookup.target
 Wants=udev.service network-online.target
+Before=nginx.service
 StartLimitBurst=3
 StartLimitIntervalSec=600
 
