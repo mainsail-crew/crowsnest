@@ -1,4 +1,4 @@
-[UNIT]
+[Unit]
 Description=webcamd - Multi Webcam/Streamer Control Deamon
 After=udev.service network-online.target
 Wants=udev.service network-online.target
