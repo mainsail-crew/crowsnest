@@ -305,6 +305,8 @@ Without these guys it simply were not possible to get that done.
 They both mentioned improvements and tested a heck out of there machines to get this all functioning well.\
 Thank you, mates :) Proud to be a part of.
 
+Thanks to [Pedro Lamas](https://github.com/pedrolamas), for the ISSUE_TEMPLATES.
+
 ---
 
 ![Mainsail Logo](https://raw.githubusercontent.com/meteyou/mainsail/master/docs/assets/img/logo.png)
