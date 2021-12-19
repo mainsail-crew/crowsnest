@@ -13,6 +13,7 @@ jobs:
     name: Shellcheck
     runs-on: ubuntu-latest
     steps:
+      - name: Fetch Repository
       - uses: actions/checkout@v2
       - name: Run ShellCheck
         uses: ludeeus/action-shellcheck@master
