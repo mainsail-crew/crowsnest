@@ -261,6 +261,8 @@ Not a comfortable solution.
 alexz from the mainsail-crew mentioned it would be a good move when \
 this could happen by crowsnest, hassle free for the user.
 
+Take a look at [alexz webcam.conf](https://github.com/zellneralex/klipper_config/blob/11f4f8db8ac0e273e25134b571d0a93291f3511e/webcam.conf)
+
 So, here we go.
 Simply add
 
