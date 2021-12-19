@@ -2,9 +2,17 @@ on:
   push:
     branches:
     - '**'
+    paths:
+      - '**.sh'
+      - 'webcamd'
+      - 'libs/**'
   pull_request:
     branches:
       - 'master'
+    paths:
+      - '**.sh'
+      - 'webcamd'
+      - 'libs/**'
 
 name: 'Check Script'
 
