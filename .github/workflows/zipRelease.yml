@@ -1,0 +1,31 @@
+name: Zip Release
+on:
+  release:
+    types: [ published ]
+
+jobs:
+  ziprelease:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install Dependency 'zip'
+        run: sudo apt install zip
+
+      - name: Fetch Repository
+        uses: actions/checkout@v2
+        with:
+          repository: ${{ github.repository }}
+          path: crowsnest
+
+      - name: Create Zip File
+        run: zip -r9 crowsnest.zip crowsnest/
+
+      - name: Upload crowsnest Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: crowsnest.zip
+          asset_name: crowsnest.zip
+          asset_content_type: application/zip
