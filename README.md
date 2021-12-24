@@ -2,56 +2,57 @@
 
 # crowsnest
 
-A webcam daemon for Raspberry Pi OS Lite images like mainsailOS
+This is a webcam daemon (background process) for Raspberry Pi OS Lite images like mainsailOS
 
 ---
 
-## It inherited his name from Sail ships Crow's nest.
+## The name "Crowsnest" was derived from a structure in the upper part of the main mast of a sailing ship. "It is a structure that is used as a lookout point.
 
-> A crow's nest is a structure in the upper part of the main mast of a ship or a structure that is used as a lookout point.\
+
 > See https://en.wikipedia.org/wiki/Crow's_nest
 
-So, this will be the 'lookout point' for your Printer.
+This is intended to be the 'lookout point' for your 3D Printer.
 
-### Install on Raspberry Pi OS
+### Installation on Raspberry Pi OS (currently the only tested and supported Operating System)
 
     cd ~
     git clone https://github.com/mainsail-crew/crowsnest.git
     cd crowsnest
     ./install.sh
 
-_This is not tested on other Distributions. If you test that on other Distributions,\
-feel free to open a Pull Request to enhance Documentation._
+_This has not been tested on other Distributions. If you test this on other Distributions,\
+it would be helpful to open a Pull Request in order to enhance the Documentation._
 
-After successful Instalation you should consider to add
+In order to keep the installation current and updated add the follollowing lines to moonraker.conf
 
     [update_manager webcamd]
     type: git_repo
     path: ~/crowsnest
     origin: https://github.com/mainsail-crew/crowsnest.git
 
-to your moonraker.conf, to get latest and possibly greatest Features.
 
-### To unsinstall 'crowsnest'
+
+### Uninstallation of 'crowsnest' - Perform the following
 
     cd crowsnest
     ./uninstall.sh
 
 ###
 
-## _NOTE: This project has WIP Status! Changes may occure and possibly break things!_
+## _NOTE:  This project is currently a Work In Progress! By installing this code there is the possibilty that other functions of Mainsail or related components could be affected in an adverse way!_
 
 ---
 
-## Simple Configuration
+## Basic Configuration
 
 ---
+After installtion there will be a file created named _webcam.conf_ that will need to have entires added to it.
 
-All you need to get your Camera up and running is a small block of code in your _webcam.conf_\
-In MainsailOS you can do that in mainsail Web Interface.\
-Open the 'config' section, there should be the mentioned file.
+In order to have your camera(s) functional within Mainsail all that is needed is a small block of code placed within your _webcam.conf_ file.\
+The changes to the _webcam.conf_ file can be made within the Mainsail Web Interface
+One will need to open and edit the webcam.conf file. To do so click on the Hamburger Menu located in the top left of the Mainsail Web Interface and then click on Machine. The file should be present to allow editing.
 
-By default it look like this:
+The default entries within the file will look as follows:
 
     [webcamd]
     log_path: ~/klipper_logs/webcamd.log
@@ -64,18 +65,18 @@ By default it look like this:
     resolution: 640x480
     max_fps: 15
 
-What that basicly means is:
+The above statements in the file determine where the log file for the webcam(s) is located and what options are selected. By default the path is
 
     log_path: ~/klipper_logs/webcamd.log
 
-Where crowsnest (webcamd) should store its Logfile.
+This is where crowsnest (webcamd) stores its Logfile.
 
-You can choose:
+Options:
 
     log_level: quiet
 
-This Option shows a bare minimum Logfile.\
-For example:
+This Option shows a bare minimum and basic Logfile.\
+Below is an example of the basic (short) logfile that will be generated 
 
     [11/02/21 20:47:52] webcamd: webcamd - A webcam Service for multiple Cams and Stream Services.
     [11/02/21 20:47:53] webcamd: Version: v0.1.3-9-g7e278cd
@@ -96,14 +97,14 @@ For example:
     [11/02/21 20:48:04] webcamd: Starting ustreamer with Device /dev/v4l/by-id/usb-USB_Camera_USB_Camera_SN0001-video-index0 ...
     [11/02/21 20:48:11] webcamd: ... Done!
 
-The next option is
+
 
     log_level: verbose
 
-This gives you a little more Informations.
-It prints out you existing webcam.conf and shows
-a detailed info about your configured ( and connected ) cams.\
-Like that:
+This provies more Information.
+This option provides a more detailed and extensive listing of the webcam.conf file. 
+The information is more detailed concerning your configured ( and connected ) cams.\
+The output will be similar to the following:
 
     [10/24/21 02:46:00] webcamd: INFO: Detect available Cameras
     [10/24/21 02:46:00] webcamd: INFO: Found 1 available Camera(s)
@@ -138,28 +139,26 @@ Like that:
     [10/24/21 02:46:03] webcamd: 		[13]: 'RX24' (32-bit XBGR 8-8-8-8)
     [10/24/21 02:46:03] webcamd: 		Size: Stepwise 32x32 - 2592x1944 with step 2/2
 
-This is useful to determine what the Hardware Encoder of your Camera is capable of.\
-In this case a "cheap" raspicam for about 7€ was used.\
-So, truly made for 'Helper for Setup' purposes.
+This information proves useful in determing what the Hardware Encoder of your Camera is capable of and gives insight as to what camera resolution the camera is able to display.\
+The above output example was provided using an "inexpensive" raspicam (approximate cost $ 7 Dollars) 
+The function of the Verbose Log Level is to assist with proper setup of ones cameras and make the process smoother.
 
-If you want to get the full Details, please use
+For the most comprehensive and full featured details, use the following:
 
     log_level: debug
 
-This will show you barely the same as 'verbose' but it prints also your\
-configured Start Parameters ( and the defaults ), also it shows\
-the Output of your choosen Streamer.\
-This option ist more for debugging purposes and has a tendency to overwhelm you if you are not familiar with that.
-
+The output will be similar to the above mentioned 'verbose' option, but it also prints also includes all of the 
+configured Start Parameters (and the defaults), 
+and the Output of your choosen Streamer.\
+This option is more for debugging purposes and has a tendency to overwhelm one with lots of information. Be prepared if you use this option as interpreting it may be a daunting task.
 ---
 
-Another Option that affects the 'logging' behavior is
+In order to delete ones webcamd.log file after a restart one may use the following option:
 
     delete_log: true
 
-If you enable that option, everytime you restart, your existing log file will be deleted.
 
-Now the more interessting part.
+Additional entries in the file are below and are desctibed below as to thier signifigance.
 
     [cam 1]
     streamer: ustreamer
@@ -187,6 +186,8 @@ You can choose:
 - rtsp - v4l2rtspserver with Multiprotocol Support\
   active maintained by [Michel Promonet](https://github.com/mpromonet) \
   [v4l2rtspserver on github](https://github.com/mpromonet/v4l2rtspserver)
+  
+  The services mentioned above will be installed when the Crowsnest installation script runs.
 
 More Services will come in the (hopefully, near) future.
 
@@ -204,28 +205,29 @@ According to that 8080 will be /webcam, port 8081 will be /webcam1 and so on._**
 
     device: /dev/video0
 
-The Videodevice (Camera) what should be used by choosen Streamservice.
+The Videodevice (Camera) that should be used by the chosen Streamservice.
+
+One may also use an entry similar to the following: 
+(Note: to determine what your specific device settings are one may consult the webcamd.log file as they will be listed within the file and allow for an easier copy and paste into the webcam.conf file)
 
     device: /dev/v4l/by-id/usb-PixArt_Imaging_Inc._USB2.0_Camera-video-index0
 
-is also valid. Your devices are listed in your log-file on every run.\
-So, you can easily copy it from there.
 
 ---
 
     resolution: 640x480
     max_fps: 15
 
-This last 2 should be pretty obvious :)
+The above entries defined the resolution that the camera will attempt to display and the frame rate of the camera :)
 
-As the last option:\
-This needs some to read further Information.
+Custom Flags Option:\
+These flags (if set) will need furhter investigation and undestanding of thier purpose.
 
     custom_flags:
 
 If you enable this in your [cam whatevernameyouset],\
 you can add parameters according to your needs.\
-Those will be appended to the default/preconfigured parameters.
+Those will be appended (added) to the default/preconfigured parameters.
 
 To setup Services to your need you have to take a closer look to the documentation of the Projects named above.\
 As a pointer in the right direction:
@@ -244,73 +246,73 @@ As a pointer in the right direction:
 
     v4l2ctl:
 
-This optional parameter allows you to setup your Cam due v4l2-ctl options.
-Unfortunatly this is a complex topic. But I try to explain it, as good I can.
+This optional parameter allows one to setup your Camera using v4l2-ctl options.
+This is a complex topic. I will try to explain it to the best of my ability.
 
-### As an Example
+### Here is an Example
 
-You own a Logitech C920 Camera, these camera needs some tweaks to get a sharp picture.\
-A solution was to use a cronjob (timed actions due scripts) that runs a script with some v4l2-ctl commands.
+Using a Logitech C920 Camera, this camera requires some tweaks to get a sharp picture.\
+One solution was to use a "cronjob" (an automated script that can be run via Unix or Linux) the script would run with some v4l2-ctl commands.
+
+The script would contain the following entries:
 
     v4l2-ctl -d /dev/video0 -c focus_auto=0
     v4l2-ctl -d /dev/video0 -c focus_absolute=30
 
-That script gets executed when th Pi boots up.\
-Not a comfortable solution.
+The script would be executed when th Pi boots up.\
+This is not an optimal soultion.
 
-alexz from the mainsail-crew mentioned it would be a good move when \
-this could happen by crowsnest, hassle free for the user.
+alexz from the mainsail-crew suggested that having crowsnest setup these commands would allow these settings to be added with less hassle for the user.
 
 Take a look at [alexz webcam.conf](https://github.com/zellneralex/klipper_config/blob/11f4f8db8ac0e273e25134b571d0a93291f3511e/webcam.conf)
 
-So, here we go.
-Simply add
+To setup the options add the statement below to your camera setup section.
 
     v4l2ctl: focus_auto=0,focus_absolute=30
 
-to your camera setup section. \
-Restart webcamd via mainsail (or your used UI) and you're good to go.
 
-To determine which options or better said parameters your Webcam provides, \
+Then restart webcamd (webcam daemon) via mainsail (or your chosen User Interface) and you're good to go.
+
+To determine which options or parameters your current Webcam provides, \
 login to your Pi via ssh and type
 
     v4l2-ctl -d <yourdevice> -L
 
-_Note: Replace \<yourdevice> with the according string. ex.:_
+_Note: Replace \<yourdevice> with the string associated with the device you want to setup. ex.:_
 
     v4l2-ctl -d /dev/video0 -L
 
-This will show you a list with available options.
+This will show you a list with available options that your camera supports.
 
-You have to "play around" with those settings if it matches your needs.
-simply repeat the commands as mentioned earlier in your ssh connection.
+There is a certain amount of "trial and error" needed to determine which settings will be needed and usable with your camera.  Find the settings that best  match your needs.
+Add the commands using the methood mentioned above to configure. Login to your Raspberry Pi via an ssh connection.
 
-If you have discoverd your setup write that to your webcam.conf as described.
+Once you have discovered the settings that will work best for your given camera and situation then make sure to add that to the webcam.conf file as described and save the file.
 
 ---
 
 ## CustomPIOS Module
 
-I have decided to provide an [CustomPiOS Module](https://github.com/guysoft/CustomPiOS) to make it easier to integrate to other Distributions like MainsailOS or similar.
-Please see [README.md](./custompios/README.md) in the module folder for\
-further Informations.
+[CustomPiOS Module](https://github.com/guysoft/CustomPiOS) is included and designed to make it easier for one to integrate crowsnest into other Linux / Raspberry Pi Distributions like MainsailOS or similar.
+Please see [README.md](./custompios/README.md) within the module folder for\
+further information.
 
 ---
 
 ## Credits
 
 I want to give a huge shoutout to _lixxbox_ and _alexz_ from the mainsail-crew.\
-Without these guys it simply were not possible to get that done.
+Without thier input and assistance it simply would not be possible for crowsnest to be as full featured as it currently is.
 
-They both mentioned improvements and tested a heck out of there machines to get this all functioning well.\
-Thank you, mates :) Proud to be a part of.
+Many features and improvements were suggested and they tested a heck out of there machines to get crowsnest to function well.\
+Thank you, mates :) Proud to be a part of a group of such talented individuals.
 
-Thanks to [Pedro Lamas](https://github.com/pedrolamas), for the ISSUE_TEMPLATES.
+Thanks to [Pedro Lamas](https://github.com/pedrolamas), for providing the ISSUE_TEMPLATES.
 
 ---
 
 ![Mainsail Logo](https://raw.githubusercontent.com/meteyou/mainsail/master/docs/assets/img/logo.png)
 
-**So, with all that said, get your position seaman! Prepare to get wet feets on your Journey.**
+**So, with all that said, get to your positions seaman! Prepare to get your feet wet on your Journey.**
 
 ## ARRRR yooo rrready to sail?
