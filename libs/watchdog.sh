@@ -52,11 +52,11 @@ function webcamd_watchdog {
 
     function get_conf_devices {
         local gcd
-    for i in $(crudini --existing=file --get "${WEBCAMD_CFG}" | \
-    sed '/webcamd/d' | cut -d ' ' -f2); do
+        for i in $(crudini --existing=file --get "${WEBCAMD_CFG}" | \
+        sed '/webcamd/d' | cut -d ' ' -f2); do
         gcd+=("${i}")
-    done
-    echo "${gcd[@]}"
+        done
+        echo "${gcd[@]}"
     }
 
     ### MAIN
