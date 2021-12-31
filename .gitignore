@@ -9,3 +9,6 @@ test*
 
 # tmp file workaround
 lost*
+
+# Ignore rtsp-simple-server binary
+bin/rtsp-simple-server/**
