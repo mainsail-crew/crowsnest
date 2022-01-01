@@ -1,4 +1,5 @@
-# Version 3
+#!/bin/bash
+# shellcheck disable=all
 
 # crowsnest
 [ -n "$CROWSNEST_CROWSNEST_REPO_SHIP" ] || CROWSNEST_CROWSNEST_REPO_SHIP=https://github.com/mainsail-crew/crowsnest.git
@@ -13,17 +14,7 @@
 [ -n "$CROWSNEST_USTREAMER_REPO_BRANCH" ] || CROWSNEST_USTREAMER_REPO_BRANCH=master
 [ -n "$CROWSNEST_USTREAMER_REPO_DEPTH" ] || CROWSNEST_USTREAMER_REPO_DEPTH=1
 [ -n "$CROWSNEST_USTREAMER_DEPS" ] || CROWSNEST_USTREAMER_DEPS="git build-essential libevent-dev libjpeg62-turbo-dev \
-libbsd-dev libraspberrypi-dev libgpiod-dev cmake cmake-data"
+libbsd-dev libraspberrypi-dev libgpiod-dev"
 [ -n "$CROWSNEST_USTREAMER_WITH_OMX" ] || CROWSNEST_USTREAMER_WITH_OMX="n"
 [ -n "$CROWSNEST_USTREAMER_WITH_GPIO" ] || CROWSNEST_USTREAMER_WITH_GPIO="n"
 
-# v4l2rtspserver
-[ -n "$CROWSNEST_V4L2RTSP_REPO_SHIP" ] || CROWSNEST_V4L2RTSP_REPO_SHIP=https://github.com/mpromonet/v4l2rtspserver.git
-[ -n "$CROWSNEST_V4L2RTSP_REPO_BRANCH" ] || CROWSNEST_V4L2RTSP_REPO_BRANCH=master
-[ -n "$CROWSNEST_V4L2RTSP_DEPS" ] || CROWSNEST_V4L2RTSP_DEPS="git build-essential liblivemedia-dev liblog4cpp5-dev"
-
-### Stay for possible later use.
-# # simple-rtsp-server
-# [ -n "$CROWSNEST_RTSPSIMPLE_RELEASE" ] || CROWSNEST_RTSPSIMPLE_RELEASE="https://github.com/aler9/rtsp-simple-server/releases/download/v0.17.9/rtsp-simple-server_v0.17.9_linux_armv6.tar.gz"
-# [ -n "$CROWSNEST_RTSPSIMPLE_DEPS" ] || CROWSNEST_RTSPSIMPLE_DEPS="curl ffmpeg"
-# [ -n "$CROWSNEST_RTSPSIMPLE_DIR" ] || CROWSNEST_RTSPSIMPLE_DIR="/home/${BASE_USER}/rtsp-simple-server"
