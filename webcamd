@@ -10,7 +10,6 @@
 ####
 #### This File is distributed under GPLv3
 ####
-#### Version 3
 
 # shellcheck enable=require-variable-braces
 
