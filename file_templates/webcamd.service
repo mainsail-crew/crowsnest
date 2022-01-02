@@ -9,11 +9,12 @@
 
 [Unit]
 Description=webcamd - Multi Webcam/Streamer Control Deamon
+Documentation=https://github.com/mainsail-crew/crowsnest
 After=udev.service network-online.target nss-lookup.target
 Wants=udev.service network-online.target
 Before=nginx.service
-StartLimitBurst=3
-StartLimitIntervalSec=600
+StartLimitBurst=10
+StartLimitIntervalSec=180
 
 [Install]
 Alias=crowsnest
@@ -21,9 +22,9 @@ WantedBy=multi-user.target
 
 [Service]
 Environment=WEBCAMD_CONFIG=/home/pi/klipper_config/webcam.conf
-Type=Forking
+Type=exec
 User=pi
 RemainAfterExit=Yes
 ExecStart= /usr/local/bin/webcamd -c ${WEBCAMD_CONFIG}
 Restart=on-failure
-RestartSec=10
+RestartSec=5
