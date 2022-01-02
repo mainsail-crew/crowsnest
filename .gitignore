@@ -20,4 +20,5 @@ test*
 lost*
 
 # Ignore rtsp-simple-server binary
-bin/rtsp-simple-server/**
+bin/rtsp-simple-server/rtsp*
+bin/rtsp-simple-server/*.yml
