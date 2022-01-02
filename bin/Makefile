@@ -18,8 +18,9 @@ USTREAMER_PATH = ustreamer
 RTSP_PATH = rtsp-simple-server
 WEBRTC_PATH = RTSPtoWebRTC
 ARCH = $(shell uname -m | cut -c '-5' | sed 's/x86_6/amd64/')
-DL_RTSP = https://github.com/aler9/rtsp-simple-server/releases/download/v0.17.13/
-RTSP_ARCHIVE = rtsp-simple-server_v0.17.13_linux_$(ARCH).tar.gz
+RTSP_VERSION = $(shell cat $(RTSP_PATH)/version)
+DL_RTSP = https://github.com/aler9/rtsp-simple-server/releases/download/$(RTSP_VERSION)/
+RTSP_ARCHIVE = rtsp-simple-server_$(RTSP_VERSION)_linux_$(ARCH).tar.gz
 
 
 # Custom Flags
