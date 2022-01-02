@@ -107,7 +107,7 @@ function detect_existing_webcamd {
         read -rp "Do you want to remove existing 'webcamd'? (YES/NO) " remove
         if [ "${remove}" = "YES" ]; then
             echo -en "\nStopping webcamd.service ...\r"
-            # sudo systemctl stop webcamd.service &> /dev/null
+            sudo systemctl stop webcamd.service &> /dev/null
             echo -e "Stopping webcamd.service ... \t[OK]\r"
             remove_existing_webcamd
         else
