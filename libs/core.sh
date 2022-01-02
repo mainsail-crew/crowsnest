@@ -83,9 +83,9 @@ function check_apps {
         )
     for chk in "${paths[@]}"; do
         if [ -x "${chk}" ]; then
-            echo "Dependency: '$(cut -d '/' -f3 < "${chk}")' not found. Exiting!"
+            log_msg "Dependency: '$(cut -d '/' -f3 < "${chk}")' not found. Exiting!"
         else
-            echo "Dependency: '$(cut -d '/' -f3 <<< "${chk}")' found in ${chk}."
+            log_msg "Dependency: '$(cut -d '/' -f3 <<< "${chk}")' found in ${chk}."
         fi
     done
 }
