@@ -1,6 +1,6 @@
 #### webcamd - A webcam Service for multiple Cams and Stream Services.
 ####
-#### written by Stephan Wendel aka KwadFan
+#### Written by Stephan Wendel aka KwadFan <me@stephanwe.de>
 #### Copyright 2021
 #### https://github.com/mainsail-crew/crowsnest
 ####
@@ -62,17 +62,21 @@ rtsp:
 
 webrtc:
 	$(info Compiling RTSPtoWebRTC...)
+ifneq ($(GOVERSION),)
 	@cd $(realpath $(WEBRTC_PATH)); \
 	GO111MODULES=on GOOS=$(shell go env GOOS) GOARCH=$(shell go env GOARCH) \
 	GOARM=$(shell uname -m | grep --color=never -o [0-9]) \
-	$(GOBUILD) $(WEBRTC_FLAGS) -o rtsp2webrtc ; \
-	$(info ...finished)
+	$(GOBUILD) $(WEBRTC_FLAGS) -o rtsp2webrtc ; echo "...finished"
+else
+	$(error Missing Go Lang installation.)
+endif
 
 clean:
 	$(MAKE) -C $(USTREAMER_PATH) clean
 	$(info Clean rtsp-simple-server)
 	$(shell rm -rf $(RTSP_PATH)/*)
 	$(info Clean RTSPtoWebRTC)
+	$(shell cd $(WEBRTC_PATH) && go clean -r)
 	$(shell rm -f $(WEBRTC_PATH)/rtsp2webrtc)
 
 update:

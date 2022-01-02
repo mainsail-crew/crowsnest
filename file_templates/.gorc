@@ -1,0 +1,18 @@
+# Adds needed Variables to ~/.profile for Go Lang
+# Written by Stephan Wendel aka KwadFan <me@stephanwe.de>
+# Copyright 2021
+# https://github.com/mainsail-crew/crowsnest
+# GPL V3
+########
+# shellcheck disable=all
+
+if [ -d /usr/local/go ]; then
+    export PATH=$PATH:/usr/local/go/bin
+fi
+if [ ! -d $HOME/golang ]; then
+    mkdir -p $HOME/golang
+    export GOPATH=$HOME/golang
+else
+    export GOPATH=$HOME/golang
+fi
+

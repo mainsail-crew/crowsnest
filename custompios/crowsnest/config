@@ -1,4 +1,12 @@
 #!/bin/bash
+#### webcamd - A webcam Service for multiple Cams and Stream Services.
+####
+#### Written by Stephan Wendel aka KwadFan <me@stephanwe.de>
+#### Copyright 2021
+#### https://github.com/mainsail-crew/crowsnest
+####
+#### This File is distributed under GPLv3
+####
 # shellcheck disable=all
 
 # crowsnest
@@ -10,11 +18,14 @@
 [ -n "$CROWSNEST_MOONRAKER_SUPPORT" ] || CROWSNEST_MOONRAKER_SUPPORT="y"
 
 # ustreamer
-[ -n "$CROWSNEST_USTREAMER_REPO_SHIP" ] || CROWSNEST_USTREAMER_REPO_SHIP=https://github.com/pikvm/ustreamer.git
-[ -n "$CROWSNEST_USTREAMER_REPO_BRANCH" ] || CROWSNEST_USTREAMER_REPO_BRANCH=master
-[ -n "$CROWSNEST_USTREAMER_REPO_DEPTH" ] || CROWSNEST_USTREAMER_REPO_DEPTH=1
 [ -n "$CROWSNEST_USTREAMER_DEPS" ] || CROWSNEST_USTREAMER_DEPS="git build-essential libevent-dev libjpeg62-turbo-dev \
 libbsd-dev libraspberrypi-dev libgpiod-dev"
 [ -n "$CROWSNEST_USTREAMER_WITH_OMX" ] || CROWSNEST_USTREAMER_WITH_OMX="n"
 [ -n "$CROWSNEST_USTREAMER_WITH_GPIO" ] || CROWSNEST_USTREAMER_WITH_GPIO="n"
 
+# Go Lang
+[ -n "$CROWSNEST_GOLANG_VERSION" ] || CROWSNEST_GOLANG_VERSION="1.17.5"
+[ -n "$CROWSNEST_GOLANG_URL" ] || CROWSNEST_GOLANG_URL="https://go.dev/dl/"
+[ -n "$CROWSNEST_GOLANG_ARCHIVE" ] || CROWSNEST_GOLANG_ARCHIVE="go${CROWSNEST_GOLANG_VERSION}.linux-armv6l.tar.gz"
+[ -n "$CROWSNEST_GOLANG_SHA256" ] || CROWSNEST_GOLANG_SHA=aa1fb6c53b4fe72f159333362a10aca37ae938bde8adc9c6eaf2a8e87d1e47de
+[ -n "$CROWSNEST_GOLANG_GO_BIN" ] || CROWSNEST_GOLANG_GO_BIN="/usr/local"

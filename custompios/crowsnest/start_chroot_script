@@ -1,16 +1,18 @@
 #!/usr/bin/env bash
-# Crow's Nest
-# A multiple Cam and Stream Service for mainsailOS
-# Written by Stephan Wendel aka KwadFan
-# Copyright 2021
-# https://github.com/mainsail-crew/crowsnest
-# GPL V3
-# Version 2
-########
 
+#### webcamd - A webcam Service for multiple Cams and Stream Services.
+####
+#### Written by Stephan Wendel aka KwadFan <me@stephanwe.de>
+#### Copyright 2021
+#### https://github.com/mainsail-crew/crowsnest
+####
+#### This File is distributed under GPLv3
+####
 
-# Error handling, leave this in place
-# set -x
+# shellcheck disable=all
+
+# Error handling
+# set -x # Uncomment for debugging purposes
 set -e
 
 source /common.sh

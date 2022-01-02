@@ -4,7 +4,7 @@
 
 #### webcamd - A webcam Service for multiple Cams and Stream Services.
 ####
-#### written by Stephan Wendel aka KwadFan
+#### Written by Stephan Wendel aka KwadFan <me@stephanwe.de>
 #### Copyright 2021
 #### https://github.com/mainsail-crew/crowsnest
 ####

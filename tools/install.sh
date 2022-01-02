@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 # Crow's Nest
 # A multiple Cam and Stream Service for mainsailOS
-# Written by Stephan Wendel aka KwadFan
+# Written by Stephan Wendel aka KwadFan <me@stephanwe.de>
 # Copyright 2021
 # https://github.com/mainsail-crew/crowsnest
 # GPL V3
-# Version 2
 ########
 
-# shellcheck enable=requires-variable-braces
+# shellcheck enable=require-variable-braces
+
 ## disabeld SC2086 for some lines because there we want 'word splitting'
 
 set -e
@@ -89,8 +89,8 @@ trap 'err_exit $? $LINENO' ERR
 ### Import config from custompios.
 function import_config {
     if [ -f "${HOME}/crowsnest/custompios/crowsnest/config" ]; then
-        # shellcheck source-path=file_templates/custompios/crowsnest/config
-        source "$PWD"/custompios/crowsnest/config
+        # shellcheck disable=SC1091
+        source custompios/crowsnest/config
     else
         echo -e "${TITLE}\n"
         echo -e "OOPS!\nConfiguration File missing! Exiting..."
@@ -150,24 +150,37 @@ function remove_existing_webcamd {
     echo -e "webcam.txt kept,but no longer necessary ..."
 }
 
-### Install Dependencies
-## Enable buster-backports ( needed for golang-go > 1.11 )
-function enable_backports {
-    local template sources
-    template="${HOME}/crowsnest/file_templates/buster-backports.list"
-    sources="/etc/apt/sources.list.d/"
-    if [ "$(grep -c "buster" /etc/apt/sources.list)" -ne "0" ]; then
-        echo -e "\n'Debian 10 Buster' ( or based of ) detected ..."
-        echo -e "We need to install Debian Backports for golang >=1.11\n"
-        echo -en "Adding buster-backports to 'apt' ...\r"
-        sudo cp "${template}" "${sources}" &> /dev/null
-        echo -e "Adding buster-backports to 'apt' ... [OK]\r"
-        echo -e "Adding buster-backports keyring to 'apt' ...\r"
-        sudo apt-key adv --keyserver keyring.debian.org --recv-keys 648ACFD622F3D138
-        sudo apt-key adv --keyserver keyring.debian.org --recv-keys 0E98404D386FA1D9
-        echo -e "Adding buster-backports keyring to 'apt' ... [OK]\r"
-        echo -e "\nRunning 'apt update' to initialize backports ..."
-        sudo apt update
+function install_go {
+    local sha256sum
+    if [ ! -d /usr/local/go ]; then
+        echo -e "Dependency: Go ${CROWSNEST_GOLANG_VERSION} not installed."
+        echo -e "Installing Go ${CROWSNEST_GOLANG_VERSION} ..."
+        echo -en "Download Go ${CROWSNEST_GOLANG_VERSION} (${CROWSNEST_GOLANG_URL})... \r"
+        curl --silent -JLo /tmp/"${CROWSNEST_GOLANG_ARCHIVE}" \
+        "${CROWSNEST_GOLANG_URL}${CROWSNEST_GOLANG_ARCHIVE}"
+        echo -e "Download Go ${CROWSNEST_GOLANG_VERSION} (${CROWSNEST_GOLANG_URL})... [OK]"
+        sha256sum="$(sha256sum /tmp/"${CROWSNEST_GOLANG_ARCHIVE}" | cut -d ' ' -f1)"
+        echo -en "Checking sha256sum ...\r"
+        if [ "${sha256sum}" = "${CROWSNEST_GOLANG_SHA}" ]; then
+            echo -e "Checking sha256sum ... [OK]"
+        else
+            echo -e "Checking sha256sum ... [FAILED]"
+            echo -e "Aborting Install ..."
+            echo -e "Goodbye..."
+            exit 1
+        fi
+        sudo tar -C "${CROWSNEST_GOLANG_GO_BIN}" -xf "/tmp/${CROWSNEST_GOLANG_ARCHIVE}"
+        echo -en "Setup GOPATH and add 'go' to PATH ...\r"
+        if [ ! -f "${HOME}/.gorc" ]; then
+            cp file_templates/.gorc "${HOME}"
+            echo -e "\n# Add Go Variables to profile\nsource ${HOME}/.gorc\n" >> \
+            "${HOME}"/.profile
+            # shellcheck disable=SC1091
+            source "${HOME}/.profile"
+        fi
+        echo -e "Setup GOPATH and add to PATH ... [OK]"
+    else
+        echo -e "$(go version) is already installed ... [skipping]"
     fi
 }
 
@@ -175,14 +188,15 @@ function install_crowsnest {
     local template servicefile logrotatefile bin_path webcamd_bin
     bin_path="/usr/local/bin"
     webcamd_bin="${HOME}/crowsnest/webcamd"
-    template="$PWD/sample_configs/${CROWSNEST_DEFAULT_CONF}"
-    servicefile="$PWD/file_templates/webcamd.service"
+    template="${PWD}/sample_configs/${CROWSNEST_DEFAULT_CONF}"
+    servicefile="${PWD}/file_templates/webcamd.service"
     logrotatefile="${HOME}/crowsnest/file_templates/logrotate_webcamd"
     echo -e "\nInstall webcamd Service ..."
     ## Install Dependencies
     echo -e "Installing 'crowsnest' Dependencies ..."
     # shellcheck disable=2086
-    sudo apt install --yes --no-install-recommends $CROWSNEST_CROWSNEST_DEPS > /dev/null
+    sudo apt install --yes --no-install-recommends ${CROWSNEST_CROWSNEST_DEPS} > /dev/null
+    install_go
     echo -e "Installing 'crowsnest' Dependencies ... [OK]"
     ## Link webcamd to $PATH
     echo -en "Linking webcamd ...\r"
@@ -192,8 +206,7 @@ function install_crowsnest {
     # Make sure not to overwrite existing!
     if [ ! -f "${CROWSNEST_DEFAULT_CONF_DIR}/webcam.conf" ]; then
         echo -en "Copying webcam.conf ...\r"
-        # shellcheck disable=2086
-        sudo -u "${BASE_USER}" cp -rf $PWD/sample_configs/${CROWSNEST_DEFAULT_CONF} "${CROWSNEST_DEFAULT_CONF_DIR}"/webcam.conf
+        sudo -u "${BASE_USER}" cp -rf "${template}" "${CROWSNEST_DEFAULT_CONF_DIR}"/webcam.conf
         echo -e "Copying webcam.conf ... [OK]\r"
     fi
     ## Link webcamd.service
@@ -212,92 +225,20 @@ function install_crowsnest {
     echo -e "Enable webcamd.service on boot ... [OK]\r"
 }
 
-function install_ustreamer {
-    local bin_path ustreamer_bin ustreamer_dump_bin
-    ustreamer_bin="${HOME}/ustreamer/ustreamer"
-    ustreamer_dump_bin="${HOME}/ustreamer/ustreamer-dump"
-    bin_path="/usr/local/bin"
-    echo -e "\nInstalling ustreamer ..."
-    echo -e "Installing ustreamer Dependencies ..."
+function build_apps {
+    echo -e "Build dependend Stream Apps ..."
+    echo -e "Installing 'ustreamer' Dependencies ..."
     # shellcheck disable=2086
-    sudo apt install --yes --no-install-recommends $CROWSNEST_USTREAMER_DEPS > /dev/null
-    echo -e "Installing ustreamer Dependencies ... \t[OK]"
-    echo -e "Cloning ustreamer Repo ..."
-    pushd "${HOME}" > /dev/null
-    git clone "${CROWSNEST_USTREAMER_REPO_SHIP}" --depth=1
+    sudo apt install --yes --no-install-recommends ${CROWSNEST_USTREAMER_DEPS} > /dev/null
+    echo -e "Installing 'ustreamer' Dependencies ... [OK]"
+    pushd bin > /dev/null
+    make all
     popd > /dev/null
-    echo -e "Cloning ustreamer Repo ... [OK]"
-    pushd "${HOME}"/ustreamer > /dev/null
-    echo -e "Compiling ustreamer ..."
-    if [ "${CROWSNEST_USTREAMER_WITH_OMX}" = "y" ] && \
-        [ "${CROWSNEST_USTREAMER_WITH_GPIO}" = "y" ]; then
-        echo -e "Compile ustreamer with OMX and GPIO Support..."
-        WITH_OMX=1 WITH_GPIO=1 make -j"$(nproc)"
-    elif [ "${CROWSNEST_USTREAMER_WITH_OMX}" = "y" ] && \
-        [ "${CROWSNEST_USTREAMER_WITH_GPIO}" = "n" ]; then
-        echo -e "Compile ustreamer with OMX Support..."
-        WITH_OMX=1 make -j"$(nproc)"
-    else
-        echo -e"Compile ustreamer without OMX and GPIO Support..."
-        make -j"$(nproc)"
-    fi
-    popd > /dev/null
-    echo -en "Linking ustreamer ...\r"
-    sudo ln -sf "${ustreamer_bin}" "${bin_path}" > /dev/null
-    sudo ln -sf "${ustreamer_dump_bin}" "${bin_path}" > /dev/null
-    echo -e "Linking ustreamer ... [OK]\r"
-    echo -e "Installing ustreamer ... [OK]"
 }
-
-function install_v4l2rtspserver {
-    local bin_path v4l2rtsp_bin
-    v4l2rtsp_bin="${HOME}/v4l2rtspserver/v4l2rtspserver"
-    bin_path="/usr/local/bin"
-    echo -e "\nInstalling v4l2rtspserver ..."
-    echo -e "Installing v4l2rtspserver Dependencies ..."
-    # shellcheck disable=2086
-    sudo apt install --yes --no-install-recommends $CROWSNEST_V4L2RTSP_DEPS > /dev/null
-    echo -e "Installing v4l2rtspserver Dependencies ... \t[OK]"
-    echo -e "Cloning v4l2rtspserver Repo ..."
-    pushd "${HOME}" > /dev/null
-    git clone "${CROWSNEST_V4L2RTSP_REPO_SHIP}" --depth=1
-    popd > /dev/null
-    echo -e "Cloning v4l2rtspserver Repo ... [OK]"
-    pushd "${HOME}"/v4l2rtspserver > /dev/null
-    echo -e "Compiling v4l2rtspserver ..."
-    cmake . && make -j"$(nproc)"
-    popd > /dev/null
-    echo -en "Linking v4l2rtspserver ...\r"
-    sudo ln -sf "${v4l2rtsp_bin}" "${bin_path}" > /dev/null
-    echo -e "Linking v4l2rtspserver ... [OK]\r"
-    echo -e "Installing v4l2rtspserver ... [OK]"
-}
-
-## Stay for later use.
-# function install_rtspsimple {
-#     local bin_path rtsp_bin
-#     bin_path="/usr/local/bin"
-#     rtsp_bin="${CROWSNEST_RTSPSIMPLE_DIR}/rtsp-simple-server"
-#     # We are using armv6l Version to be downwards compatible.
-#     ## Install Dependencies
-#     echo -e "Installing 'rtsp-simple-server' Dependencies ..."
-#     sudo apt install --yes --no-install-recommends $CROWSNEST_RTSPSIMPLE_DEPS > /dev/null
-#     echo -e "Installing 'rtsp-simple-server' Dependencies ... [OK]"
-#     # Download Release Binary
-#     echo -e "Download 'rtsp-simple-server' ..."
-#     curl -o /tmp/rtsp-simple-server.tar.gz -L "${CROWSNEST_RTSPSIMPLE_RELEASE}"
-#     echo -e "Download 'rtsp-simple-server' ... [OK]"
-#     echo -en "Unpacking 'rtsp-simple-server' ...\r"
-#     mkdir -p "${CROWSNEST_RTSPSIMPLE_DIR}" > /dev/null
-#     tar xfz /tmp/rtsp-simple-server.tar.gz -C "${CROWSNEST_RTSPSIMPLE_DIR}" > /dev/null
-#     echo -e "Unpacking 'rtsp-simple-server' ... [OK]"
-#     echo -en "Linking 'rtsp-simple-server' ...\r"
-#     sudo ln -sf "${rtsp_bin}" "${bin_path}" > /dev/null
-#     echo -e "Linking 'rtsp-simple-server' ... [OK]\r"
-# }
 
 function install_raspicam_fix {
     sudo sh -c 'echo "bcm2835-v4l2" >> /etc/modules'
+    sudo cp file_templates/bcm2835-v4l2.conf /etc/modprobe.d/
 }
 
 #### MAIN
@@ -305,14 +246,10 @@ install_cleanup_trap
 import_config
 welcome_msg
 detect_existing_webcamd
-## Golang not needed for now!
-# enable_backports
 echo -e "Running apt update first ..."
 sudo apt update
 install_crowsnest
-install_ustreamer
-install_v4l2rtspserver
-# install_rtspsimple
+build_apps
 install_raspicam_fix
 goodbye_msg
 

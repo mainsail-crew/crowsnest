@@ -1,14 +1,12 @@
 #!/usr/bin/env bash
-# Crow's Nest
-# A multiple Cam and Stream Service for mainsailOS
-# Written by Stephan Wendel aka KwadFan
-# Copyright 2021
-# https://github.com/mainsail-crew/crowsnest
-# GPL V3
-#
-# patcher.sh - copies new templates to ist destinations.
-#
-########
+#### webcamd - A webcam Service for multiple Cams and Stream Services.
+####
+#### Written by Stephan Wendel aka KwadFan <me@stephanwe.de>
+#### Copyright 2021
+#### https://github.com/mainsail-crew/crowsnest
+####
+#### This File is distributed under GPLv3
+####
 
 # shellcheck enable=requires-variable-braces
 
@@ -120,10 +118,25 @@ function daemon_reload {
     echo -e "Reload systemd to enable new daemon ... [OK]"
 }
 
+function uninstall_v4l2rtsp {
+    local bin_path v4l2rtsp_dir
+    bin_path="/usr/local/bin/v4l2rtspserver"
+    v4l2rtsp_dir="${HOME}/v4l2rtspserver"
+    if [ -d "${v4l2rtsp_dir}" ]; then
+        echo -en "Uninstalling 'v4l2rtspserver' ...\r"
+        if [ -x "${bin_path}" ]; then
+            sudo rm -f "${bin_path}"
+        fi
+        sudo rm -rf "${v4l2rtsp_dir}"
+        echo -e "Uninstalling 'v4l2rtspserver' ... [OK]\r"
+    fi
+}
+
 #### MAIN
 install_cleanup_trap
 welcome_msg
 stop_webcamd
+uninstall_v4l2rtsp
 copy_service
 copy_logrotate
 goodbye_msg

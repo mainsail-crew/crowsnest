@@ -1,6 +1,14 @@
 # Editor Config
 # This should help contributors and save time for my sometimes cheesy Brain xD
-# Stephan Wendel <me@stephanwe.de>
+
+#### webcamd - A webcam Service for multiple Cams and Stream Services.
+####
+#### Written by Stephan Wendel aka KwadFan <me@stephanwe.de>
+#### Copyright 2021
+#### https://github.com/mainsail-crew/crowsnest
+####
+#### This File is distributed under GPLv3
+####
 
 root = true
 
