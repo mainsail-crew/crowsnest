@@ -82,7 +82,7 @@ function check_apps {
         "bin/RTSPtoWebRTC/rtsp2webrtc"
         )
     for chk in "${paths[@]}"; do
-        if [ -x "${chk}" ]; then
+        if [ -x "${BASE_CN_PATH}/${chk}" ]; then
             log_msg "Dependency: '$(cut -d '/' -f3 < "${chk}")' not found. Exiting!"
         else
             log_msg "Dependency: '$(cut -d '/' -f3 <<< "${chk}")' found in ${chk}."
