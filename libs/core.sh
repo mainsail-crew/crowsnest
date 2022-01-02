@@ -74,6 +74,22 @@ function check_dep {
     fi
 }
 
+function check_apps {
+    local paths
+    paths=( \
+        "bin/ustreamer/ustreamer" \
+        "bin/rtsp-simple-server/rtsp-simple-server" \
+        "bin/RTSPtoWebRTC/rtsp2webrtc"
+        )
+    for chk in "${paths[@]}"; do
+        if [ -x "${chk}" ]; then
+            echo "Dependency: '$(cut -d '/' -f3 < "${chk}")' not found. Exiting!"
+        else
+            echo "Dependency: '$(cut -d '/' -f3 <<< "${chk}")' found in ${chk}."
+        fi
+    done
+}
+
 # Check all needed Dependencies
 # If pass print your set configfile to log.
 # print_cfg, see libs/logging.sh L#75
@@ -83,8 +99,6 @@ function initial_check {
     check_dep "crudini"
     check_dep "find"
     check_dep "logger"
-    check_dep "ustreamer"
-    check_dep "v4l2rtspserver"
     check_dep "xargs"
     # check_dep "rtsp-simple-server" # Stay for later use.
     if [ -z "$(check_cfg "${WEBCAMD_CFG}")" ]; then
