@@ -100,6 +100,7 @@ function initial_check {
     check_dep "find"
     check_dep "logger"
     check_dep "xargs"
+    check_apps
     # check_dep "rtsp-simple-server" # Stay for later use.
     if [ -z "$(check_cfg "${WEBCAMD_CFG}")" ]; then
         if [ "$(log_level)" != "quiet" ]; then
