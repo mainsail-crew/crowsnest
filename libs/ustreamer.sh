@@ -21,7 +21,7 @@ function run_ustreamer {
     local cam_section ustreamer_bin device port resolution fps custom
     local raspicam start_param wwwroot
     cam_section="${1}"
-    ustreamer_bin="$(whereis ustreamer | awk '{print $2}')"
+    ustreamer_bin="${BASE_CN_PATH}/bin/ustreamer/ustreamer"
     device="$(get_param "cam ${cam_section}" device)"
     port=$(get_param "cam ${cam_section}" port)
     resolution=$(get_param "cam ${cam_section}" resolution)
