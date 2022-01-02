@@ -17,8 +17,8 @@ So, this will be the 'lookout point' for your Printer.
 
     cd ~
     git clone https://github.com/mainsail-crew/crowsnest.git
-    cd crowsnest
-    ./install.sh
+    cd ~/crowsnest
+    make install
 
 _This is not tested on other Distributions. If you test that on other Distributions,\
 feel free to open a Pull Request to enhance Documentation._
@@ -34,10 +34,27 @@ to your moonraker.conf, to get latest and possibly greatest Features.
 
 ### To unsinstall 'crowsnest'
 
-    cd crowsnest
-    ./uninstall.sh
+    cd ~/crowsnest
+    make uninstall
 
-###
+### To manually update 'crowsnest'
+
+Normally, you can update via moonraker's Update Manager.
+Sometimes manual intervention is needed! See commit messages.
+
+    cd ~/crowsnest
+    make update
+
+### Are there more options?
+
+Yes.
+
+    cd ~/crowsnest
+    make
+
+or
+
+    make help
 
 ## _NOTE: This project has WIP Status! Changes may occure and possibly break things!_
 
@@ -180,13 +197,13 @@ This section should be pretty much self explantory.
 means your choosen streamservice will be mjpg_streamer.\
 You can choose:
 
-- ustreamer - A streamserver from Pi-KVM Project\
-  active maintained by [Maxim Devaev](https://github.com/mdevaev)\
-  [ustreamer on github](https://github.com/pikvm/ustreamer)
+-   ustreamer - A streamserver from Pi-KVM Project\
+    active maintained by [Maxim Devaev](https://github.com/mdevaev)\
+    [ustreamer on github](https://github.com/pikvm/ustreamer)
 
-- rtsp - v4l2rtspserver with Multiprotocol Support\
-  active maintained by [Michel Promonet](https://github.com/mpromonet) \
-  [v4l2rtspserver on github](https://github.com/mpromonet/v4l2rtspserver)
+-   rtsp - v4l2rtspserver with Multiprotocol Support\
+    active maintained by [Michel Promonet](https://github.com/mpromonet) \
+    [v4l2rtspserver on github](https://github.com/mpromonet/v4l2rtspserver)
 
 More Services will come in the (hopefully, near) future.
 
@@ -230,13 +247,13 @@ Those will be appended to the default/preconfigured parameters.
 To setup Services to your need you have to take a closer look to the documentation of the Projects named above.\
 As a pointer in the right direction:
 
-- ustreamer
+-   ustreamer
 
-  - For sake of simplicity I converted ustreamers manpage to
-    [ustreamer's manpage](./ustreamer_manpage.md)
+    -   For sake of simplicity I converted ustreamers manpage to
+        [ustreamer's manpage](./ustreamer_manpage.md)
 
-- v4l2rtspserver
-  - Please visit [v4l2rtspserver Usage](https://github.com/mpromonet/v4l2rtspserver#usage)\
+-   v4l2rtspserver
+    -   Please visit [v4l2rtspserver Usage](https://github.com/mpromonet/v4l2rtspserver#usage)\
 
 ---
 
