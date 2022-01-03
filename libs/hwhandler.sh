@@ -56,3 +56,15 @@ function detect_raspicam {
     echo "${avail}"
 }
 
+function dev_is_raspicam {
+    v4l2-ctl --list-devices |  grep -A1 -e 'mmal' | \
+    awk 'NR==2 {print $1}'
+}
+
+# Determine if cam has H.264 Hardware encoder
+# call detect_h264 <nameornumber> ex.: detect_h264 foobar
+function detect_h264 {
+    local dev
+    dev="$(get_param "cam ${1}" device)"
+    v4l2-ctl -d "${dev}" --list-formats-ext | grep -c "[hH]264"
+}

@@ -18,7 +18,7 @@ set -e
 
 function run_ustreamer {
     local cam_section ustreamer_bin device port resolution fps custom
-    local raspicam start_param wwwroot
+    local start_param wwwroot
     cam_section="${1}"
     ustreamer_bin="${BASE_CN_PATH}/bin/ustreamer/ustreamer"
     device="$(get_param "cam ${cam_section}" device)"
@@ -26,11 +26,9 @@ function run_ustreamer {
     resolution=$(get_param "cam ${cam_section}" resolution)
     fps=$(get_param "cam ${cam_section}" max_fps)
     custom="$(get_param "cam ${cam_section}" custom_flags 2> /dev/null)"
-    raspicam="$(v4l2-ctl --list-devices |  grep -A1 -e 'mmal' | \
-    awk 'NR==2 {print $1}')"
     wwwroot="${BASE_CN_PATH}/ustreamer-www"
     #Raspicam Workaround
-    if [ "${device}" == "${raspicam}" ]; then
+    if [ "${device}" == "$(dev_is_raspicam)" ]; then
         start_param=(
                     --host 127.0.0.1 -p "${port}" -m MJPEG --device-timeout=5
                     --buffers=3 -r "${resolution}" -f "${fps}" --allow-origin=\*
