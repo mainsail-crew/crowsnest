@@ -16,7 +16,6 @@
 # Exit upon Errors
 set -e
 
-
 function run_ustreamer {
     local cam_section ustreamer_bin device port resolution fps custom
     local raspicam start_param wwwroot
