@@ -51,25 +51,31 @@ function configured_cams {
 # Checks [cam <nameornumber>] if all needed configuration sections are present
 # call check_section <nameornumber> ex.: check_section foobar
 function check_section {
-    local section param must_exist missing
+    local section exist param must_exist missing
     section="cam ${1}"
     # Ignore missing custom flags
-    param="$(crudini --existing=param --get "${WEBCAMD_CFG}" "${section}" \
+    exist="$(crudini --existing=param --get "${WEBCAMD_CFG}" "${section}" \
     2> /dev/null | sed '/custom_flags/d;/v4l2ctl/d')"
-    must_exist="mode port device resolution max_fps"
-    missing="$(echo "${param}" "${must_exist}" | \
+    for i in ${exist}; do
+        param+=("${i}")
+    done
+    # Stop on deprecated conf
+    for i in "${param[@]}"; do
+        if [ "${i}" = "streamer" ]; then
+            deprecated_msg_1
+            exit 1
+        fi
+    done
+    must_exist=(mode port device resolution max_fps)
+    missing="$(echo "${param[@]}" "${must_exist[@]}" | \
     tr ' ' '\n' | sort | uniq -u)"
-    if [ -n "${missing}" ]; then
-        if [ "${missing}" != "streamer" ] && [ "${missing}" != "mode" ] ; then
+    for i in "${missing[@]}"; do
+        if [ -n "${i}" ]; then
             log_msg "ERROR: Parameter ${missing} not found in \
             Section [${section}]. Start skipped!"
-            exit 1
         else
-            log_msg "WARN: Parameter ${missing} in Section [${section}]. \
-            is deprecated! Using Fallback Mode 'mjpg'"
+            log_msg "INFO: Configuration of Section [${section}] looks good. \
+            Continue..."
         fi
-    else
-        log_msg "INFO: Configuration of Section [${section}] looks good. \
-        Continue..."
-    fi
+    done
 }
