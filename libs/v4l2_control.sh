@@ -28,7 +28,6 @@ function v4l2_control {
             device="$(get_param "cam ${cam}" device)"
             # get v4l2ctl parameters
             v4l2ctl="$(get_param "cam ${cam}" v4l2ctl)"
-
             # if not empty do
             if [ -n "${v4l2ctl}" ]; then
                 # Write configured options to Log
