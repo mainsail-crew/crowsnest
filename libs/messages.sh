@@ -34,3 +34,9 @@ function help_msg {
     echo -e "\n\t\t-v Prints Version of webcamd."
     echo -e "\n\t\t-c </path/to/configfile>\n\t\t\tPath to your webcam.conf\n"
 }
+
+function deprecated_msg_1 {
+    log_msg "Parameter 'streamer' is deprecated!"
+    log_msg "Please use mode: (mjpg/webrtc)"
+    log_msg "WARN: Switching mode to fallback 'mjpg'"
+}
