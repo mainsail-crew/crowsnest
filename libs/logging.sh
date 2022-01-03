@@ -55,6 +55,9 @@ function log_msg {
     if [ ! -d "${logfile}" ]; then
         mkdir -p "$(dirname "${logfile}")"
     fi
+    if [ ! -f "${logfile}" ]; then
+        touch "${logfile}"
+    fi
     echo -e "${prefix} ${msg}" | tr -s ' ' >> "${logfile}" 2>&1
     echo -e "${msg}" | logger -t webcamd
 }
