@@ -83,9 +83,9 @@ function check_apps {
         )
     for chk in "${paths[@]}"; do
         if [ -x "${BASE_CN_PATH}/${chk}" ]; then
-            log_msg "Dependency: '$(cut -d '/' -f3 < "${chk}")' not found. Exiting!"
+            log_msg "Dependency: '$(echo "${chk}" | cut -d '/' -f3)' not found. Exiting!"
         else
-            log_msg "Dependency: '$(cut -d '/' -f3 <<< "${chk}")' found in ${chk}."
+            log_msg "Dependency: '$(echo "${chk}" | cut -d '/' -f3)' found in ${chk}."
         fi
     done
 }
