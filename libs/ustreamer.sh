@@ -29,7 +29,6 @@ function run_ustreamer {
     custom="$(get_param "cam ${cam_section}" custom_flags 2> /dev/null)"
     raspicam="$(v4l2-ctl --list-devices |  grep -A1 -e 'mmal' | \
     awk 'NR==2 {print $1}')"
-    check_section "${cam_section}"
     wwwroot="${BASE_CN_PATH}/ustreamer-www"
     #Raspicam Workaround
     if [ "${device}" == "${raspicam}" ]; then
@@ -60,4 +59,5 @@ function run_ustreamer {
     else
         log_msg "ERROR: Start of ustreamer [cam ${cam_section}] failed!"
     fi
+    return
 }
