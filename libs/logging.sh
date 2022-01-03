@@ -105,3 +105,17 @@ function print_cams {
         fi
     fi
 }
+
+function debug_msg {
+    local msg logfile prefix
+    msg="${1}"
+    prefix="$(date +'[%D %T]') webcamd: DEBUG:"
+    #Workaround sed ~ to BASH VAR $HOME
+    logfile="$(get_param webcamd log_path | sed "s#^~#${HOME}#gi")"
+    #Workaround: Make Dir if not exist
+    if [ ! -d "${logfile}" ]; then
+        mkdir -p "$(dirname "${logfile}")"
+    fi
+    echo -e "${prefix} ${msg}" | tr -s ' ' >> "${logfile}" 2>&1
+    echo -e "${msg}" | logger -t webcamd
+}
