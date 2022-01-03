@@ -24,8 +24,8 @@ function get_param {
     cfg="${WEBCAMD_CFG}"
     section="${1}"
     param="${2}"
-    crudini --get "${cfg}" "${section}" "${param}" | \
-    sed 's/\#.*//;s/[[:space:]]*$//' || echo ""
+    crudini --get "${cfg}" "${section}" "${param}" 2> /dev/null | \
+    sed 's/\#.*//;s/[[:space:]]*$//'
 }
 
 # Check for existing file
@@ -56,13 +56,18 @@ function check_section {
     # Ignore missing custom flags
     param="$(crudini --existing=param --get "${WEBCAMD_CFG}" "${section}" \
     2> /dev/null | sed '/custom_flags/d;/v4l2ctl/d')"
-    must_exist="streamer port device resolution max_fps"
+    must_exist="mode port device resolution max_fps"
     missing="$(echo "${param}" "${must_exist}" | \
     tr ' ' '\n' | sort | uniq -u)"
     if [ -n "${missing}" ]; then
-        log_msg "ERROR: Parameter ${missing} not found in \
-        Section [${section}]. Start skipped!"
-        exit 1
+        if [ "${missing}" != "streamer" ] && [ "${missing}" != "mode" ] ; then
+            log_msg "ERROR: Parameter ${missing} not found in \
+            Section [${section}]. Start skipped!"
+            exit 1
+        else
+            log_msg "WARN: Parameter ${missing} in Section [${section}]. \
+            is deprecated! Using Fallback Mode 'mjpg'"
+        fi
     else
         log_msg "INFO: Configuration of Section [${section}] looks good. \
         Continue..."
