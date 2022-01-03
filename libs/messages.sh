@@ -38,5 +38,5 @@ function help_msg {
 function deprecated_msg_1 {
     log_msg "Parameter 'streamer' is deprecated!"
     log_msg "Please use mode: (mjpg/webrtc)"
-    log_msg "WARN: Switching to fallback mode 'mjpg'"
+    log_msg "ERROR: Please update your webcam.conf! Stopped."
 }
