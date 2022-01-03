@@ -76,16 +76,17 @@ function check_dep {
 
 function check_apps {
     local paths
-    paths=( \
-        "bin/ustreamer/ustreamer" \
-        "bin/rtsp-simple-server/rtsp-simple-server" \
-        "bin/RTSPtoWebRTC/rtsp2webrtc"
+    paths=(
+        bin/ustreamer/ustreamer
+        bin/rtsp-simple-server/rtsp-simple-server
+        bin/RTSPtoWebRTC/rtsp2webrtc
         )
     for chk in "${paths[@]}"; do
         if [ -x "${BASE_CN_PATH}/${chk}" ]; then
-            log_msg "Dependency: '$(echo "${chk}" | cut -d '/' -f3)' not found. Exiting!"
-        else
             log_msg "Dependency: '$(echo "${chk}" | cut -d '/' -f3)' found in ${chk}."
+        else
+            log_msg "Dependency: '$(echo "${chk}" | cut -d '/' -f3)' not found. Exiting!"
+            exit 1
         fi
     done
 }
