@@ -91,6 +91,16 @@ function check_apps {
     done
 }
 
+function check_omx {
+    if [ -d "/opt/vc/include" ] &&
+    [ "$(ffmpeg -hide_banner -buildconf | grep -c 'omx')" -gt 0 ] &&
+    [ "$(bin/ustreamer/ustreamer --features  | grep -c '\+ WITH_OMX')" -eq 1 ]; then
+        return 1
+    else
+        return 0
+    fi
+}
+
 # Check all needed Dependencies
 # If pass print your set configfile to log.
 # print_cfg, see libs/logging.sh L#75
@@ -101,6 +111,7 @@ function initial_check {
     check_dep "find"
     check_dep "logger"
     check_dep "xargs"
+    check_dep "ffmpeg"
     check_apps
     # check_dep "rtsp-simple-server" # Stay for later use.
     if [ -z "$(check_cfg "${WEBCAMD_CFG}")" ]; then
