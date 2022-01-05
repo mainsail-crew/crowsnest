@@ -19,7 +19,7 @@ set -e
 ## Start Stream Service
 # sleep to prevent cpu cycle spikes
 function construct_streamer {
-    local cams
+    local cams sleep_pid
     # See configparser.sh L#53
     log_msg "Try to start configured Cams / Services..."
     for cams in $(configured_cams); do
@@ -28,7 +28,21 @@ function construct_streamer {
             mjpg)
                 check_section "${cams}"
                 run_ustreamer "${cams}" &
-                sleep 1
+                sleep 2 & sleep_pid="$!" ; wait "${sleep_pid}"
+            ;;
+            rtsp)
+                if [ -z "$(pidof rtsp-simple-server)" ]; then
+                    run_rtsp &
+                    sleep 2 & sleep_pid="$!"; wait "${sleep_pid}"
+                else
+                    echo "RTSP Server already running ... Skipped." | \
+                    log_output "INFO:"
+                fi
+                run_ffmpeg "${cams}" &
+                sleep 8 & sleep_pid="$!"; wait "${sleep_pid}"
+            ;;
+            webrtc)
+                log_msg "Not now implemented"
             ;;
             ?|*)
                 unknown_mode_msg
