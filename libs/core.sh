@@ -95,12 +95,11 @@ function check_apps {
 # 0 = false / 1 = true
 function check_omx {
     if [ -d "/opt/vc/include" ] &&
-    [ "$(ffmpeg -hide_banner -buildconf | grep -c 'omx')" -gt 0 ] &&
-    [ "$(${BASE_CN_PATH}/bin/ustreamer/ustreamer --features \
-    | grep -c '\+ WITH_OMX')" -eq 1 ]; then
-        return 1
+    [ ! "$(ffmpeg -hide_banner -buildconf | grep -c 'omx')" = "0" ] &&
+    [ "$("${BASE_CN_PATH}"/bin/ustreamer/ustreamer --features | grep -c '\+ WITH_OMX')" = "1" ]; then
+        echo "1"
     else
-        return 0
+        echo "0"
     fi
 }
 
