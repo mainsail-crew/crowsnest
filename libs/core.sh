@@ -91,6 +91,8 @@ function check_apps {
     done
 }
 
+# checks availability of OpenMax IL feature on host and in apps.
+# 0 = false / 1 = true
 function check_omx {
     if [ -d "/opt/vc/include" ] &&
     [ "$(ffmpeg -hide_banner -buildconf | grep -c 'omx')" -gt 0 ] &&
