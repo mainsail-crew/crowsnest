@@ -23,7 +23,7 @@ function run_ffmpeg {
     dev="$(get_param "cam ${cam_section}" device)"
     # Construct start_param
     start_param=( -nostdin -hide_banner -f video4linux2 )
-    if [ "$(detect_h264 "${cam_section}")" -eq 1 ]; then
+    if [ "$(detect_h264 "${cam_section}")" = "1" ]; then
         start_param+=( -input_format h264 )
     else
         start_param+=( -input_format yuyv422 )
