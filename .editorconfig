@@ -36,3 +36,10 @@ indent_style = tab
 [*.{json,yml,yaml}]
 indent_style = space
 indent_size = 2
+
+# HTML related
+[*.{html,css,js}]
+indent_style = space
+indent_size = 2
+
+
