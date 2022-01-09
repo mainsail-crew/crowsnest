@@ -52,5 +52,5 @@ function construct_streamer {
         esac
     done
     log_msg "... Done!"
-    return 0
+    return
 }

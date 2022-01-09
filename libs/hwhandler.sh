@@ -63,8 +63,18 @@ function dev_is_raspicam {
 
 # Determine if cam has H.264 Hardware encoder
 # call detect_h264 <nameornumber> ex.: detect_h264 foobar
+# returns 1 = true / 0 = false ( numbers are strings! not int!)
 function detect_h264 {
     local dev
     dev="$(get_param "cam ${1}" device)"
     v4l2-ctl -d "${dev}" --list-formats-ext | grep -c "[hH]264"
+}
+
+# Determine if cam has MJPEG Hardware encoder
+# call detect_mjpeg <nameornumber> ex.: detect_mjpeg foobar
+# returns 1 = true / 0 = false ( numbers are strings! not int!)
+function detect_mjpeg {
+    local dev
+    dev="$(get_param "cam ${1}" device)"
+    v4l2-ctl -d "${dev}" --list-formats-ext | grep -c "Motion-JPEG, compressed"
 }
