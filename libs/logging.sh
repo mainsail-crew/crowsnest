@@ -36,10 +36,10 @@ function log_level {
 }
 
 function delete_log {
-    local devel logfile
+    local del_log logfile
     logfile="$(get_param "webcamd" log_path | sed "s#^~#${HOME}#gi")"
-    devel="$(get_param "webcamd" delete_log 2> /dev/null)"
-    if [ "${devel}" = "true" ]; then
+    del_log="$(get_param "webcamd" delete_log 2> /dev/null)"
+    if [ "${del_log}" = "true" ]; then
         rm -rf "${logfile}"
     fi
 }
