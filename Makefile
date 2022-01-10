@@ -40,6 +40,7 @@ uninstall:
 	@bash -c tools/uninstall.sh
 
 update:
+	@git submodule update --init
 	@bash -c tools/update.sh
 
 build:
