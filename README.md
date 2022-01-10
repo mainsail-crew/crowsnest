@@ -75,7 +75,7 @@ By default it look like this:
     log_level: quiet
 
     [cam 1]
-    streamer: ustreamer
+    mode: mjpg
     port: 8080
     device: /dev/video0
     resolution: 640x480
@@ -192,29 +192,32 @@ Now the more interessting part.
 
 This section should be pretty much self explantory.
 
-    streamer: ustreamer
+    mode: mjpg
 
-means your choosen streamservice will be mjpg_streamer.\
+means your choosen streamservice will be ustreamer with the well known mjpg-protocol.\
 You can choose:
 
--   ustreamer - A streamserver from Pi-KVM Project\
-    active maintained by [Maxim Devaev](https://github.com/mdevaev)\
-    [ustreamer on github](https://github.com/pikvm/ustreamer)
+    mode: rtsp
 
--   rtsp - v4l2rtspserver with Multiprotocol Support\
-    active maintained by [Michel Promonet](https://github.com/mpromonet) \
-    [v4l2rtspserver on github](https://github.com/mpromonet/v4l2rtspserver)
+This let you use external viewer like vlc for example.
+_NOTE: There will be no preview in your Browser!_
 
-More Services will come in the (hopefully, near) future.
+    mode: webrtc
+
+If you choose that mode you gain access to a newer technoligie called WebRTC.
+_NOTE: At this point there is no support via mainsail!_
+
+you can use, the inbuilt Website to watch your feed.
+
+    http://<yourprinterip>:8085
 
 ---
 
     port: 8080
 
-The port where the choosen service will listen on\
-**_NOTE: If you choose 'rtsp' use Port 8554!_**
+This will only affect the used port of ustreamer.
 
-**_NOTE: Ports 8080 - 8084 are covered by nginx reverse proxy! \
+**_NOTE: Ports 8080 - 8084 are covered by nginx reverse proxy in MainsailOS \
 According to that 8080 will be /webcam, port 8081 will be /webcam1 and so on._**
 
 ---
@@ -231,11 +234,13 @@ So, you can easily copy it from there.
 ---
 
     resolution: 640x480
+
+Your desired FPS Settings has to match what your Camera able to deliver!
+_NOTE: For the most part ignored in rtsp or webrtc mode!_
+
     max_fps: 15
 
-This last 2 should be pretty obvious :)
-
-As the last option:\
+This last option only affects ustreamer:\
 This needs some to read further Information.
 
     custom_flags:
@@ -244,16 +249,13 @@ If you enable this in your [cam whatevernameyouset],\
 you can add parameters according to your needs.\
 Those will be appended to the default/preconfigured parameters.
 
-To setup Services to your need you have to take a closer look to the documentation of the Projects named above.\
+To setup Services to your need you have to take a closer look to the documentation of the Project.\
 As a pointer in the right direction:
 
 -   ustreamer
 
     -   For sake of simplicity I converted ustreamers manpage to
         [ustreamer's manpage](./ustreamer_manpage.md)
-
--   v4l2rtspserver
-    -   Please visit [v4l2rtspserver Usage](https://github.com/mpromonet/v4l2rtspserver#usage)\
 
 ---
 
@@ -313,6 +315,24 @@ Please see [README.md](./custompios/README.md) in the module folder for\
 further Informations.
 
 ---
+
+## What 'Backends' uses crowsnest?
+
+-   ustreamer - A streamserver from Pi-KVM Project\
+    active maintained by [Maxim Devaev](https://github.com/mdevaev)\
+    [ustreamer on github](https://github.com/pikvm/ustreamer)
+
+-   rtsp-simple-server
+
+    -   This server provides rtsp streams and more\
+        at this point of development are only 'rtsp' features enabled\
+        More features are planned.
+        [rtsp-simple-server](https://github.com/aler9/rtsp-simple-server) is written in Go by [aler9](https://github.com/aler9)
+
+-   RTSPtoWebRTC
+
+    -   RTSPtoWebRTC's task should be pretty obvious.\
+        [RTSPtoWebRTC](https://github.com/deepch/RTSPtoWebRTC) is also written in "Go" by [deepch](https://github.com/deepch)
 
 ## Credits
 
