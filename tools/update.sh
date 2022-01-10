@@ -152,12 +152,18 @@ function copy_raspicam_fix {
     local logrotatefile origin
     origin="/etc/modprobe.d/bcm2835-v4l2.conf"
     logrotatefile="${HOME}/crowsnest/file_templates/bcm2835-v4l2.conf"
-    if [ -n "$(diff_files "${origin}" "${logrotatefile}")" ]; then
+    if [ ! -f "${origin}" ]; then
         echo -en "Copying bcm2835-v4l2.conf file ...\r"
         sudo cp -rf "${logrotatefile}" "${origin}" > /dev/null
         echo -e "Copying bcm2835-v4l2.conf file ... [OK]\r"
     else
-        echo -e "No update of '${origin}' required."
+        if [ -n "$(diff_files "${origin}" "${logrotatefile}")" ]; then
+            echo -en "Copying bcm2835-v4l2.conf file ...\r"
+            sudo cp -rf "${logrotatefile}" "${origin}" > /dev/null
+            echo -e "Copying bcm2835-v4l2.conf file ... [OK]\r"
+        else
+            echo -e "No update of '${origin}' required."
+        fi
     fi
 }
 
