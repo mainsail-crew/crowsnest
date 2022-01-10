@@ -16,7 +16,7 @@ So, this will be the 'lookout point' for your Printer.
 ### Install on Raspberry Pi OS
 
     cd ~
-    git clone https://github.com/mainsail-crew/crowsnest.git
+    git clone --recurse-submodules https://github.com/mainsail-crew/crowsnest.git
     cd ~/crowsnest
     make install
 
