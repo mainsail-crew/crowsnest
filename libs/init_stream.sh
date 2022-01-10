@@ -42,12 +42,21 @@ function construct_streamer {
                 sleep 8 & sleep_pid="$!"; wait "${sleep_pid}"
             ;;
             webrtc)
-                log_msg "Not now implemented"
+                if [ -z "$(pidof rtsp-simple-server)" ]; then
+                    run_rtsp &
+                    sleep 2 & sleep_pid="$!"; wait "${sleep_pid}"
+                else
+                    echo "RTSP Server already running ... Skipped." | \
+                    log_output "INFO:"
+                fi
+                run_ffmpeg "${cams}" &
+                sleep 8 & sleep_pid="$!"; wait "${sleep_pid}"
+                run_webrtc &
             ;;
             ?|*)
                 unknown_mode_msg
                 run_ustreamer "${cams}" &
-                sleep 1
+                sleep 2 & sleep_pid="$!" ; wait "${sleep_pid}"
             ;;
         esac
     done
