@@ -75,7 +75,7 @@ endif
 clean:
 	$(MAKE) -C $(USTREAMER_PATH) clean
 	$(info Clean rtsp-simple-server)
-	$(shell rm -rf $(RTSP_PATH)/*)
+	$(shell rm -rf $(RTSP_PATH)/rtsp*)
 	$(info Clean RTSPtoWebRTC)
 	$(shell cd $(WEBRTC_PATH) && go clean -r)
 	$(shell rm -f $(WEBRTC_PATH)/rtsp2webrtc)
