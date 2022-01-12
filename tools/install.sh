@@ -154,7 +154,6 @@ function install_go {
     local sha256sum
     if [ ! -d /usr/local/go ]; then
         echo -e "Dependency: Go ${CROWSNEST_GOLANG_VERSION} not installed."
-        echo -e "Installing Go ${CROWSNEST_GOLANG_VERSION} ..."
         echo -en "Download Go ${CROWSNEST_GOLANG_VERSION} (${CROWSNEST_GOLANG_URL})... \r"
         curl --silent -JLo /tmp/"${CROWSNEST_GOLANG_ARCHIVE}" \
         "${CROWSNEST_GOLANG_URL}${CROWSNEST_GOLANG_ARCHIVE}"
@@ -169,8 +168,13 @@ function install_go {
             echo -e "Goodbye..."
             exit 1
         fi
+        echo -en "Installing Go ${CROWSNEST_GOLANG_VERSION} ...\r"
         sudo tar -C "${CROWSNEST_GOLANG_GO_BIN}" -xf "/tmp/${CROWSNEST_GOLANG_ARCHIVE}"
+        echo -e "Installing Go ${CROWSNEST_GOLANG_VERSION} ... [OK]"
         echo -en "Setup GOPATH and add 'go' to PATH ...\r"
+        if [ ! -d "${HOME}/golang" ]; then
+            mkdir -p "${HOME}"/golang
+        fi
         if [ ! -f "${HOME}/.gorc" ]; then
             cp file_templates/.gorc "${HOME}"
             echo -e "\n# Add Go Variables to profile\nsource ${HOME}/.gorc\n" >> \
@@ -178,9 +182,12 @@ function install_go {
             # shellcheck disable=SC1091
             source "${HOME}/.profile"
         fi
+        # Make sure PATH is set during installation
+        export PATH=${PATH}:/usr/local/go/bin
+        export GOPATH=${HOME}/golang
         echo -e "Setup GOPATH and add to PATH ... [OK]"
     else
-        echo -e "$(go version) is already installed ... [skipping]"
+        echo -e "$(go version) is already installed ... [SKIPPED]"
     fi
 }
 
@@ -223,6 +230,24 @@ function install_crowsnest {
     echo -en "Enable webcamd.service on boot ...\r"
     sudo systemctl enable webcamd.service
     echo -e "Enable webcamd.service on boot ... [OK]\r"
+    echo -en "Add User ${BASE_USER} to group 'video' ...\r"
+    if [ "$(groups | grep -c video)" == "0" ]; then
+        sudo usermod -aG video "${BASE_USER}" > /dev/null
+        echo -e "Add User ${BASE_USER} to group 'video' ... [OK]"
+    else
+        echo -e "Add User ${BASE_USER} to group 'video' ... [SKIPPED]"
+        echo -e "==> User ${BASE_USER} is already in group 'video'"
+    fi
+}
+
+# Make sure submodules are initialized
+function sub_init {
+    if [ ! -f "${HOME}/crowsnest/bin/ustreamer/Makefile" ] ||
+    [ ! -f "${HOME}/crowsnest/bin/RTSPtoWebRTC/main.go" ]; then
+        echo -en "Submodules are not initialized ..."
+        git submodule update --init > /dev/null
+        echo -e "Submodules are not initialized ... [OK]"
+    fi
 }
 
 function build_apps {
@@ -241,6 +266,8 @@ function install_raspicam_fix {
     sudo cp file_templates/bcm2835-v4l2.conf /etc/modprobe.d/
 }
 
+function
+
 #### MAIN
 install_cleanup_trap
 import_config
@@ -249,6 +276,7 @@ detect_existing_webcamd
 echo -e "Running apt update first ..."
 sudo apt update
 install_crowsnest
+sub_init
 build_apps
 install_raspicam_fix
 goodbye_msg

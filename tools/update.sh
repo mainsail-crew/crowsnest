@@ -199,10 +199,10 @@ function uninstall_ustreamer {
 }
 # Install funcs
 function install_go {
-    echo -e "\nDependency Check: Go 1.17.5"
-    if [ "$(go version | awk '{print $3}')" != "go1.17.5" ]; then
+    local sha256sum
+    if [ ! -d /usr/local/go ] ||
+    [ "$(go version | awk '{print $3}')" != "go1.17.5" ]; then
         echo -e "Dependency: Go ${CROWSNEST_GOLANG_VERSION} not installed."
-        echo -e "Installing Go ${CROWSNEST_GOLANG_VERSION} ..."
         echo -en "Download Go ${CROWSNEST_GOLANG_VERSION} (${CROWSNEST_GOLANG_URL})... \r"
         curl --silent -JLo /tmp/"${CROWSNEST_GOLANG_ARCHIVE}" \
         "${CROWSNEST_GOLANG_URL}${CROWSNEST_GOLANG_ARCHIVE}"
@@ -217,8 +217,13 @@ function install_go {
             echo -e "Goodbye..."
             exit 1
         fi
+        echo -en "Installing Go ${CROWSNEST_GOLANG_VERSION} ...\r"
         sudo tar -C "${CROWSNEST_GOLANG_GO_BIN}" -xf "/tmp/${CROWSNEST_GOLANG_ARCHIVE}"
+        echo -e "Installing Go ${CROWSNEST_GOLANG_VERSION} ... [OK]"
         echo -en "Setup GOPATH and add 'go' to PATH ...\r"
+        if [ ! -d "${HOME}/golang" ]; then
+            mkdir -p "${HOME}"/golang
+        fi
         if [ ! -f "${HOME}/.gorc" ]; then
             cp file_templates/.gorc "${HOME}"
             echo -e "\n# Add Go Variables to profile\nsource ${HOME}/.gorc\n" >> \
@@ -226,9 +231,22 @@ function install_go {
             # shellcheck disable=SC1091
             source "${HOME}/.profile"
         fi
+        # Make sure PATH is set during installation
+        export PATH=${PATH}:/usr/local/go/bin
+        export GOPATH=${HOME}/golang
         echo -e "Setup GOPATH and add to PATH ... [OK]"
     else
-        echo -e "$(go version) is already installed ... [skipping]"
+        echo -e "$(go version) is already installed ... [SKIPPED]"
+    fi
+}
+
+# Make sure submodules are initialized
+function sub_init {
+    if [ ! -f "${HOME}/crowsnest/bin/ustreamer/Makefile" ] ||
+    [ ! -f "${HOME}/crowsnest/bin/RTSPtoWebRTC/main.go" ]; then
+        echo -en "Submodules are not initialized ..."
+        git submodule update --init > /dev/null
+        echo -e "Submodules are not initialized ... [OK]"
     fi
 }
 
@@ -264,6 +282,7 @@ copy_service
 copy_logrotate
 copy_raspicam_fix
 install_go
+sub_init
 build_apps
 start_webcamd
 goodbye_msg

@@ -9,10 +9,10 @@
 if [ -d /usr/local/go ]; then
     export PATH=$PATH:/usr/local/go/bin
 fi
-if [ ! -d $HOME/golang ]; then
-    mkdir -p $HOME/golang
+if [ -d $HOME/golang ]; then
     export GOPATH=$HOME/golang
 else
+    mkdir -p $HOME/golang
     export GOPATH=$HOME/golang
 fi
 
