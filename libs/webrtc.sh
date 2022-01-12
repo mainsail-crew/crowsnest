@@ -49,7 +49,7 @@ function generate_config {
     head[4]='\n    "ice_credential": ""\n  },\n  "streams": {'
     echo -e "${head[*]}" > "${tmp}"
     for i in "${cnf_cm[@]}"; do
-        c=$((${c}+1))
+        c=$((c +1))
         stream[0]="    \"${i}\": {"
         stream[1]="\n      \"on_demand\": false,"
         stream[2]="\n      \"disable_audio\": true,"
