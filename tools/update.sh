@@ -154,7 +154,7 @@ function copy_logrotate {
     if [ ! "${BASE_USER}" == "pi" ]; then
         cp -rf "${origin}" /tmp/logrotate_webcamd
         sudo sed -i 's|pi|'"${BASE_USER}"'|g' /tmp/webcamd.service
-        servicefile="/tmp/logrotate_webcamd"
+        logrotatefile="/tmp/logrotate_webcamd"
     else
         logrotatefile="${HOME}/crowsnest/file_templates/logrotate_webcamd"
     fi
