@@ -4,7 +4,7 @@
 
 #### webcamd - A webcam Service for multiple Cams and Stream Services.
 ####
-#### written by Stephan Wendel aka KwadFan
+#### Written by Stephan Wendel aka KwadFan <me@stephanwe.de>
 #### Copyright 2021
 #### https://github.com/mainsail-crew/crowsnest
 ####
@@ -48,7 +48,8 @@ function list_cam_formats {
 # Determine connected "raspicam" device
 function detect_raspicam {
     local avail
-    if [ "$(cut -d ' ' -f1 < /proc/device-tree/model)" = "Raspberry" ]; then
+    if [ -f /proc/device-tree/model ] &&
+    grep -a "Raspberry" /proc/device-tree/model -eq 0 ; then
         avail="$(vcgencmd get_camera | awk -F '=' '{ print $3 }')"
     else
         avail="0"
@@ -56,3 +57,25 @@ function detect_raspicam {
     echo "${avail}"
 }
 
+function dev_is_raspicam {
+    v4l2-ctl --list-devices |  grep -A1 -e 'mmal' | \
+    awk 'NR==2 {print $1}'
+}
+
+# Determine if cam has H.264 Hardware encoder
+# call detect_h264 <nameornumber> ex.: detect_h264 foobar
+# returns 1 = true / 0 = false ( numbers are strings! not int!)
+function detect_h264 {
+    local dev
+    dev="$(get_param "cam ${1}" device)"
+    v4l2-ctl -d "${dev}" --list-formats-ext | grep -c "[hH]264"
+}
+
+# Determine if cam has MJPEG Hardware encoder
+# call detect_mjpeg <nameornumber> ex.: detect_mjpeg foobar
+# returns 1 = true / 0 = false ( numbers are strings! not int!)
+function detect_mjpeg {
+    local dev
+    dev="$(get_param "cam ${1}" device)"
+    v4l2-ctl -d "${dev}" --list-formats-ext | grep -c "Motion-JPEG, compressed"
+}

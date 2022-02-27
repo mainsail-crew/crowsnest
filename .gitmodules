@@ -1,0 +1,6 @@
+[submodule "bin/ustreamer"]
+	path = bin/ustreamer
+	url = https://github.com/pikvm/ustreamer
+	branch = master
+    ignore = untracked
+

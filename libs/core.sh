@@ -4,7 +4,7 @@
 
 #### webcamd - A webcam Service for multiple Cams and Stream Services.
 ####
-#### written by Stephan Wendel aka KwadFan
+#### Written by Stephan Wendel aka KwadFan <me@stephanwe.de>
 #### Copyright 2021
 #### https://github.com/mainsail-crew/crowsnest
 ####
@@ -74,6 +74,34 @@ function check_dep {
     fi
 }
 
+function check_apps {
+    local paths
+    paths=(
+        bin/ustreamer/ustreamer
+        bin/rtsp-simple-server/rtsp-simple-server
+        )
+    for chk in "${paths[@]}"; do
+        if [ -x "${BASE_CN_PATH}/${chk}" ]; then
+            log_msg "Dependency: '$(echo "${chk}" | cut -d '/' -f3)' found in ${chk}."
+        else
+            log_msg "Dependency: '$(echo "${chk}" | cut -d '/' -f3)' not found. Exiting!"
+            exit 1
+        fi
+    done
+}
+
+# checks availability of OpenMax IL feature on host and in apps.
+# 0 = false / 1 = true
+function check_omx {
+    if [ -d "/opt/vc/include" ] &&
+    [ ! "$(ffmpeg -hide_banner -buildconf | grep -c 'omx')" = "0" ] &&
+    [ "$("${BASE_CN_PATH}"/bin/ustreamer/ustreamer --features | grep -c '\+ WITH_OMX')" = "1" ]; then
+        echo "1"
+    else
+        echo "0"
+    fi
+}
+
 # Check all needed Dependencies
 # If pass print your set configfile to log.
 # print_cfg, see libs/logging.sh L#75
@@ -83,9 +111,9 @@ function initial_check {
     check_dep "crudini"
     check_dep "find"
     check_dep "logger"
-    check_dep "ustreamer"
-    check_dep "v4l2rtspserver"
     check_dep "xargs"
+    check_dep "ffmpeg"
+    check_apps
     # check_dep "rtsp-simple-server" # Stay for later use.
     if [ -z "$(check_cfg "${WEBCAMD_CFG}")" ]; then
         if [ "$(log_level)" != "quiet" ]; then

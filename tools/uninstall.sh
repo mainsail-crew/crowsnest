@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
-# Crow's Nest
-# A multiple Cam and Stream Service for mainsailOS
-# Written by Stephan Wendel aka KwadFan
-# Copyright 2021
-# https://github.com/mainsail-crew/crowsnest
-# GPL V3
-# Version 1.1
-########
+#### webcamd - A webcam Service for multiple Cams and Stream Services.
+####
+#### Written by Stephan Wendel aka KwadFan <me@stephanwe.de>
+#### Copyright 2021
+#### https://github.com/mainsail-crew/crowsnest
+####
+#### This File is distributed under GPLv3
+####
 
-# shellcheck enable=requires-variable-braces
+# shellcheck enable=require-variable-braces
 
 ## Exit on Error
 set -e
@@ -76,10 +76,11 @@ function ask_uninstall {
         if [ "${remove}" = "YES" ]; then
             sudo echo -e "\nPlease enter your password!"
             uninstall_crowsnest
-            uninstall_ustreamer
             uninstall_v4l2rtsp
-            uninstall_rtspsimple
+            # go unsinstaller is deprecated will be removed in future
+            uninstall_go
             remove_raspicam_fix
+            remove_logrotate
             goodbye_msg
         else
             echo -e "\nYou answered '${remove}'! Uninstall will be aborted..."
@@ -109,35 +110,7 @@ function uninstall_crowsnest {
     echo -e "Uninstalling webcamd.service...[OK]\r"
 }
 
-function uninstall_ustreamer {
-    local bin_path bin_dump_path ustreamer_dir
-    bin_path="/usr/local/bin/ustreamer"
-    bin_dump_path="/usr/local/bin/ustreamer-dump"
-    ustreamer_dir="${HOME}/ustreamer"
-    if [ -d "${ustreamer_dir}" ]; then
-        echo -en "Uninstalling ustreamer ...\r"
-        if [ -x "${bin_path}" ] && [ -x "${bin_dump_path}" ]; then
-            sudo rm -f "${bin_path}" "${bin_dump_path}"
-        fi
-        sudo rm -rf "${ustreamer_dir}"
-        echo -e "Uninstalling ustreamer ... [OK]\r"
-    fi
-}
-
-function uninstall_rtspsimple {
-    local bin_path rtspsimple_dir
-    bin_path="/usr/local/bin/rtsp-simple-server"
-    rtspsimple_dir="${HOME}/rtsp-simple-server"
-    if [ -d "${rtspsimple_dir}" ]; then
-        echo -en "Uninstalling 'rtsp-simple-server' ...\r"
-        if [ -x "${bin_path}" ]; then
-            sudo rm -f "${bin_path}"
-        fi
-        sudo rm -rf "${rtspsimple_dir}"
-        echo -e "Uninstalling 'rtsp-simple-server' ... [OK]\r"
-    fi
-}
-
+#obsolete will be removed in future
 function uninstall_v4l2rtsp {
     local bin_path v4l2rtsp_dir
     bin_path="/usr/local/bin/v4l2rtspserver"
@@ -152,10 +125,39 @@ function uninstall_v4l2rtsp {
     fi
 }
 
+#obsolete will be removed in future
+function uninstall_go {
+    if [ -n "$(whereis -b go | awk '{print $2}')" ]; then
+        echo -e "\nFound $(go version)\n"
+    else
+        echo -e "No Version of Go Lang found ... [SKIPPED]"
+    fi
+    if  [ -d "/usr/local/go" ] && [ -f "${HOME}/.gorc" ]; then
+        sudo rm -rf "$(whereis -b go | awk '{print $2}')"
+        rm -f "${HOME}/.gorc"
+        sudo rm -rf "${HOME}/golang"
+        sed -i '/# Add Go/d;/.gorc/d' "${HOME}/.profile"
+        echo -e "\nUninstall complete!"
+    fi
+}
+
 function remove_raspicam_fix {
-    echo -en "Removing Raspicam Fix ...\r"
-    sudo sed -i '/bcm2835/d' /etc/modules
-    echo -e "Removing Raspicam Fix ... [OK]"
+    if [ -f /proc/device-tree/model ] &&
+    grep -q "Raspberry" /proc/device-tree/model ; then
+        echo -en "Removing Raspicam Fix ...\r"
+        sudo sed -i '/bcm2835/d' /etc/modules
+        sudo rm -f /etc/modprobe.d/bcm2835-v4l2.conf
+        echo -e "Removing Raspicam Fix ... [OK]"
+    else
+        echo -e "This is not a Raspberry Pi!"
+        echo -e "Removing Raspicam Fix ... [SKIPPED]"
+    fi
+}
+
+function remove_logrotate {
+    echo -en "Removing Logrotate Rule ...\r"
+    sudo rm -f /etc/logrotate.d/webcamd
+    echo -e "Removing Logrotate Rule ... [OK]"
 }
 
 #### MAIN

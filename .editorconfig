@@ -1,17 +1,45 @@
 # Editor Config
 # This should help contributors and save time for my sometimes cheesy Brain xD
-# Stephan Wendel <me@stephanwe.de>
 
-[*.sh]
+#### webcamd - A webcam Service for multiple Cams and Stream Services.
+####
+#### Written by Stephan Wendel aka KwadFan <me@stephanwe.de>
+#### Copyright 2021
+#### https://github.com/mainsail-crew/crowsnest
+####
+#### This File is distributed under GPLv3
+####
+
+root = true
+
+[*]
 charset = utf-8
 end_of_line = lf
+trim_trailing_whitespace = true
 insert_final_newline = true
+max_line_length = 125
 indent_style = space
 indent_size = 4
-trim_trailing_whitespace = true
 
-[*.md]
-charset = utf-8
+[*.sh]
+# According to Linux Kernel line lenght.
+# Try to stay at max lenght of 80 characters
+max_line_length = 100
+
+[*.{md,markdown}]
 insert_final_newline = true
-end_of_line = lf
-trim_trailing_whitespace = true
+trim_trailing_whitespace = false
+
+[{Makefile,**.mk}]
+indent_style = tab
+
+[*.{json,yml,yaml}]
+indent_style = space
+indent_size = 2
+
+# HTML related
+[*.{html,css,js}]
+indent_style = space
+indent_size = 2
+
+

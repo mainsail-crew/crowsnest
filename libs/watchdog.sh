@@ -4,7 +4,7 @@
 
 #### webcamd - A webcam Service for multiple Cams and Stream Services.
 ####
-#### written by Stephan Wendel aka KwadFan
+#### Written by Stephan Wendel aka KwadFan <me@stephanwe.de>
 #### Copyright 2021
 #### https://github.com/mainsail-crew/crowsnest
 ####
@@ -52,11 +52,11 @@ function webcamd_watchdog {
 
     function get_conf_devices {
         local gcd
-    for i in $(crudini --existing=file --get "${WEBCAMD_CFG}" | \
-    sed '/webcamd/d' | cut -d ' ' -f2); do
+        for i in $(crudini --existing=file --get "${WEBCAMD_CFG}" | \
+        sed '/webcamd/d' | cut -d ' ' -f2); do
         gcd+=("${i}")
-    done
-    echo "${gcd[@]}"
+        done
+        echo "${gcd[@]}"
     }
 
     ### MAIN

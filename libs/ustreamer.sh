@@ -4,7 +4,7 @@
 
 #### webcamd - A webcam Service for multiple Cams and Stream Services.
 ####
-#### written by Stephan Wendel aka KwadFan
+#### Written by Stephan Wendel aka KwadFan <me@stephanwe.de>
 #### Copyright 2021
 #### https://github.com/mainsail-crew/crowsnest
 ####
@@ -16,48 +16,49 @@
 # Exit upon Errors
 set -e
 
+function run_mjpg {
+    local cams
+    cams="${1}"
+    for instance in ${cams} ; do
+        run_ustreamer "${instance}" &
+    done
+}
 
 function run_ustreamer {
-    local cam_section ustreamer_bin device port resolution fps custom
-    local raspicam start_param wwwroot
-    cam_section="${1}"
-    ustreamer_bin="$(whereis ustreamer | awk '{print $2}')"
-    device="$(get_param "cam ${cam_section}" device)"
-    port=$(get_param "cam ${cam_section}" port)
-    resolution=$(get_param "cam ${cam_section}" resolution)
-    fps=$(get_param "cam ${cam_section}" max_fps)
-    custom="$(get_param "cam ${cam_section}" custom_flags 2> /dev/null)"
-    raspicam="$(v4l2-ctl --list-devices |  grep -A1 -e 'mmal' | \
-    awk 'NR==2 {print $1}')"
-    check_section "${cam_section}"
-    wwwroot="${BASE_CN_PATH}/ustreamer-www"
+    local cam_sec ust_bin dev pt res fps cstm start_param
+    cam_sec="${1}"
+    ust_bin="${BASE_CN_PATH}/bin/ustreamer/ustreamer"
+    dev="$(get_param "cam ${cam_sec}" device)"
+    pt=$(get_param "cam ${cam_sec}" port)
+    res=$(get_param "cam ${cam_sec}" resolution)
+    fps=$(get_param "cam ${cam_sec}" max_fps)
+    cstm="$(get_param "cam ${cam_sec}" custom_flags 2> /dev/null)"
+    # construct start parameter
+    start_param=( --host 127.0.0.1 -p "${pt}" )
     #Raspicam Workaround
-    if [ "${device}" == "${raspicam}" ]; then
-        start_param=(
-                    --host 127.0.0.1 -p "${port}" -m MJPEG --device-timeout=5
-                    --buffers=3 -r "${resolution}" -f "${fps}" --allow-origin=\*
-                    --static "${wwwroot}"
-                    )
+    if [ "${dev}" = "$(dev_is_raspicam)" ]; then
+        start_param+=( -m MJPEG --device-timeout=5 --buffers=3 )
     else
-        start_param=(
-                    -d "${device}" -r "${resolution}" -f "${fps}"
-                    --host 127.0.0.1 -p "${port}" --allow-origin=\*
-                    --device-timeout=2 --static "${wwwroot}"
-                    )
+        start_param+=( -d "${dev}" --device-timeout=2 )
     fi
-    # Custom Flag Handling
-    if [ -n "${custom}" ]; then
-        start_param+=("${custom}")
+    start_param+=( -r "${res}" -f "${fps}" )
+    # Use MJPEG Hardware encoder if possible
+    if [ "$(detect_mjpeg "${cam_sec}")" = "1" ]; then
+        start_param+=( -m MJPEG --encoder=HW )
     fi
-    log_msg "Starting ustreamer with Device ${device} ..."
+    # webroot & allow crossdomain requests
+    start_param+=( --allow-origin=\* --static "${BASE_CN_PATH}/ustreamer-www" )
+    # Custom Flag Handling (append to defaults)
+    if [ -n "${cstm}" ]; then
+        start_param+=( "${cstm}" )
+    fi
+    # Log start_param
+    log_msg "Starting ustreamer with Device ${dev} ..."
     echo "Parameters: ${start_param[*]}" | \
-    log_output "ustreamer [cam ${cam_section}]"
-    # Ustreamer is designed to run even if the device is not ready or readable.
-    # I dont like that! ustreamer has to exit if Cam isnt there.
-    if [ -e "${device}" ]; then
-        echo "${start_param[*]}" | xargs "${ustreamer_bin}" 2>&1 | \
-        log_output "ustreamer [cam ${cam_section}]"
-    else
-        log_msg "ERROR: Start of ustreamer [cam ${cam_section}] failed!"
-    fi
+    log_output "ustreamer [cam ${cam_sec}]"
+    # Start ustreamer
+    echo "${start_param[*]}" | xargs "${ust_bin}" 2>&1 | \
+    log_output "ustreamer [cam ${cam_sec}]"
+    # Should not be seen else failed.
+    log_msg "ERROR: Start of ustreamer [cam ${cam_sec}] failed!"
 }

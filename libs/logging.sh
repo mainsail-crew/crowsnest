@@ -4,7 +4,7 @@
 
 #### webcamd - A webcam Service for multiple Cams and Stream Services.
 ####
-#### written by Stephan Wendel aka KwadFan
+#### Written by Stephan Wendel aka KwadFan <me@stephanwe.de>
 #### Copyright 2021
 #### https://github.com/mainsail-crew/crowsnest
 ####
@@ -36,10 +36,10 @@ function log_level {
 }
 
 function delete_log {
-    local devel logfile
+    local del_log logfile
     logfile="$(get_param "webcamd" log_path | sed "s#^~#${HOME}#gi")"
-    devel="$(get_param "webcamd" delete_log 2> /dev/null)"
-    if [ "${devel}" = "true" ]; then
+    del_log="$(get_param "webcamd" delete_log 2> /dev/null)"
+    if [ "${del_log}" = "true" ]; then
         rm -rf "${logfile}"
     fi
 }
@@ -54,6 +54,9 @@ function log_msg {
     #Workaround: Make Dir if not exist
     if [ ! -d "${logfile}" ]; then
         mkdir -p "$(dirname "${logfile}")"
+    fi
+    if [ ! -f "${logfile}" ]; then
+        touch "${logfile}"
     fi
     echo -e "${prefix} ${msg}" | tr -s ' ' >> "${logfile}" 2>&1
     echo -e "${msg}" | logger -t webcamd
@@ -104,4 +107,18 @@ function print_cams {
             list_cam_formats "${raspicam}"
         fi
     fi
+}
+
+function debug_msg {
+    local msg logfile prefix
+    msg="${1}"
+    prefix="$(date +'[%D %T]') webcamd: DEBUG:"
+    #Workaround sed ~ to BASH VAR $HOME
+    logfile="$(get_param webcamd log_path | sed "s#^~#${HOME}#gi")"
+    #Workaround: Make Dir if not exist
+    if [ ! -d "${logfile}" ]; then
+        mkdir -p "$(dirname "${logfile}")"
+    fi
+    echo -e "${prefix} ${msg}" | tr -s ' ' >> "${logfile}" 2>&1
+    echo -e "${msg}" | logger -t webcamd
 }

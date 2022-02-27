@@ -4,7 +4,7 @@
 
 #### webcamd - A webcam Service for multiple Cams and Stream Services.
 ####
-#### written by Stephan Wendel aka KwadFan
+#### Written by Stephan Wendel aka KwadFan <me@stephanwe.de>
 #### Copyright 2021
 #### https://github.com/mainsail-crew/crowsnest
 ####
@@ -28,7 +28,6 @@ function v4l2_control {
             device="$(get_param "cam ${cam}" device)"
             # get v4l2ctl parameters
             v4l2ctl="$(get_param "cam ${cam}" v4l2ctl)"
-
             # if not empty do
             if [ -n "${v4l2ctl}" ]; then
                 # Write configured options to Log

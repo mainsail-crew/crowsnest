@@ -4,13 +4,12 @@
 
 #### webcamd - A webcam Service for multiple Cams and Stream Services.
 ####
-#### written by Stephan Wendel aka KwadFan
+#### Written by Stephan Wendel aka KwadFan <me@stephanwe.de>
 #### Copyright 2021
 #### https://github.com/mainsail-crew/crowsnest
 ####
 #### This File is distributed under GPLv3
 ####
-#### Version 3
 
 # shellcheck enable=require-variable-braces
 
@@ -28,7 +27,7 @@ source "${BASE_CN_PATH}/libs/hwhandler.sh"
 source "${BASE_CN_PATH}/libs/init_stream.sh"
 source "${BASE_CN_PATH}/libs/logging.sh"
 source "${BASE_CN_PATH}/libs/messages.sh"
-source "${BASE_CN_PATH}/libs/v4l2rtspserver.sh"
+source "${BASE_CN_PATH}/libs/rtspsimple.sh"
 source "${BASE_CN_PATH}/libs/ustreamer.sh"
 source "${BASE_CN_PATH}/libs/v4l2_control.sh"
 source "${BASE_CN_PATH}/libs/watchdog.sh"

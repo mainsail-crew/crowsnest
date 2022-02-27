@@ -16,9 +16,9 @@ So, this will be the 'lookout point' for your Printer.
 ### Install on Raspberry Pi OS
 
     cd ~
-    git clone https://github.com/mainsail-crew/crowsnest.git
-    cd crowsnest
-    ./install.sh
+    git clone --recurse-submodules https://github.com/mainsail-crew/crowsnest.git
+    cd ~/crowsnest
+    make install
 
 _This is not tested on other Distributions. If you test that on other Distributions,\
 feel free to open a Pull Request to enhance Documentation._
@@ -34,10 +34,27 @@ to your moonraker.conf, to get latest and possibly greatest Features.
 
 ### To unsinstall 'crowsnest'
 
-    cd crowsnest
-    ./uninstall.sh
+    cd ~/crowsnest
+    make uninstall
 
-###
+### To manually update 'crowsnest'
+
+Normally, you can update via moonraker's Update Manager.
+Sometimes manual intervention is needed! See commit messages.
+
+    cd ~/crowsnest
+    make update
+
+### Are there more options?
+
+Yes.
+
+    cd ~/crowsnest
+    make
+
+or
+
+    make help
 
 ## _NOTE: This project has WIP Status! Changes may occure and possibly break things!_
 
@@ -58,7 +75,7 @@ By default it look like this:
     log_level: quiet
 
     [cam 1]
-    streamer: ustreamer
+    mode: mjpg
     port: 8080
     device: /dev/video0
     resolution: 640x480
@@ -175,30 +192,24 @@ Now the more interessting part.
 
 This section should be pretty much self explantory.
 
-    streamer: ustreamer
+    mode: mjpg
 
-means your choosen streamservice will be mjpg_streamer.\
+means your choosen streamservice will be ustreamer with the well known mjpg-protocol.\
 You can choose:
 
-- ustreamer - A streamserver from Pi-KVM Project\
-  active maintained by [Maxim Devaev](https://github.com/mdevaev)\
-  [ustreamer on github](https://github.com/pikvm/ustreamer)
+    mode: rtsp
 
-- rtsp - v4l2rtspserver with Multiprotocol Support\
-  active maintained by [Michel Promonet](https://github.com/mpromonet) \
-  [v4l2rtspserver on github](https://github.com/mpromonet/v4l2rtspserver)
-
-More Services will come in the (hopefully, near) future.
+This let you use external viewer like vlc for example.
+_NOTE: There will be no preview in your Browser!_
 
 ---
 
     port: 8080
 
-The port where the choosen service will listen on\
-**_NOTE: If you choose 'rtsp' use Port 8554!_**
+This will only affect the used port of ustreamer.
 
-**_NOTE: Ports 8080 - 8084 are covered by nginx reverse proxy! \
-According to that 8080 will be /webcam, port 8081 will be /webcam1 and so on._**
+**_NOTE: Ports 8080 - 8084 are covered by nginx reverse proxy in MainsailOS \
+According to that 8080 will be /webcam, port 8081 will be /webcam2 and so on._**
 
 ---
 
@@ -214,11 +225,13 @@ So, you can easily copy it from there.
 ---
 
     resolution: 640x480
+
+Your desired FPS Settings has to match what your Camera able to deliver!
+_NOTE: For the most part ignored in rtsp mode!_
+
     max_fps: 15
 
-This last 2 should be pretty obvious :)
-
-As the last option:\
+This last option only affects ustreamer:\
 This needs some to read further Information.
 
     custom_flags:
@@ -227,16 +240,13 @@ If you enable this in your [cam whatevernameyouset],\
 you can add parameters according to your needs.\
 Those will be appended to the default/preconfigured parameters.
 
-To setup Services to your need you have to take a closer look to the documentation of the Projects named above.\
+To setup Services to your need you have to take a closer look to the documentation of the Project.\
 As a pointer in the right direction:
 
-- ustreamer
+-   ustreamer
 
-  - For sake of simplicity I converted ustreamers manpage to
-    [ustreamer's manpage](./ustreamer_manpage.md)
-
-- v4l2rtspserver
-  - Please visit [v4l2rtspserver Usage](https://github.com/mpromonet/v4l2rtspserver#usage)\
+    -   For sake of simplicity I converted ustreamers manpage to
+        [ustreamer's manpage](./ustreamer_manpage.md)
 
 ---
 
@@ -297,6 +307,21 @@ further Informations.
 
 ---
 
+## What 'Backends' uses crowsnest?
+
+-   ustreamer - A streamserver from Pi-KVM Project\
+    active maintained by [Maxim Devaev](https://github.com/mdevaev)\
+    [ustreamer on github](https://github.com/pikvm/ustreamer)
+
+-   rtsp-simple-server
+
+    -   This server provides rtsp streams and more\
+        at this point of development are only 'rtsp' features enabled\
+        More features are planned.
+        [rtsp-simple-server](https://github.com/aler9/rtsp-simple-server) is written in Go by [aler9](https://github.com/aler9)
+
+---
+
 ## Credits
 
 I want to give a huge shoutout to _lixxbox_ and _alexz_ from the mainsail-crew.\
@@ -309,7 +334,9 @@ Thanks to [Pedro Lamas](https://github.com/pedrolamas), for the ISSUE_TEMPLATES.
 
 ---
 
-![Mainsail Logo](https://raw.githubusercontent.com/meteyou/mainsail/master/docs/assets/img/logo.png)
+<p align="center">
+<img src="https://raw.githubusercontent.com/meteyou/mainsail/master/docs/assets/img/logo.png">
+</p>
 
 **So, with all that said, get your position seaman! Prepare to get wet feets on your Journey.**
 
