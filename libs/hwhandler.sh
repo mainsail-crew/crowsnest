@@ -49,7 +49,7 @@ function list_cam_formats {
 function detect_raspicam {
     local avail
     if [ -f /proc/device-tree/model ] &&
-    grep -a "Raspberry" /proc/device-tree/model -eq 0 ; then
+    grep -q "Raspberry" /proc/device-tree/model; then
         avail="$(vcgencmd get_camera | awk -F '=' '{ print $3 }')"
     else
         avail="0"
