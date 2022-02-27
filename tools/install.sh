@@ -194,6 +194,9 @@ function install_crowsnest {
     ## Copy logrotate
     echo -en "Linking logrotate file ...\r"
     sudo cp -rf "${logrotatefile}" /etc/logrotate.d/webcamd
+    if [ ! "${BASE_USER}" == "pi" ]; then
+        sudo sed -i 's|pi|'"${BASE_USER}"'|g' /etc/logrotate.d/webcamd
+    fi
     echo -e "Linking logrotate file ... [OK]\r"
     echo -en "Reload systemd to enable new deamon ...\r"
     sudo systemctl daemon-reload

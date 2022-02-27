@@ -11,6 +11,7 @@
 # shellcheck enable=requires-variable-braces
 
 # Global Vars
+BASE_USER=$(whoami)
 TITLE="crowsnest - A Webcam Daemon for Raspberry Pi OS"
 
 ### Non root
@@ -126,7 +127,13 @@ function import_config {
 function copy_service {
     local servicefile origin
     origin="/etc/systemd/system/webcamd.service"
-    servicefile="${HOME}/crowsnest/file_templates/webcamd.service"
+    if [ ! "${BASE_USER}" == "pi" ]; then
+        cp -rf "${origin}" /tmp/webcamd.service
+        sudo sed -i 's|pi|'"${BASE_USER}"'|g' /tmp/webcamd.service
+        servicefile="/tmp/webcamd.service"
+    else
+        servicefile="${HOME}/crowsnest/file_templates/webcamd.service"
+    fi
     if [ "$(compare_files "${origin}" "${servicefile}")" -eq 1 ]; then
         echo -en "Copying webcamd.service file ...\r"
         sudo cp -rf "${servicefile}" "${origin}" > /dev/null
@@ -135,12 +142,22 @@ function copy_service {
     else
         echo -e "No update of '${origin}' required."
     fi
+    # Clean Temp File
+    if [ -f /tmp/webcamd.service ]; then
+        sudo rm -f /tmp/webcamd.service
+    fi
 }
 
 function copy_logrotate {
     local logrotatefile origin
     origin="/etc/logrotate.d/webcamd"
-    logrotatefile="${HOME}/crowsnest/file_templates/logrotate_webcamd"
+    if [ ! "${BASE_USER}" == "pi" ]; then
+        cp -rf "${origin}" /tmp/logrotate_webcamd
+        sudo sed -i 's|pi|'"${BASE_USER}"'|g' /tmp/webcamd.service
+        servicefile="/tmp/logrotate_webcamd"
+    else
+        logrotatefile="${HOME}/crowsnest/file_templates/logrotate_webcamd"
+    fi
     if [ "$(compare_files "${origin}" "${logrotatefile}")" -eq 1 ]; then
         echo -en "Copying logrotate file ...\r"
         sudo cp -rf "${logrotatefile}" "${origin}" > /dev/null
