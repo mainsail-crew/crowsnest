@@ -14,6 +14,7 @@
 BASE_USER=$(whoami)
 TITLE="crowsnest - A Webcam Daemon for Raspberry Pi OS"
 
+
 ### Non root
 if [ ${UID} == '0' ]; then
     echo -e "DO NOT RUN THIS SCRIPT AS ROOT!\nExiting..."
@@ -271,10 +272,47 @@ function build_apps {
         make all
         popd > /dev/null || exit 1
     else
-        echo -e "All Apps are present ... [skipped]"
+        echo -e "All Apps are present ... [OK]"
+        update_ustreamer
+        update_rtsp
     fi
 }
 
+function update_ustreamer {
+    local sm_version us_version
+    sm_version="$(cd bin/ustreamer && git describe --always --tags | sed 's/^v//')"
+    us_version="$(bin/ustreamer/ustreamer -v)"
+    echo -en "Checking ustreamer Version ${sm_version} ... \r"
+    if [ "${sm_version}" == "${us_version}" ]; then
+        echo -e "Checking ustreamer Version ${us_version} ... [SKIPPED]"
+        echo -e "\t==> Version match, no update needed."
+    else
+        echo -e "Checking ustreamer Version ${sm_version} ... [UPDATE]"
+        echo -e "\t==> Version (${us_version}) mismatch, update needed."
+        pushd bin/ &> /dev/null || exit 1
+        make ustreamer
+        popd &> /dev/null || exit 1
+        echo -e "Ustreamer Update ... [OK]"
+    fi
+}
+
+function update_rtsp {
+    local dl_version rtsp_version
+    dl_version="$(cat bin/rtsp-simple-server/version)"
+    rtsp_version="$(bin/rtsp-simple-server/rtsp-simple-server --version)"
+    echo -en "Checking rtsp-simple-server Version ... \r"
+    if [ "${dl_version}" == "${rtsp_version}" ]; then
+        echo -e "Checking rtsp-simple-server Version ${dl_version} ... [SKIPPED]"
+        echo -e "\t==> Version match, no update needed."
+    else
+        echo -e "Checking rtsp-simple-server Version ... [UPDATE]"
+        echo -e "\t==> Version (${rtsp_version}) mismatch, update needed."
+        pushd bin/ &> /dev/null || exit 1
+        make rtsp
+        popd &> /dev/null || exit 1
+        echo -e "rtsp-simple-server Update ... [OK]"
+    fi
+}
 
 
 #### MAIN
