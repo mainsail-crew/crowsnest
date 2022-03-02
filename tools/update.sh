@@ -241,9 +241,6 @@ function uninstall_rtsp2webrtc {
         echo -e "Removing RTSPtoWebRTC ..."
         sudo rm -rf "${HOME}/crowsnest/bin/RTSPtoWebRTC"
         echo -e "Removing RTSPtoWebRTC ... [OK]"
-    else
-        echo -e "Removing RTSPtoWebRTC ... [SKIPPED]"
-        echo -e "RTSPtoWebRTC not installed ..."
     fi
 }
 
