@@ -179,7 +179,7 @@ If you enable that option, everytime you restart, your existing log file will be
 Now the more interessting part.
 
     [cam 1]
-    streamer: ustreamer
+    mode: mjpg
     port: 8080
     device: /dev/video0
     resolution: 640x480
