@@ -18,136 +18,28 @@ set -e
 source /common.sh
 install_cleanup_trap
 
-### Module Specific functions
-
-function copy_config {
-  echo_green "Copying Default configuration File to ${CROWSNEST_DEFAULT_CONF_DIR}"
-  sudo -u "${BASE_USER}" cp sample_configs/${CROWSNEST_DEFAULT_CONF} "${CROWSNEST_DEFAULT_CONF_DIR}"/webcam.conf
-}
-
-## Check Dependencies, install if not installed
-
+echo_green "Installing crowsnest and enable webcam Service ..."
+# install dependencies
 apt_update_skip
-check_install_pkgs ${CROWSNEST_DEPS}
-
+check_install_pkgs ${CROWSNEST_CROWSNEST_DEPS}
 # Move to $HOME dir
-cd /home/${BASE_USER}
-
-### Install crowsnest
-## Clone Repo
+pushd /home/${BASE_USER}
+# make sure config folder exist
+if [ ! -d "${CROWSNEST_DEFAULT_CONF_DIR}" ]; then
+    mkdir -p "${CROWSNEST_DEFAULT_CONF_DIR}"
+fi
+# clone Repo
+echo_green "Clone crowsnest repository ..."
 gitclone CROWSNEST_CROWSNEST_REPO crowsnest
-
-# Check succsessfull clone.
-if [ -d "/home/${BASE_USER}/crowsnest" ]; then
-  pushd /home/${BASE_USER}/crowsnest > /dev/null
-  if [ -d "$CROWSNEST_DEFAULT_CONF_DIR" ]; then
-    copy_config
-  else
-    echo_red "${CROWSNEST_DEFAULT_CONF_DIR} does not exist!"
-    echo_green "Creating ${CROWSNEST_DEFAULT_CONF_DIR}."
-    sudo -u ${BASE_USER} mkdir -p ${CROWSNEST_DEFAULT_CONF_DIR}
-    copy_config
-  fi
-  # Create symlink to webcamd script in /usr/local/bin
-  echo_green "Create Sym Link to ${PWD}/webcamd in /usr/local/bin ..."
-  sudo ln -sf $PWD/webcamd /usr/local/bin/
-
-  # Add webcamd to moonraker.conf
-  if [ "${CROWSNEST_MOONRAKER_SUPPORT}" = "y" ]; then
-    echo_green "Add webcamd (crowsnest) to Moonraker's Update Manager"
-    # Make sure moonraker.conf exists
-    if [ -f "${CROWSNEST_DEFAULT_CONF_DIR}/moonraker.conf" ]; then
-      echo -e "\n" >> ${CROWSNEST_DEFAULT_CONF_DIR}/moonraker.conf
-      while read -r line; do
-        echo -e "${line}" >> ${CROWSNEST_DEFAULT_CONF_DIR}/moonraker.conf
-      done < "$PWD/file_templates/moonraker_update.txt"
-      echo -e "\n" >> ${CROWSNEST_DEFAULT_CONF_DIR}/moonraker.conf
-    else
-      echo_red "File 'moonraker.conf' does not exist. [SKIPPING]"
-    fi
-  else
-    echo_red "Moonraker's Update Manager Support disabled [SKIPPING]"
-  fi
-  ### Install Service
-  echo_green "Copying webcamd.service file \
-  to '/etc/systemd/system/webcamd.service'.. "
-  cp -p file_templates/webcamd.service /etc/systemd/system/
-  ## Make sure raspicam become /dev/video0 Workaround
-  sudo sh -c 'echo "bcm2835-v4l2" >> /etc/modules'
-  ## Enable systemd service
-  echo_green "Enable webcamd.service ..."
-  systemctl_if_exists enable webcamd.service
-  popd > /dev/null
+# install crowsnest
+pushd /home/${BASE_USER}/crowsnest
+echo_green "Running crowsnest installer ..."
+sudo -u ${BASE_USER} make install
+# add update manager section to moonraker.conf
+if [ -f "/home/${BASE_USER}/klipper_config/moonraker.conf" ] &&
+[ "${CROWSNEST_MOONRAKER_SUPPORT}" == "y" ]; then
+    cat file_templates/moonraker_update.txt | \
+    sudo -u ${BASE_USER} tee -a /home/${BASE_USER}/klipper_config/moonraker.conf
 fi
-
-### Install ustreamer
-echo_green "Installing ustreamer ..."
-### Clone and compile ustreamer
-echo_green "Cloning ustreamer Sources."
-gitclone CROWSNEST_USTREAMER_REPO ustreamer
-echo_green "Installing ustreamer Dependencies."
-check_install_pkgs ${CROWSNEST_USTREAMER_DEPS}
-## Compile ustreamer
-echo_green "Compiling ustreamer"
-pushd ustreamer > /dev/null
-if [ "${CROWSNEST_USTREAMER_WITH_OMX}" = "y" ] && \
-  [ "${CROWSNEST_USTREAMER_WITH_GPIO}" = "y" ]; then
-  echo_green "Compile ustreamer with OMX and GPIO Support..."
-  WITH_OMX=1 WITH_GPIO=1 make -j $(nproc)
-elif [ "${CROWSNEST_USTREAMER_WITH_OMX}" = "y" ] && \
-  [ "${CROWSNEST_USTREAMER_WITH_GPIO}" = "n" ]; then
-  echo_green "Compile ustreamer with OMX Support..."
-  WITH_OMX=1 make -j $(nproc)
-else
-  echo_green "Compile ustreamer without OMX and GPIO Support..."
-  make -j $(nproc)
-fi
-popd > /dev/null
-
-## Create sym links
-echo_green "Creating sym links..."
-sudo ln -sf $PWD/ustreamer/ustreamer /usr/local/bin/
-sudo ln -sf $PWD/ustreamer/ustreamer-dump /usr/local/bin/
-# Finished
-echo_green "Successful installed ustreamer."
-
-### Stay for possibly later use.
-# ### Install rtsp-simple-server
-# echo_green "Installing 'rtsp-simple-server' ..."
-# # Install Dependencies
-# echo_green "Installing 'rtsp-simple-server' Dependencies ..."
-# check_install_pkgs "${CROWSNEST_RTSPSIMPLE_DEPS}"
-# # Download Release Binary
-# echo_green "Download 'rtsp-simple-server' ..."
-# curl -o /tmp/rtsp-simple-server.tar.gz -L "${CROWSNEST_SIMPLERTSP_RELEASE}"
-# sudo -u ${BASE_USER} mkdir -p "${CROWSNEST_RTSPSIMPLE_DIR}"
-# sudo -u ${BASE_USER} tar xfz /tmp/rtsp-simple-server.tar.gz -C "${CROWSNEST_RTSPSIMPLE_DIR}"
-# ## Create sym links
-# echo_green "Creating sym links..."
-# sudo ln -sf ${CROWSNEST_RTSPSIMPLE_DIR}/rtsp-simple-server /usr/local/bin/
-# # Finished
-# echo_green "Successful installed 'rtsp-simple-server'."
-
-### Install v4l2rtspserver
-echo_green "Installing v4l2rtspserver ..."
-### Clone and compile v4l2rtspserver
-echo_green "Cloning v4l2rtspserver Sources."
-gitclone CROWSNEST_V4L2RTSP_REPO v4l2rtspserver
-echo_green "Installing v4l2rtspserv Dependencies."
-check_install_pkgs ${CROWSNEST_V4L2RTSP_DEPS}
-## Compile v4l2rtspserver
-echo_green "Compiling v4l2rtspserver"
-pushd v4l2rtspserver > /dev/null
-cmake -j $(nproc) . && make -j $(nproc)
-popd > /dev/null
-
-## Create sym links
-echo_green "Creating sym links..."
-sudo ln -sf $PWD/v4l2rtspserver/v4l2rtspserver /usr/local/bin/
-# Finished
-echo_green "Successful installed v4l2rtspserver."
-
-### Final Cleanup
-apt clean --yes
-apt autoclean --yes
-apt autoremove --purge --yes
+popd
+popd
