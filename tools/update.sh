@@ -126,10 +126,11 @@ function import_config {
 
 # Copy Files funcs
 function copy_service {
-    local servicefile origin
+    local servicefile template origin
     origin="/etc/systemd/system/webcamd.service"
     if [ ! "${BASE_USER}" == "pi" ]; then
-        cp -rf "${origin}" /tmp/webcamd.service
+        template="${HOME}/crowsnest/file_templates/webcamd.service"
+        cp -rf "${template}" /tmp/webcamd.service
         sudo sed -i 's|pi|'"${BASE_USER}"'|g' /tmp/webcamd.service
         servicefile="/tmp/webcamd.service"
     else
@@ -150,11 +151,12 @@ function copy_service {
 }
 
 function copy_logrotate {
-    local logrotatefile origin
+    local logrotatefile template origin
     origin="/etc/logrotate.d/webcamd"
     if [ ! "${BASE_USER}" == "pi" ]; then
-        cp -rf "${origin}" /tmp/logrotate_webcamd
-        sudo sed -i 's|pi|'"${BASE_USER}"'|g' /tmp/webcamd.service
+        template="${HOME}/crowsnest/file_templates/logrotate_webcamd"
+        cp -rf "${template}" /tmp/webcamd
+        sudo sed -i 's|pi|'"${BASE_USER}"'|g' /tmp/webcamd
         logrotatefile="/tmp/logrotate_webcamd"
     else
         logrotatefile="${HOME}/crowsnest/file_templates/logrotate_webcamd"
@@ -165,6 +167,10 @@ function copy_logrotate {
         echo -e "Copying logrotate file ... [OK]\r"
     else
         echo -e "No update of '${origin}' required."
+    fi
+    # Clean Temp File
+    if [ -f /tmp/webcamd ]; then
+        sudo rm -f /tmp/webcamd
     fi
 }
 
