@@ -157,7 +157,7 @@ function copy_logrotate {
         template="${HOME}/crowsnest/file_templates/logrotate_webcamd"
         cp -rf "${template}" /tmp/webcamd
         sudo sed -i 's|pi|'"${BASE_USER}"'|g' /tmp/webcamd
-        logrotatefile="/tmp/logrotate_webcamd"
+        logrotatefile="/tmp/webcamd"
     else
         logrotatefile="${HOME}/crowsnest/file_templates/logrotate_webcamd"
     fi
