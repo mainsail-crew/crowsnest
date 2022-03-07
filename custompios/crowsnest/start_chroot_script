@@ -20,26 +20,36 @@ install_cleanup_trap
 
 echo_green "Installing crowsnest and enable webcam Service ..."
 # install dependencies
-apt_update_skip
+# force apt update
+apt update
 check_install_pkgs ${CROWSNEST_CROWSNEST_DEPS}
 # Move to $HOME dir
-pushd /home/${BASE_USER}
-# make sure config folder exist
-if [ ! -d "${CROWSNEST_DEFAULT_CONF_DIR}" ]; then
-    mkdir -p "${CROWSNEST_DEFAULT_CONF_DIR}"
-fi
-# clone Repo
-echo_green "Clone crowsnest repository ..."
-gitclone CROWSNEST_CROWSNEST_REPO crowsnest
-# install crowsnest
-pushd /home/${BASE_USER}/crowsnest
-echo_green "Running crowsnest installer ..."
-sudo -u ${BASE_USER} make install
-# add update manager section to moonraker.conf
-if [ -f "/home/${BASE_USER}/klipper_config/moonraker.conf" ] &&
-[ "${CROWSNEST_MOONRAKER_SUPPORT}" == "y" ]; then
-    cat file_templates/moonraker_update.txt | \
-    sudo -u ${BASE_USER} tee -a /home/${BASE_USER}/klipper_config/moonraker.conf
-fi
-popd
-popd
+pushd /home/${BASE_USER} &> /dev/null || exit 1
+    # make sure config folder exist
+    if [ ! -d "${CROWSNEST_DEFAULT_CONF_DIR}" ]; then
+        sudo -u "${BASE_USER}" mkdir -p "${CROWSNEST_DEFAULT_CONF_DIR}"
+    fi
+    # clone Repo
+    echo_green "Clone crowsnest repository ..."
+    gitclone CROWSNEST_CROWSNEST_REPO crowsnest
+    # install crowsnest
+    pushd /home/${BASE_USER}/crowsnest &> /dev/null || exit 1
+    echo_green "Running crowsnest installer ..."
+    sudo -u "${BASE_USER}" make install
+    # add update manager section to moonraker.conf
+    if [ -f "/home/${BASE_USER}/klipper_config/moonraker.conf" ] &&
+    [ "${CROWSNEST_MOONRAKER_SUPPORT}" == "y" ]; then
+        sudo -u ${BASE_USER} \
+        sh -c 'echo -e "\n" >> /home/$(whoami)/klipper_config/moonraker.conf'
+        sudo -u ${BASE_USER} \
+        sh -c 'cat file_templates/moonraker_update.txt \
+        >> /home/$(whoami)/klipper_config/moonraker.conf'
+    fi
+    if [ "${CROWSNEST_FORCE_RASPICAMFIX}" == "y" ]; then
+        echo -en "Applying Raspicam Fix ... \r"
+        sudo sh -c 'echo "bcm2835-v4l2" >> /etc/modules'
+        sudo cp file_templates/bcm2835-v4l2.conf /etc/modprobe.d/
+        echo -e "Applying Raspicam Fix ... [OK]"
+    fi
+    popd &> /dev/null || exit 1
+popd &> /dev/null || exit 1
