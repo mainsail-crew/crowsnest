@@ -87,17 +87,15 @@ function print_cfg {
 }
 
 function print_cams {
-    local count raspicam total
-    count="$(find /dev/v4l/by-id/ 2> /dev/null | sed '1d;1~2d' | wc -l)"
-    total="$((count+$(detect_raspicam)))"
+    local csi raspicam total v4l
+    v4l="$(find /dev/v4l/by-id/ -iname "*index0" 2> /dev/null | wc -l)"
+    csi="$(find /dev/v4l/by-path/ -iname "*csi*index0" 2> /dev/null | wc -l)"
+    total="$((v4l+$(detect_raspicam)+csi))"
     if [ "${total}" -eq 0 ]; then
-        log_msg "ERROR: No usable Cameras Found. Stopping $(basename "${0}")."
+        log_msg "ERROR: No usable Devices Found. Stopping $(basename "${0}")."
         exit 1
     else
-        log_msg "INFO: Found ${total} available Camera(s)"
-    fi
-    if [ -d "/dev/v4l/by-id/" ]; then
-        detect_avail_cams
+        log_msg "INFO: Found ${total} total available Device(s)"
     fi
     if [ "$(detect_raspicam)" -ne 0 ]; then
         raspicam="$(v4l2-ctl --list-devices |  grep -A1 -e 'mmal' | \
@@ -106,6 +104,12 @@ function print_cams {
         if [ ! "$(log_level)" = "quiet" ]; then
             list_cam_formats "${raspicam}"
         fi
+    fi
+    if [ -d "/dev/v4l/by-id/" ]; then
+        detect_avail_cams
+    fi
+    if [ -d "/dev/v4l/by-path" ]; then
+        detect_avail_csi
     fi
 }
 

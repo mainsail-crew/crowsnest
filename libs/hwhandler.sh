@@ -19,18 +19,36 @@ set -e
 ### Detect Hardware
 function detect_avail_cams {
     local avail realpath
-    avail="$(find /dev/v4l/by-id/ 2> /dev/null | sort -n | sed '1d;1~2d')"
-    if [ -d "/dev/v4l/by-id/" ]; then
-        echo "${avail}" | while read -r i; do
-            realpath=$(readlink -e "${i}")
-            log_msg "${i} -> ${realpath}"
+    avail="$(find /dev/v4l/by-id/ -iname "*index0" 2> /dev/null)"
+    count="$(echo "${avail}" | wc -l)"
+    if [ -d "/dev/v4l/by-id/" ] &&
+    [ -n "${avail}" ]; then
+        log_msg "INFO: Found ${count} available camera(s)"
+        echo "${avail}" | while read -r v4l; do
+            realpath=$(readlink -e "${v4l}")
+            log_msg "${v4l} -> ${realpath}"
             if [ "$(log_level)" != "quiet" ]; then
-                list_cam_formats "${i}"
+                list_cam_formats "${v4l}"
             fi
         done
     else
-        log_msg "ERROR: No usable Cameras found. Exiting."
-        exit 1
+        log_msg "INFO: No usable Cameras found."
+    fi
+}
+
+function detect_avail_csi {
+    local avail count realpath
+    avail="$(find /dev/v4l/by-path/ -iname "*csi*index0" 2> /dev/null)"
+    count="$(echo "${avail}" | wc -l)"
+    if [ -d "/dev/v4l/by-path/" ] &&
+    [ -n "${avail}" ]; then
+        log_msg "INFO: Found ${count} available csi device(s)"
+        echo "${avail}" | while read -r csi; do
+            realpath=$(readlink -e "${csi}")
+            log_msg "${csi} -> ${realpath}"
+        done
+    else
+        log_msg "INFO: No usable CSI Devices found."
     fi
 }
 

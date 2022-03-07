@@ -122,6 +122,6 @@ function initial_check {
     fi
     # in systemd show always config file
     logger -t webcamd -f "${WEBCAMD_CFG}"
-    log_msg "INFO: Detect available Cameras"
+    log_msg "INFO: Detect available Devices"
     print_cams
 }
