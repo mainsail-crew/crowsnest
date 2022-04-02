@@ -282,15 +282,33 @@ to your camera setup section. \
 Restart webcamd via mainsail (or your used UI) and you're good to go.
 
 To determine which options or better said parameters your Webcam provides, \
-login to your Pi via ssh and type
+add to your
 
-    v4l2-ctl -d <yourdevice> -L
+    [webcamd]
 
-_Note: Replace \<yourdevice> with the according string. ex.:_
+section, simply
 
-    v4l2-ctl -d /dev/video0 -L
+    log_v4l2ctrls: true
 
-This will show you a list with available options.
+This will show you a list with available options. Like this:
+
+    [04/02/22 15:07:44] webcamd: Supported Controls:
+    [04/02/22 15:07:44] webcamd: 		brightness 0x00980900 (int) : min=1 max=255 step=1 default=128 value=128
+    [04/02/22 15:07:44] webcamd: 		contrast 0x00980901 (int) : min=1 max=255 step=1 default=128 value=128
+    [04/02/22 15:07:44] webcamd: 		saturation 0x00980902 (int) : min=1 max=255 step=1 default=128 value=128
+    [04/02/22 15:07:44] webcamd: 		white_balance_temperature_auto 0x0098090c (bool) : default=1 value=1
+    [04/02/22 15:07:44] webcamd: 		gain 0x00980913 (int) : min=1 max=100 step=1 default=50 value=50
+    [04/02/22 15:07:45] webcamd: 		power_line_frequency 0x00980918 (menu) : min=0 max=2 default=1 value=1
+    [04/02/22 15:07:45] webcamd: 		0: Disabled
+    [04/02/22 15:07:45] webcamd: 		1: 50 Hz
+    [04/02/22 15:07:45] webcamd: 		2: 60 Hz
+    [04/02/22 15:07:45] webcamd: 		white_balance_temperature 0x0098091a (int) : min=2800 max=6500 step=1 default=4650 value=4650 flags=inactive
+    [04/02/22 15:07:45] webcamd: 		sharpness 0x0098091b (int) : min=1 max=255 step=1 default=128 value=128
+    [04/02/22 15:07:45] webcamd: 		exposure_auto 0x009a0901 (menu) : min=0 max=3 default=0 value=0
+    [04/02/22 15:07:45] webcamd: 		0: Auto Mode
+    [04/02/22 15:07:45] webcamd: 		2: Shutter Priority Mode
+    [04/02/22 15:07:46] webcamd: 		exposure_absolute 0x009a0902 (int) : min=5 max=2500 step=1 default=5 value=5 flags=inactive
+    [04/02/22 15:07:46] webcamd: 		exposure_auto_priority 0x009a0903 (bool) : default=0 value=0
 
 You have to "play around" with those settings if it matches your needs.
 simply repeat the commands as mentioned earlier in your ssh connection.

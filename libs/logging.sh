@@ -14,7 +14,7 @@
 # shellcheck enable=require-variable-braces
 
 # Exit upon Errors
-set -e
+set -eE
 
 ## Logging
 function init_log_entry {
@@ -33,6 +33,10 @@ function log_level {
     else
         echo "${loglevel}"
     fi
+}
+
+function log_v4l2ctrls {
+    get_param webcamd log_v4l2ctrls 2> /dev/null || echo "false"
 }
 
 function delete_log {
@@ -103,6 +107,9 @@ function print_cams {
         log_msg "Detected 'Raspicam' Device -> ${raspicam}"
         if [ ! "$(log_level)" = "quiet" ]; then
             list_cam_formats "${raspicam}"
+        fi
+        if [ "$(log_v4l2ctrls)" == "true" ]; then
+            list_cam_v4l2ctrls "${raspicam}"
         fi
     fi
     if [ -d "/dev/v4l/by-id/" ]; then

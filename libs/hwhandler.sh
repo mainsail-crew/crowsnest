@@ -14,7 +14,7 @@
 # shellcheck enable=require-variable-braces
 
 # Exit upon Errors
-set -e
+set -eE
 
 ### Detect Hardware
 function detect_avail_cams {
@@ -29,6 +29,9 @@ function detect_avail_cams {
             log_msg "${v4l} -> ${realpath}"
             if [ "$(log_level)" != "quiet" ]; then
                 list_cam_formats "${v4l}"
+            fi
+            if [ "$(log_v4l2ctrls)" == "true" ]; then
+                list_cam_v4l2ctrls "${v4l}"
             fi
         done
     else
@@ -54,11 +57,21 @@ function detect_avail_csi {
 
 # Used for "verbose" and "debug" logging in logging.sh
 function list_cam_formats {
-    local device
+    local device formats
     device="${1}"
     formats="$(v4l2-ctl -d "${device}" --list-formats-ext | sed '1,3d')"
     log_msg "Supported Formats:"
     echo "${formats}" | while read -r i; do
+        log_msg "\t\t${i}"
+    done
+}
+
+function list_cam_v4l2ctrls {
+    local device ctrls
+    device="${1}"
+    ctrls="$(v4l2-ctl -d "${device}" --list-ctrls-menus)"
+    log_msg "Supported Controls:"
+    echo "${ctrls}" | while read -r i; do
         log_msg "\t\t${i}"
     done
 }
