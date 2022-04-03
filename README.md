@@ -281,14 +281,9 @@ Simply add
 to your camera setup section. \
 Restart webcamd via mainsail (or your used UI) and you're good to go.
 
-To determine which options or better said parameters your Webcam provides, \
-add to your
+To determine which options or better said parameters your Webcam provides, set at least
 
-    [webcamd]
-
-section, simply
-
-    log_v4l2ctrls: true
+    log_level: verbose
 
 This will show you a list with available options. Like this:
 

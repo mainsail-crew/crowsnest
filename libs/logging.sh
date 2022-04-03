@@ -14,7 +14,7 @@
 # shellcheck enable=require-variable-braces
 
 # Exit upon Errors
-set -eE
+set -Ee
 
 ## Logging
 function init_log_entry {
@@ -35,10 +35,6 @@ function log_level {
     fi
 }
 
-function log_v4l2ctrls {
-    get_param webcamd log_v4l2ctrls 2> /dev/null || echo "false"
-}
-
 function delete_log {
     local del_log logfile
     logfile="$(get_param "webcamd" log_path | sed "s#^~#${HOME}#gi")"
@@ -47,7 +43,6 @@ function delete_log {
         rm -rf "${logfile}"
     fi
 }
-
 
 function log_msg {
     local msg logfile prefix
@@ -107,8 +102,6 @@ function print_cams {
         log_msg "Detected 'Raspicam' Device -> ${raspicam}"
         if [ ! "$(log_level)" = "quiet" ]; then
             list_cam_formats "${raspicam}"
-        fi
-        if [ "$(log_v4l2ctrls)" == "true" ]; then
             list_cam_v4l2ctrls "${raspicam}"
         fi
     fi

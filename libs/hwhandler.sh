@@ -14,7 +14,7 @@
 # shellcheck enable=require-variable-braces
 
 # Exit upon Errors
-set -eE
+set -Ee
 
 ### Detect Hardware
 function detect_avail_cams {
@@ -29,8 +29,6 @@ function detect_avail_cams {
             log_msg "${v4l} -> ${realpath}"
             if [ "$(log_level)" != "quiet" ]; then
                 list_cam_formats "${v4l}"
-            fi
-            if [ "$(log_v4l2ctrls)" == "true" ]; then
                 list_cam_v4l2ctrls "${v4l}"
             fi
         done
