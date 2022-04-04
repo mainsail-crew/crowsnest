@@ -66,6 +66,7 @@ init_log_entry
 initial_check
 v4l2_control
 construct_streamer
+brokenfocus
 
 ## Loop and Watchdog
 ## In this case watchdog acts more like a "cable defect detector"

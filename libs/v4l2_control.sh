@@ -16,7 +16,7 @@
 # shellcheck enable=require-variable-braces
 
 # Exit upon Errors
-set -e
+set -eE
 
 function v4l2_control {
     log_msg "V4L2 Control:"
@@ -48,6 +48,9 @@ function v4l2_control {
                         v4l2-ctl -d "${device}" -c "${param}" 2> /dev/null
                     fi
                 done
+                    if [ "$(log_level)" == "debug" ]; then
+                        v4l2-ctl -d "${device}" -L | log_output "v4l2ctl"
+                    fi
             else
                 log_msg "No parameters set for [cam ${cam}]. Skipped."
             fi
@@ -56,4 +59,79 @@ function v4l2_control {
 
 ### MAIN
 main
+}
+
+function brokenfocus {
+
+    # call get_dev_id <device>
+    # ex.: get_dev_id /dev/v4l/by-id/mywierd-cam-index0
+    # spits out device id like lsusb
+    function get_dev_id {
+        local device uevent_path
+        device="$(realpath "${1}" | sed 's|/dev/||')"
+        uevent_path="/sys/class/video4linux/${device}/device/uevent"
+        grep "PRODUCT" "${uevent_path}" | cut -d'=' -f2 | awk -F'/' '{print $1":"$2}'
+    }
+
+    # checks if "focus_absolute" is configured
+    # call if_focus_absolute <mycamnameornumber>
+    # returns 1 = true, 0 = false
+    function if_focus_absolute {
+        local cam
+        cam="${1}"
+        get_param "cam ${cam}" v4l2ctl | grep -c "focus_absolute"
+    }
+
+    # call get_conf_value <mycamnameornumber>
+    # spits out value from config file
+    function get_conf_value {
+        local cam conf_val
+        local -a params
+        cam="${1}"
+        conf_val="$(get_param "cam ${cam}" v4l2ctl)"
+        if [ -n "${conf_val}" ]; then
+            IFS=','; read -ra params <<< "${conf_val}"
+            unset IFS
+            for i in "${params[@]}"; do
+                grep "focus_absolute" <<< "${i}" || true
+            done
+        fi
+    }
+
+    # call get_current_value <device>
+    # ex.: get_current_value /dev/video0
+    # spits out focus_absolute=20 ( if set to 20 )
+    function get_current_value {
+        v4l2-ctl -d "${1}" -C "focus_absolute" | sed 's/:[[:space:]]/=/'
+    }
+
+    # call set_current_value <device> <value>
+    # ex.: set_current_value /dev/video0 focus_absolute=30
+    function set_focus_absolute {
+        local device value
+        device="${1}"
+        value="${2}"
+        v4l2-ctl -d "${device}" -c "${value}"
+    }
+
+    function main {
+        local cur_val conf_val device
+        for cam in $(configured_cams); do
+            device="$(get_param "cam ${cam}" device)"
+            cur_val="$(get_current_value "${device}")"
+            conf_val="$(get_conf_value "${cam}")"
+            if [ "$(if_focus_absolute "${cam}")" == "1" ] &&
+            [ "${cur_val}" != "${conf_val}" ]; then
+                detected_broken_dev_msg
+                set_focus_absolute "${device}" "${conf_val}"
+            fi
+            if [ "$(log_level)" == "debug" ]; then
+                debug_focus_val_msg "$(get_current_value "${device}")"
+            fi
+        done
+    }
+
+### MAIN
+main
+
 }

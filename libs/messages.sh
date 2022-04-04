@@ -17,6 +17,8 @@
 set -e
 
 ## Message Helpers
+
+## core lib
 function missing_args_msg {
     echo -e "webcamd: Missing Arguments!"
     echo -e "\n\tTry: webcamd -h\n"
@@ -54,3 +56,15 @@ function provides_omx_msg {
     fi
 }
 
+
+## v4l2_control lib
+function detected_broken_dev_msg {
+    log_msg "WARN: Detected 'brokenfocus' device."
+    log_msg "INFO: Trying to set to configured Value."
+}
+
+# call debug_focus_val_msg <value>
+# ex.: debug_focus_val_msg focus_absolute=30
+function debug_focus_val_msg {
+    log_msg "DEBUG: Value is now: ${1}"
+}
