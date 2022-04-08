@@ -62,17 +62,6 @@ main
 }
 
 function brokenfocus {
-
-    # call get_dev_id <device>
-    # ex.: get_dev_id /dev/v4l/by-id/mywierd-cam-index0
-    # spits out device id like lsusb
-    function get_dev_id {
-        local device uevent_path
-        device="$(realpath "${1}" | sed 's|/dev/||')"
-        uevent_path="/sys/class/video4linux/${device}/device/uevent"
-        grep "PRODUCT" "${uevent_path}" | cut -d'=' -f2 | awk -F'/' '{print $1":"$2}'
-    }
-
     # checks if "focus_absolute" is configured
     # call if_focus_absolute <mycamnameornumber>
     # returns 1 = true, 0 = false
