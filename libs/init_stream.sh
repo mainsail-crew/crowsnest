@@ -45,6 +45,6 @@ function construct_streamer {
     if [ "${#RTSP_INSTANCES[@]}" != "0" ]; then
         run_rtsp "${RTSP_INSTANCES[*]}"
     fi
-    sleep 8 & sleep_pid="$!" ; wait "${sleep_pid}"
+    sleep 2 & sleep_pid="$!" ; wait "${sleep_pid}"
     log_msg " ... Done!"
 }

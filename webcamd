@@ -61,8 +61,7 @@ while getopts ":vhc:" arg; do
     esac
 done
 
-delete_log
-init_log_entry
+init_logging
 initial_check
 v4l2_control
 construct_streamer

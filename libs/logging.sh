@@ -17,7 +17,19 @@
 set -Ee
 
 ## Logging
-function init_log_entry {
+function set_log_path {
+    #Workaround sed ~ to BASH VAR $HOME
+    CROWSNEST_LOG_PATH=$(get_param webcamd log_path | sed "s#^~#${HOME}#gi")
+    declare -g CROWSNEST_LOG_PATH
+    #Workaround: Make Dir if not exist
+    if [ ! -d "$(dirname "${CROWSNEST_LOG_PATH}")" ]; then
+        mkdir -p "$(dirname "${CROWSNEST_LOG_PATH}")"
+    fi
+}
+
+function init_logging {
+    set_log_path
+    delete_log
     log_msg "webcamd - A webcam Service for multiple Cams and Stream Services."
     log_msg "Version: $(self_version)"
     log_msg "Prepare Startup ..."
@@ -36,28 +48,18 @@ function log_level {
 }
 
 function delete_log {
-    local del_log logfile
-    logfile="$(get_param "webcamd" log_path | sed "s#^~#${HOME}#gi")"
+    local del_log
     del_log="$(get_param "webcamd" delete_log 2> /dev/null)"
     if [ "${del_log}" = "true" ]; then
-        rm -rf "${logfile}"
+        rm -rf "${CROWSNEST_LOG_PATH}"
     fi
 }
 
 function log_msg {
-    local msg logfile prefix
+    local msg prefix
     msg="${1}"
     prefix="$(date +'[%D %T]') webcamd:"
-    #Workaround sed ~ to BASH VAR $HOME
-    logfile="$(get_param webcamd log_path | sed "s#^~#${HOME}#gi")"
-    #Workaround: Make Dir if not exist
-    if [ ! -d "${logfile}" ]; then
-        mkdir -p "$(dirname "${logfile}")"
-    fi
-    if [ ! -f "${logfile}" ]; then
-        touch "${logfile}"
-    fi
-    echo -e "${prefix} ${msg}" | tr -s ' ' >> "${logfile}" 2>&1
+    echo -e "${prefix} ${msg}" | tr -s ' ' >> "${CROWSNEST_LOG_PATH}" 2>&1
     echo -e "${msg}" | logger -t webcamd
 }
 
@@ -114,15 +116,10 @@ function print_cams {
 }
 
 function debug_msg {
-    local msg logfile prefix
-    msg="${1}"
-    prefix="$(date +'[%D %T]') webcamd: DEBUG:"
-    #Workaround sed ~ to BASH VAR $HOME
-    logfile="$(get_param webcamd log_path | sed "s#^~#${HOME}#gi")"
-    #Workaround: Make Dir if not exist
-    if [ ! -d "${logfile}" ]; then
-        mkdir -p "$(dirname "${logfile}")"
-    fi
-    echo -e "${prefix} ${msg}" | tr -s ' ' >> "${logfile}" 2>&1
-    echo -e "${msg}" | logger -t webcamd
+    local prefix
+    prefix="Develop -- DEBUG:"
+    while read -r msg; do
+        log_msg "${prefix}${msg}"
+        echo -e "${msg}" | logger -t webcamd
+    done <<< "${1}"
 }
