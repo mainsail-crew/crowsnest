@@ -114,7 +114,7 @@ function brokenfocus {
                 detected_broken_dev_msg
                 set_focus_absolute "${device}" "${conf_val}"
             fi
-            if [ "$(log_level)" == "debug" ]; then
+            if [ "$(log_level)" == "debug" ] && [ -n "${cur_val}" ]; then
                 debug_focus_val_msg "$(get_current_value "${device}")"
             fi
         done
