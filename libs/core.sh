@@ -114,7 +114,8 @@ function initial_check {
     check_dep "xargs"
     check_dep "ffmpeg"
     check_apps
-    # check_dep "rtsp-simple-server" # Stay for later use.
+    versioncontrol
+    # print cfg if ! log_level: quiet
     if [ -z "$(check_cfg "${WEBCAMD_CFG}")" ]; then
         if [ "$(log_level)" != "quiet" ]; then
             print_cfg

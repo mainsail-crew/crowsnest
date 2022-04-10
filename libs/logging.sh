@@ -119,7 +119,7 @@ function debug_msg {
     local prefix
     prefix="Develop -- DEBUG:"
     while read -r msg; do
-        log_msg "${prefix}${msg}"
+        log_msg "${prefix} ${msg}"
         echo -e "${msg}" | logger -t webcamd
     done <<< "${1}"
 }

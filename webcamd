@@ -30,6 +30,7 @@ source "${BASE_CN_PATH}/libs/messages.sh"
 source "${BASE_CN_PATH}/libs/rtspsimple.sh"
 source "${BASE_CN_PATH}/libs/ustreamer.sh"
 source "${BASE_CN_PATH}/libs/v4l2_control.sh"
+source "${BASE_CN_PATH}/libs/versioncontrol.sh"
 source "${BASE_CN_PATH}/libs/watchdog.sh"
 
 #### MAIN
