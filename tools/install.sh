@@ -11,7 +11,7 @@
 
 ## disabeld SC2086 for some lines because there we want 'word splitting'
 
-set -e
+set -Ee
 
 ## Debug
 # set -x

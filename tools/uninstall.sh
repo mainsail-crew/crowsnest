@@ -11,7 +11,7 @@
 # shellcheck enable=require-variable-braces
 
 ## Exit on Error
-set -e
+set -Ee
 
 ## Debug
 # set -x

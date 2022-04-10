@@ -14,7 +14,7 @@
 # shellcheck enable=require-variable-braces
 
 # Exit upon Errors
-set -e
+set -Ee
 
 ## Version of webcamd
 function self_version {
