@@ -79,7 +79,7 @@ function detect_raspicam {
     local avail
     if [ -f /proc/device-tree/model ] &&
     grep -q "Raspberry" /proc/device-tree/model; then
-        avail="$(vcgencmd get_camera | awk -F '=' '{ print $3 }')"
+        avail="$(vcgencmd get_camera | awk -F '=' '{ print $3 }' | cut -d',' -f1)"
     else
         avail="0"
     fi
