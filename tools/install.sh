@@ -201,7 +201,7 @@ function install_crowsnest {
         sudo sed -i 's|pi|'"${BASE_USER}"'|g' /etc/logrotate.d/webcamd
     fi
     echo -e "Linking logrotate file ... [OK]\r"
-    if [ "${UNATTENDED}" == "false" ]; then
+    if [ "${UNATTENDED}" == "false" ] && [ "$(stat -c %i /)" == "2" ]; then
         echo -en "Reload systemd to enable new deamon ...\r"
         sudo systemctl daemon-reload
         echo -e "Reload systemd to enable new daemon ... [OK]"
