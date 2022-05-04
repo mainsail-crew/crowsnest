@@ -157,12 +157,15 @@ function remove_existing_webcamd {
 }
 
 function install_crowsnest {
-    local template servicefile logrotatefile bin_path webcamd_bin
+    local bin_path logrotatefile moonraker_conf moonraker_update
+    local webcamd_bin servicefile template
     bin_path="/usr/local/bin"
     webcamd_bin="${HOME}/crowsnest/webcamd"
     template="${PWD}/sample_configs/${CROWSNEST_DEFAULT_CONF}"
     servicefile="${PWD}/file_templates/webcamd.service"
     logrotatefile="${HOME}/crowsnest/file_templates/logrotate_webcamd"
+    moonraker_conf="${HOME}/klipper_config/moonraker.conf"
+    moonraker_update="${PWD}/file_templates/moonraker_update.txt"
     echo -e "\nInstall webcamd Service ..."
     ## Install Dependencies
     echo -e "Installing 'crowsnest' Dependencies ..."
@@ -198,12 +201,19 @@ function install_crowsnest {
         sudo sed -i 's|pi|'"${BASE_USER}"'|g' /etc/logrotate.d/webcamd
     fi
     echo -e "Linking logrotate file ... [OK]\r"
-    echo -en "Reload systemd to enable new deamon ...\r"
-    sudo systemctl daemon-reload
-    echo -e "Reload systemd to enable new daemon ... [OK]"
-    echo -en "Enable webcamd.service on boot ...\r"
-    sudo systemctl enable webcamd.service
-    echo -e "Enable webcamd.service on boot ... [OK]\r"
+    if [ "${UNATTENDED}" == "false" ]; then
+        echo -en "Reload systemd to enable new deamon ...\r"
+        sudo systemctl daemon-reload
+        echo -e "Reload systemd to enable new daemon ... [OK]"
+        echo -en "Enable webcamd.service on boot ...\r"
+        sudo systemctl enable webcamd.service
+        echo -e "Enable webcamd.service on boot ... [OK]\r"
+    fi
+    if [ "${UNATTENDED}" == "true" ]; then
+        echo -en "Adding Crowsnest Update Manager entry to moonraker.conf ...\r"
+        cat "${moonraker_update}" >> "${moonraker_conf}"
+        echo -e "Adding Crowsnest Update Manager entry to moonraker.conf ... [OK]"
+    fi
     echo -en "Add User ${BASE_USER} to group 'video' ...\r"
     if [ "$(groups | grep -c video)" == "0" ]; then
         sudo usermod -aG video "${BASE_USER}" > /dev/null
@@ -248,6 +258,16 @@ function install_raspicam_fix {
 }
 
 #### MAIN
+while getopts "z" arg; do
+    case ${arg} in
+        z)
+            UNATTENDED="true"
+            ;;
+        *)
+            UNATTENDED="false"
+        ;;
+    esac
+done
 install_cleanup_trap
 import_config
 welcome_msg
