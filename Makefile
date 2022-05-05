@@ -33,16 +33,16 @@ help:
 	@echo ""
 
 install:
-	@bash -c tools/install.sh
+	@bash -c 'tools/install.sh'
 
 unattended:
-	@bash -c tools/install.sh -z
+	@bash -c 'tools/install.sh -z'
 
 uninstall:
-	@bash -c tools/uninstall.sh
+	@bash -c 'tools/uninstall.sh'
 
 update:
-	@bash -c tools/update.sh
+	@bash -c 'tools/update.sh'
 
 build:
 	@git submodule update

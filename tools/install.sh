@@ -211,7 +211,8 @@ function install_crowsnest {
     fi
     if [ "${UNATTENDED}" == "true" ]; then
         echo -en "Adding Crowsnest Update Manager entry to moonraker.conf ...\r"
-        cat "${moonraker_update}" >> "${moonraker_conf}"
+        cat "${moonraker_conf}" "${moonraker_update}" | \
+        tee "${moonraker_conf}" > /dev/null
         echo -e "Adding Crowsnest Update Manager entry to moonraker.conf ... [OK]"
     fi
     echo -en "Add User ${BASE_USER} to group 'video' ...\r"
@@ -261,6 +262,8 @@ function install_raspicam_fix {
 while getopts "z" arg; do
     case ${arg} in
         z)
+            echo "Running in UNATTENDED Mode ..."
+            set -x
             UNATTENDED="true"
             ;;
         *)
