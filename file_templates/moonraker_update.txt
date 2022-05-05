@@ -1,5 +1,5 @@
+
 [update_manager webcamd]
 type: git_repo
 path: ~/crowsnest
 origin: https://github.com/mainsail-crew/crowsnest.git
-
