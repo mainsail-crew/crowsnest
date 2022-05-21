@@ -142,7 +142,8 @@ function uninstall_go {
 }
 
 function remove_raspicam_fix {
-    if [ -f /proc/device-tree/model ] &&
+    if [ -f /etc/modprobe.d/bcm2835-v4l2.conf ] &&
+    [ -f /proc/device-tree/model ] &&
     grep -q "Raspberry" /proc/device-tree/model ; then
         echo -en "Removing Raspicam Fix ...\r"
         sudo sed -i '/bcm2835/d' /etc/modules

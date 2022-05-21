@@ -1,4 +1,5 @@
 
+# Crowsnest update_manager entry
 [update_manager webcamd]
 type: git_repo
 path: ~/crowsnest

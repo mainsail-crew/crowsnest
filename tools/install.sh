@@ -2,19 +2,17 @@
 # Crow's Nest
 # A multiple Cam and Stream Service for mainsailOS
 # Written by Stephan Wendel aka KwadFan <me@stephanwe.de>
-# Copyright 2021
+# Copyright 2021 - 2022
 # https://github.com/mainsail-crew/crowsnest
 # GPL V3
 ########
 
 # shellcheck enable=require-variable-braces
 
-## disabeld SC2086 for some lines because there we want 'word splitting'
+## disabled SC2086 for some lines because there we want 'word splitting'
 
+# Exit on errors
 set -Ee
-
-## Debug
-# set -x
 
 # Global Vars
 BASE_USER=$(whoami)
@@ -27,7 +25,7 @@ if [ ${UID} == '0' ]; then
 fi
 
 ### noninteractive Check
-if [ -z "${DEBIAN_FRONTEND}" ]; then
+if [ "${DEBIAN_FRONTEND}" != "noninteractive" ]; then
     export DEBIAN_FRONTEND=noninteractive
 fi
 
@@ -205,11 +203,12 @@ function install_crowsnest {
         echo -en "Reload systemd to enable new deamon ...\r"
         sudo systemctl daemon-reload
         echo -e "Reload systemd to enable new daemon ... [OK]"
-        echo -en "Enable webcamd.service on boot ...\r"
-        sudo systemctl enable webcamd.service
-        echo -e "Enable webcamd.service on boot ... [OK]\r"
     fi
-    if [ "${UNATTENDED}" == "true" ]; then
+    echo -en "Enable webcamd.service on boot ...\r"
+    sudo systemctl enable webcamd.service
+    echo -e "Enable webcamd.service on boot ... [OK]\r"
+    if [ "${CROWSNEST_ADD_CROWSNEST_MOONRAKER}" == "1" ] &&
+    [ -f "${moonraker_conf}" ]; then
         echo -en "Adding Crowsnest Update Manager entry to moonraker.conf ...\r"
         cat "${moonraker_conf}" "${moonraker_update}" | \
         tee "${moonraker_conf}" > /dev/null
@@ -262,7 +261,7 @@ function install_raspicam_fix {
 while getopts "z" arg; do
     case ${arg} in
         z)
-            echo "Running in UNATTENDED Mode ..."
+            echo "WARN: Running in UNATTENDED Mode ..."
             set -x
             UNATTENDED="true"
             ;;
@@ -274,13 +273,17 @@ done
 install_cleanup_trap
 import_config
 welcome_msg
-detect_existing_webcamd
+if [ "${UNATTENDED}" != "true" ]; then
+    detect_existing_webcamd
+fi
 echo -e "Running apt update first ..."
 sudo apt update
 install_crowsnest
 sub_init
 build_apps
-install_raspicam_fix
+if [ "${UNATTENDED}" != "true" ]; then
+    install_raspicam_fix
+fi
 goodbye_msg
 
 exit 0
