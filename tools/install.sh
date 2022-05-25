@@ -154,8 +154,9 @@ function remove_existing_webcamd {
     echo -e "webcam.txt kept,but no longer necessary ..."
 }
 
+
 function install_crowsnest {
-    local bin_path logrotatefile moonraker_conf moonraker_update
+    local addconf bin_path logrotatefile moonraker_conf moonraker_update
     local webcamd_bin servicefile template
     bin_path="/usr/local/bin"
     webcamd_bin="${HOME}/crowsnest/webcamd"
@@ -164,6 +165,13 @@ function install_crowsnest {
     logrotatefile="${HOME}/crowsnest/file_templates/logrotate_webcamd"
     moonraker_conf="${HOME}/klipper_config/moonraker.conf"
     moonraker_update="${PWD}/file_templates/moonraker_update.txt"
+    ## helper func moonraker update_manager
+    function add_update_entry {
+        sudo -u "${BASE_USER}" \
+        cp "${moonraker_conf}" "${moonraker_conf}.backup" &&
+        cat "${moonraker_conf}" "${moonraker_update}" > /tmp/moonraker.conf &&
+        cp -rf /tmp/moonraker.conf "${moonraker_conf}"
+    }
     echo -e "\nInstall webcamd Service ..."
     ## Install Dependencies
     echo -e "Installing 'crowsnest' Dependencies ..."
@@ -199,21 +207,40 @@ function install_crowsnest {
         sudo sed -i 's|pi|'"${BASE_USER}"'|g' /etc/logrotate.d/webcamd
     fi
     echo -e "Linking logrotate file ... [OK]\r"
+    ## update systemd if not unattended
     if [ "${UNATTENDED}" == "false" ] && [ "$(stat -c %i /)" == "2" ]; then
         echo -en "Reload systemd to enable new deamon ...\r"
         sudo systemctl daemon-reload
         echo -e "Reload systemd to enable new daemon ... [OK]"
     fi
+    ## enable webcamd.service
     echo -en "Enable webcamd.service on boot ...\r"
     sudo systemctl enable webcamd.service
     echo -e "Enable webcamd.service on boot ... [OK]\r"
-    if [ "${CROWSNEST_ADD_CROWSNEST_MOONRAKER}" == "1" ] &&
+    ## Add moonraker update manager entry
+    ## Unattended
+    if [ "${UNATTENDED}" == "true" ] &&
+    [ "${CROWSNEST_ADD_CROWSNEST_MOONRAKER}" == "1" ] &&
     [ -f "${moonraker_conf}" ]; then
         echo -en "Adding Crowsnest Update Manager entry to moonraker.conf ...\r"
-        cat "${moonraker_conf}" "${moonraker_update}" | \
-        tee "${moonraker_conf}" > /dev/null
+        add_update_entry
         echo -e "Adding Crowsnest Update Manager entry to moonraker.conf ... [OK]"
     fi
+    ## Manual install
+    if [ "${UNATTENDED}" != "true" ]; then
+        read -rp "Do you want to add [update_manager] entry?(y/n) " addconf
+        case "${addconf}" in
+            y*|Y*)
+                add_update_entry
+            ;;
+
+            n*|N*)
+                echo -e "Adding Crowsnest Update Manager entry to moonraker.conf ... [SKIPPED]"
+            ;;
+        esac
+    fi
+
+    ## add $USER to group video
     echo -en "Add User ${BASE_USER} to group 'video' ...\r"
     if [ "$(groups | grep -c video)" == "0" ]; then
         sudo usermod -aG video "${BASE_USER}" > /dev/null

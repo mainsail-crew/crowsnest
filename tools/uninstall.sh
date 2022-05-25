@@ -74,7 +74,6 @@ function ask_uninstall {
     if  [ -x "/usr/local/bin/webcamd" ] && [ -d "${HOME}/crowsnest" ]; then
         read -rp "Do you REALLY want to remove existing 'crowsnest'? (YES/NO) " remove
         if [ "${remove}" = "YES" ]; then
-            sudo echo -e "\nPlease enter your password!"
             uninstall_crowsnest
             uninstall_v4l2rtsp
             # go unsinstaller is deprecated will be removed in future
