@@ -171,6 +171,9 @@ function install_crowsnest {
         cp "${moonraker_conf}" "${moonraker_conf}.backup" &&
         cat "${moonraker_conf}" "${moonraker_update}" > /tmp/moonraker.conf &&
         cp -rf /tmp/moonraker.conf "${moonraker_conf}"
+        if [ "${UNATTENDED}" == "true" ]; then
+            sudo rm -f "${moonraker_conf}.backup"
+        fi
     }
     echo -e "\nInstall webcamd Service ..."
     ## Install Dependencies
