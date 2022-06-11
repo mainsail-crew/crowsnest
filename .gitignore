@@ -22,3 +22,6 @@ lost*
 # Ignore rtsp-simple-server binary
 bin/rtsp-simple-server/rtsp*
 bin/rtsp-simple-server/*.yml
+
+# Ignore Custom Config for Intsaller
+tools/config.local

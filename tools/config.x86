@@ -17,6 +17,8 @@ libxcomposite1 libxtst6"
 [ -n "$CROWSNEST_MOONRAKER_SUPPORT" ] || CROWSNEST_MOONRAKER_SUPPORT="y"
 
 # ustreamer
+[ -n "$CROWSNEST_USTREAMER_REPO_SHIP" ] || CROWSNEST_USTREAMER_REPO_SHIP=https://github.com/pikvm/ustreamer.git
+[ -n "$CROWSNEST_USTREAMER_REPO_BRANCH" ] || CROWSNEST_USTREAMER_REPO_BRANCH=master
 [ -n "$CROWSNEST_USTREAMER_DEPS" ] || CROWSNEST_USTREAMER_DEPS="git build-essential libevent-dev libjpeg-dev \
 libbsd-dev"
 [ -n "$CROWSNEST_USTREAMER_WITH_OMX" ] || CROWSNEST_USTREAMER_WITH_OMX="n"

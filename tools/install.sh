@@ -84,22 +84,47 @@ function err_exit {
 ### Init ERR Trap
 trap 'err_exit $? $LINENO' ERR
 
+## helper func
+## call get_os_version <keyword>
+function get_os_version {
+    if [ -n "${1}" ]; then
+        grep -c "${1}" /etc/os-release
+    fi
+}
+
 ### Import config from custompios.
 function import_config {
-    if [ "$(uname -m)" == "x86_64" ] &&
-    [ -f tools/x86_config ]; then
+    ## Source Custom config if present
+    if [ -s tools/config.local ]; then
         # shellcheck disable=SC1091
-        source tools/x86_config
-    else
-        if [ -f "${HOME}/crowsnest/custompios/crowsnest/config" ]; then
-            # shellcheck disable=SC1091
-            source custompios/crowsnest/config
-        else
-            echo -e "${TITLE}\n"
-            echo -e "OOPS!\nConfiguration File missing! Exiting..."
-            echo -e "Try to git clone a second time please ...\n"
-            exit 1
-        fi
+        source tools/config.local
+        return 0
+    fi
+
+    ## X86 machines
+    if [ "$(uname -m)" == "x86_64" ] &&
+    [ -f tools/config.x86 ]; then
+        # shellcheck disable=SC1091
+        source tools/config.x86
+        return 0
+    fi
+
+    ## rpi os buster
+    if [ "$(uname -m)" != "x86_64" ] &&
+    [ "$(get_os_version buster)" != "0" ] &&
+    [ -f "tools/config.buster" ]; then
+        # shellcheck disable=SC1091
+        source tools/config.buster
+        return 0
+    fi
+
+    ## rpi os bullseye
+    if [ "$(uname -m)" != "x86_64" ] &&
+    [ "$(get_os_version bullseye)" != "0" ] &&
+    [ -f "tools/config.bullseye" ]; then
+        # shellcheck disable=SC1091
+        source tools/config.bullseye
+        return 0
     fi
 }
 
@@ -167,12 +192,17 @@ function install_crowsnest {
     moonraker_update="${PWD}/file_templates/moonraker_update.txt"
     ## helper func moonraker update_manager
     function add_update_entry {
-        sudo -u "${BASE_USER}" \
-        cp "${moonraker_conf}" "${moonraker_conf}.backup" &&
-        cat "${moonraker_conf}" "${moonraker_update}" > /tmp/moonraker.conf &&
-        cp -rf /tmp/moonraker.conf "${moonraker_conf}"
-        if [ "${UNATTENDED}" == "true" ]; then
-            sudo rm -f "${moonraker_conf}.backup"
+        if [ -f "${moonraker_conf}" ]; then
+            echo -e "Adding [update_manager] entry ..."
+            sudo -u "${BASE_USER}" \
+            cp "${moonraker_conf}" "${moonraker_conf}.backup" &&
+            cat "${moonraker_conf}" "${moonraker_update}" > /tmp/moonraker.conf &&
+            cp -rf /tmp/moonraker.conf "${moonraker_conf}"
+            if [ "${UNATTENDED}" == "true" ]; then
+                sudo rm -f "${moonraker_conf}.backup"
+            fi
+        else
+            echo -e "moonraker.conf is missing ... [SKIPPED]"
         fi
     }
     echo -e "\nInstall webcamd Service ..."
@@ -230,7 +260,8 @@ function install_crowsnest {
         echo -e "Adding Crowsnest Update Manager entry to moonraker.conf ... [OK]"
     fi
     ## Manual install
-    if [ "${UNATTENDED}" != "true" ]; then
+    if [ "${UNATTENDED}" != "true" ] &&
+    [ "${CROWSNEST_ADD_CROWSNEST_MOONRAKER}" != "0" ]; then
         read -rp "Do you want to add [update_manager] entry?(y/n) " addconf
         case "${addconf}" in
             y*|Y*)
@@ -254,17 +285,27 @@ function install_crowsnest {
     fi
 }
 
-# Make sure submodules are initialized
-function sub_init {
-    if [ ! -f "${HOME}/crowsnest/bin/ustreamer/Makefile" ]; then
-        echo -e "Submodule is not initialized ..."
-        git submodule update --init > /dev/null
-        echo -e "Submodule is not initialized ... [OK]"
+function clone_ustreamer {
+    ## remove bin/ustreamer if exist
+    if [ -d bin/ustreamer ]; then
+        rm -rf bin/ustreamer
+    fi
+    git clone "${CROWSNEST_USTREAMER_REPO_SHIP}" \
+    -b "${CROWSNEST_USTREAMER_REPO_BRANCH}" bin/ustreamer
+    ## Buster workaround
+    ## ustreamer support omx only till version 4.13
+    ## so stick to that version
+    if [ "$(get_os_version buster)" != "0" ]; then
+        pushd bin/ustreamer &> /dev/null || exit 1
+        git reset --hard 61ab2a8
+        popd &> /dev/null || exit 1
     fi
 }
 
 function build_apps {
     echo -e "Build dependend Stream Apps ..."
+    echo -e "Cloning ustreamer repository ..."
+    clone_ustreamer
     echo -e "Installing 'ustreamer' Dependencies ..."
     # shellcheck disable=2086
     sudo apt install --yes --no-install-recommends ${CROWSNEST_USTREAMER_DEPS} > /dev/null
@@ -285,6 +326,21 @@ function install_raspicam_fix {
         echo -e "This is not a Raspberry Pi!"
         echo -e "Applying Raspicam Fix ... [SKIPPED]"
     fi
+}
+
+function enable_legacy_cam {
+    local cfg
+    cfg="/boot/config.txt"
+    echo -en "Enable legacy camera stack ... \r"
+    sudo sed -i "s/camera_auto_detect=1/#camera_auto_detect=1/" "${cfg}"
+    if [ "$(grep -c "start_x" "${cfg}")" == "0" ]; then
+        sudo crudini --set --inplace "${cfg}" all start_x 1 &> /dev/null
+    fi
+    if [ "$(grep -c "gpu_mem" "${cfg}")" == "0" ]; then
+        sudo crudini --set --inplace "${cfg}" pi4 gpu_mem 256 &> /dev/null
+        sudo crudini --set --inplace "${cfg}" all gpu_mem 128 &> /dev/null
+    fi
+    echo -e "Enable legacy camera stack ... [OK]"
 }
 
 #### MAIN
@@ -309,10 +365,13 @@ fi
 echo -e "Running apt update first ..."
 sudo apt update
 install_crowsnest
-sub_init
 build_apps
-if [ "${UNATTENDED}" != "true" ]; then
+if [ "${UNATTENDED}" != "true" ] &&
+[ "${CROWSNEST_FORCE_RASPICAMFIX}" != "0" ]; then
     install_raspicam_fix
+fi
+if [ "$(get_os_version bullseye)" != "0" ]; then
+    enable_legacy_cam
 fi
 goodbye_msg
 

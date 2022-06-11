@@ -7,7 +7,7 @@
 #### This File is distributed under GPLv3
 ####
 
-.PHONY: help install unsinstall build buildclean uninstallgo update
+.PHONY: help install unsinstall build buildclean
 
 # Setup
 USER = $(shell whoami)
@@ -27,7 +27,6 @@ help:
 	@echo ""
 	@echo "   install      Installs crowsnest"
 	@echo "   uninstall    Uninstalls crowsnest"
-	@echo "   update       Updates crowsnest (if needed)"
 	@echo "   build        builds binaries"
 	@echo "   buildclean   cleans binaries (for recompile)"
 	@echo ""
@@ -41,11 +40,7 @@ unattended:
 uninstall:
 	@bash -c 'tools/uninstall.sh'
 
-update:
-	@bash -c 'tools/update.sh'
-
 build:
-	@git submodule update
 	$(MAKE) -C $(BIN_FOLDER)
 
 buildclean:

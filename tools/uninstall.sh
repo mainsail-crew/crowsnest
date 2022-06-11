@@ -75,9 +75,6 @@ function ask_uninstall {
         read -rp "Do you REALLY want to remove existing 'crowsnest'? (YES/NO) " remove
         if [ "${remove}" = "YES" ]; then
             uninstall_crowsnest
-            uninstall_v4l2rtsp
-            # go unsinstaller is deprecated will be removed in future
-            uninstall_go
             remove_raspicam_fix
             remove_logrotate
             goodbye_msg
@@ -107,37 +104,6 @@ function uninstall_crowsnest {
         sudo rm -f "${bin_path}"
     fi
     echo -e "Uninstalling webcamd.service...[OK]\r"
-}
-
-#obsolete will be removed in future
-function uninstall_v4l2rtsp {
-    local bin_path v4l2rtsp_dir
-    bin_path="/usr/local/bin/v4l2rtspserver"
-    v4l2rtsp_dir="${HOME}/v4l2rtspserver"
-    if [ -d "${v4l2rtsp_dir}" ]; then
-        echo -en "Uninstalling 'v4l2rtspserver' ...\r"
-        if [ -x "${bin_path}" ]; then
-            sudo rm -f "${bin_path}"
-        fi
-        sudo rm -rf "${v4l2rtsp_dir}"
-        echo -e "Uninstalling 'v4l2rtspserver' ... [OK]\r"
-    fi
-}
-
-#obsolete will be removed in future
-function uninstall_go {
-    if [ -n "$(whereis -b go | awk '{print $2}')" ]; then
-        echo -e "\nFound $(go version)\n"
-    else
-        echo -e "No Version of Go Lang found ... [SKIPPED]"
-    fi
-    if  [ -d "/usr/local/go" ] && [ -f "${HOME}/.gorc" ]; then
-        sudo rm -rf "$(whereis -b go | awk '{print $2}')"
-        rm -f "${HOME}/.gorc"
-        sudo rm -rf "${HOME}/golang"
-        sed -i '/# Add Go/d;/.gorc/d' "${HOME}/.profile"
-        echo -e "\nUninstall complete!"
-    fi
 }
 
 function remove_raspicam_fix {

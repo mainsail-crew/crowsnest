@@ -37,14 +37,6 @@ to your moonraker.conf, to get latest and possibly greatest Features.
     cd ~/crowsnest
     make uninstall
 
-### To manually update 'crowsnest'
-
-Normally, you can update via moonraker's Update Manager.
-Sometimes manual intervention is needed! See commit messages.
-
-    cd ~/crowsnest
-    make update
-
 ### Are there more options?
 
 Yes.
