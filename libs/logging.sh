@@ -82,9 +82,10 @@ function print_cfg {
     local prefix
     prefix="\t\t"
     log_msg "INFO: Print Configfile: '${CROWSNEST_CFG}'"
+    (sed '/^#.*/d;/./,$!d' | cut -d'#' -f1) < "${CROWSNEST_CFG}" | \
     while read -r line; do
         log_msg "${prefix}${line}"
-    done < "${CROWSNEST_CFG}"
+    done
 }
 
 function print_cams {
