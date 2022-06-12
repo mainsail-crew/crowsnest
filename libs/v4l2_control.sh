@@ -71,6 +71,15 @@ function brokenfocus {
         get_param "cam ${cam}" v4l2ctl | grep -c "focus_absolute"
     }
 
+    # checks if device has "focus_absolute"
+    # call has_focus_absolute <mycamnameornumber>
+    # returns greater 0 if true, 0 if false
+    function has_focus_absolute {
+        local cam
+        cam="${1}"
+        v4l2-ctl -d "${cam}" -L 2> /dev/null | grep -c "focus_absolute"
+    }
+
     # call get_conf_value <mycamnameornumber>
     # spits out value from config file
     function get_conf_value {
@@ -91,7 +100,7 @@ function brokenfocus {
     # ex.: get_current_value /dev/video0
     # spits out focus_absolute=20 ( if set to 20 )
     function get_current_value {
-        v4l2-ctl -d "${1}" -C "focus_absolute" | sed 's/:[[:space:]]/=/'
+        v4l2-ctl -d "${1}" -C "focus_absolute" 2> /dev/null | sed 's/:[[:space:]]/=/'
     }
 
     # call set_current_value <device> <value>
@@ -109,7 +118,8 @@ function brokenfocus {
             device="$(get_param "cam ${cam}" device)"
             cur_val="$(get_current_value "${device}")"
             conf_val="$(get_conf_value "${cam}")"
-            if [ "$(if_focus_absolute "${cam}")" == "1" ] &&
+            if [ "$(has_focus_absolute "${cam}")" != "0" ] &&
+            [ "$(if_focus_absolute "${cam}")" == "1" ] &&
             [ "${cur_val}" != "${conf_val}" ]; then
                 detected_broken_dev_msg
                 set_focus_absolute "${device}" "${conf_val}"
