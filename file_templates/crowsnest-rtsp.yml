@@ -25,6 +25,7 @@ readBufferCount: 512
 #   "password": "password",
 #   "path": "path",
 #   "action": "read|publish"
+#   "query": "url's raw query"
 # }
 # If the response code is 20x, authentication is accepted, otherwise
 # it is discarded.
@@ -71,7 +72,7 @@ encryption: "no"
 # Address of the TCP/RTSP listener. This is needed only when encryption is "no" or "optional".
 rtspAddress: :8554
 # Address of the TCP/TLS/RTSPS listener. This is needed only when encryption is "strict" or "optional".
-rtspsAddress: :8555
+rtspsAddress: :8322
 # Address of the UDP/RTP listener. This is needed only when "udp" is in protocols.
 rtpAddress: :8000
 # Address of the UDP/RTCP listener. This is needed only when "udp" is in protocols.
@@ -91,10 +92,6 @@ serverKey: server.key
 serverCert: server.crt
 # Authentication methods.
 authMethods: [basic, digest]
-# Read buffer size.
-# This doesn't influence throughput and shouldn't be touched unless the server
-# reports errors about the buffer size.
-readBufferSize: 2048
 
 ###############################################
 # RTMP parameters
@@ -108,23 +105,49 @@ rtmpAddress: :1935
 # HLS parameters
 
 # Disable support for the HLS protocol.
-hlsDisable: yes
+hlsDisable: no
 # Address of the HLS listener.
 hlsAddress: :8888
 # By default, HLS is generated only when requested by a user.
 # This option allows to generate it always, avoiding the delay between request and generation.
 hlsAlwaysRemux: no
-# Number of HLS segments to generate.
-# Increasing segments allows more buffering,
-# Decreasing segments decreases latency.
-hlsSegmentCount: 3
+# Variant of the HLS protocol to use. Available options are:
+# * mpegts - uses MPEG-TS segments, for maximum compatibility.
+# * fmp4 - uses fragmented MP4 segments, more efficient.
+# * lowLatency - uses Low-Latency HLS.
+hlsVariant: mpegts
+# Number of HLS segments to keep on the server.
+# Segments allow to seek through the stream.
+# Their number doesn't influence latency.
+hlsSegmentCount: 7
 # Minimum duration of each segment.
+# A player usually puts 3 segments in a buffer before reproducing the stream.
 # The final segment duration is also influenced by the interval between IDR frames,
-# since the server changes the segment duration to include at least a IDR frame in each one.
+# since the server changes the duration in order to include at least one IDR frame
+# in each segment.
 hlsSegmentDuration: 1s
+# Minimum duration of each part.
+# A player usually puts 3 parts in a buffer before reproducing the stream.
+# Parts are used in Low-Latency HLS in place of segments.
+# Part duration is influenced by the distance between video/audio samples
+# and is adjusted in order to produce segments with a similar duration.
+hlsPartDuration: 200ms
+# Maximum size of each segment.
+# This prevents RAM exhaustion.
+hlsSegmentMaxSize: 50M
 # Value of the Access-Control-Allow-Origin header provided in every HTTP response.
 # This allows to play the HLS stream from an external website.
 hlsAllowOrigin: "*"
+# Enable TLS/HTTPS on the HLS server.
+# This is required for Low-Latency HLS.
+hlsEncryption: no
+# Path to the server key. This is needed only when encryption is yes.
+# This can be generated with:
+# openssl genrsa -out server.key 2048
+# openssl req -new -x509 -sha256 -key server.key -out server.crt -days 3650
+hlsServerKey: server.key
+# Path to the server certificate.
+hlsServerCert: server.crt
 
 ###############################################
 # Path parameters
@@ -139,8 +162,8 @@ paths:
   all:
     # Source of the stream. This can be:
     # * publisher -> the stream is published by a RTSP or RTMP client
-    # * rtsp://existing-url -> the stream is pulled from another RTSP server
-    # * rtsps://existing-url -> the stream is pulled from another RTSP server with RTSPS
+    # * rtsp://existing-url -> the stream is pulled from another RTSP server / camera
+    # * rtsps://existing-url -> the stream is pulled from another RTSP server / camera with RTSPS
     # * rtmp://existing-url -> the stream is pulled from another RTMP server
     # * http://existing-url/stream.m3u8 -> the stream is pulled from another HLS server
     # * https://existing-url/stream.m3u8 -> the stream is pulled from another HLS server with HTTPS
@@ -209,7 +232,7 @@ paths:
     # The following environment variables are available:
     # * RTSP_PATH: path name
     # * RTSP_PORT: server port
-    # * 1, 2, ...: regular expression groups, if path name is
+    # * G1, G2, ...: regular expression groups, if path name is
     #   a regular expression.
     runOnInit:
     # Restart the command if it exits suddenly.
@@ -221,7 +244,7 @@ paths:
     # The following environment variables are available:
     # * RTSP_PATH: path name
     # * RTSP_PORT: server port
-    # * 1, 2, ...: regular expression groups, if path name is
+    # * G1, G2, ...: regular expression groups, if path name is
     #   a regular expression.
     runOnDemand:
     # Restart the command if it exits suddenly.
@@ -233,23 +256,24 @@ paths:
     # readers connected and this amount of time has passed.
     runOnDemandCloseAfter: 10s
 
-    # Command to run when a client starts publishing.
-    # This is terminated with SIGINT when a client stops publishing.
+    # Command to run when the stream is ready to be read, whether it is
+    # published by a client or pulled from a server / camera.
+    # This is terminated with SIGINT when the stream is not ready anymore.
     # The following environment variables are available:
     # * RTSP_PATH: path name
     # * RTSP_PORT: server port
-    # * 1, 2, ...: regular expression groups, if path name is
+    # * G1, G2, ...: regular expression groups, if path name is
     #   a regular expression.
-    runOnPublish:
+    runOnReady:
     # Restart the command if it exits suddenly.
-    runOnPublishRestart: no
+    runOnReadyRestart: no
 
     # Command to run when a clients starts reading.
     # This is terminated with SIGINT when a client stops reading.
     # The following environment variables are available:
     # * RTSP_PATH: path name
     # * RTSP_PORT: server port
-    # * 1, 2, ...: regular expression groups, if path name is
+    # * G1, G2, ...: regular expression groups, if path name is
     #   a regular expression.
     runOnRead:
     # Restart the command if it exits suddenly.
