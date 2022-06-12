@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#### webcamd - A webcam Service for multiple Cams and Stream Services.
+#### crowsnest - A webcam Service for multiple Cams and Stream Services.
 ####
 #### Written by Stephan Wendel aka KwadFan <me@stephanwe.de>
 #### Copyright 2021
@@ -31,7 +31,7 @@ function welcome_msg {
 
 function goodbye_msg {
     echo -e "Please remove manually the 'crowsnest' folder in ${HOME}"
-    echo -e "Remove [update manager webcamd] section from moonraker.conf!"
+    echo -e "Remove [update manager crowsnest] section from moonraker.conf!"
     echo -e "After that is done, please reboot!\nGoodBye...\n"
 }
 
@@ -71,7 +71,7 @@ trap 'err_exit $? $LINENO' ERR
 ### Uninstall crowsnest
 function ask_uninstall {
     local remove
-    if  [ -x "/usr/local/bin/webcamd" ] && [ -d "${HOME}/crowsnest" ]; then
+    if  [ -x "/usr/local/bin/crowsnest" ] && [ -d "${HOME}/crowsnest" ]; then
         read -rp "Do you REALLY want to remove existing 'crowsnest'? (YES/NO) " remove
         if [ "${remove}" = "YES" ]; then
             uninstall_crowsnest
@@ -91,19 +91,19 @@ function ask_uninstall {
 
 function uninstall_crowsnest {
     local servicefile bin_path
-    servicefile="/etc/systemd/system/webcamd.service"
-    bin_path="/usr/local/bin/webcamd"
-    echo -en "\nStopping webcamd.service ...\r"
-    sudo systemctl stop webcamd.service &> /dev/null
-    echo -e "Stopping webcamd.service ... \t[OK]\r"
-    echo -en "Uninstalling webcamd.service...\r"
+    servicefile="/etc/systemd/system/crowsnest.service"
+    bin_path="/usr/local/bin/crowsnest"
+    echo -en "\nStopping crowsnest.service ...\r"
+    sudo systemctl stop crowsnest.service &> /dev/null
+    echo -e "Stopping crowsnest.service ... \t[OK]\r"
+    echo -en "Uninstalling crowsnest.service...\r"
     if [ -f "${servicefile}" ]; then
         sudo rm -f "${servicefile}"
     fi
     if [ -x "${bin_path}" ]; then
         sudo rm -f "${bin_path}"
     fi
-    echo -e "Uninstalling webcamd.service...[OK]\r"
+    echo -e "Uninstalling crowsnest.service...[OK]\r"
 }
 
 function remove_raspicam_fix {
@@ -122,7 +122,7 @@ function remove_raspicam_fix {
 
 function remove_logrotate {
     echo -en "Removing Logrotate Rule ...\r"
-    sudo rm -f /etc/logrotate.d/webcamd
+    sudo rm -f /etc/logrotate.d/crowsnest
     echo -e "Removing Logrotate Rule ... [OK]"
 }
 

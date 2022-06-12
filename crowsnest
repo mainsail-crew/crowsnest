@@ -2,7 +2,7 @@
 
 #### Webcamd Core Application.
 
-#### webcamd - A webcam Service for multiple Cams and Stream Services.
+#### crowsnest - A webcam Service for multiple Cams and Stream Services.
 ####
 #### Written by Stephan Wendel aka KwadFan <me@stephanwe.de>
 #### Copyright 2021
@@ -44,7 +44,7 @@ fi
 while getopts ":vhc:" arg; do
     case "${arg}" in
         v )
-            echo -e "\nwebcamd Version: $(self_version)\n"
+            echo -e "\ncrowsnest Version: $(self_version)\n"
             exit 0
         ;;
         h )
@@ -53,7 +53,7 @@ while getopts ":vhc:" arg; do
         ;;
         c )
             check_cfg "${OPTARG}"
-            export WEBCAMD_CFG="${OPTARG}"
+            export CROWSNEST_CFG="${OPTARG}"
         ;;
         \?)
             wrong_args_msg
@@ -73,7 +73,7 @@ brokenfocus
 ## The User gets a message if Device is lost.
 clean_watchdog
 while true ; do
-    webcamd_watchdog
+    crowsnest_watchdog
     sleep 120 & sleep_pid="$!"
     wait "${sleep_pid}"
 done

@@ -2,7 +2,7 @@
 
 #### Watchdog
 
-#### webcamd - A webcam Service for multiple Cams and Stream Services.
+#### crowsnest - A webcam Service for multiple Cams and Stream Services.
 ####
 #### Written by Stephan Wendel aka KwadFan <me@stephanwe.de>
 #### Copyright 2021
@@ -24,7 +24,7 @@ function clean_watchdog {
     rm -f /tmp/lost-*
 }
 
-function webcamd_watchdog {
+function crowsnest_watchdog {
     # Helper Functions
     function available {
     find "${1}" &> /dev/null
@@ -52,8 +52,8 @@ function webcamd_watchdog {
 
     function get_conf_devices {
         local gcd
-        for i in $(crudini --existing=file --get "${WEBCAMD_CFG}" | \
-        sed '/webcamd/d' | cut -d ' ' -f2); do
+        for i in $(crudini --existing=file --get "${CROWSNEST_CFG}" | \
+        sed '/crowsnest/d' | cut -d ' ' -f2); do
         gcd+=("${i}")
         done
         echo "${gcd[@]}"
@@ -62,7 +62,7 @@ function webcamd_watchdog {
     ### MAIN
 
     for i in $(get_conf_devices); do
-        cc="$(crudini --get "${WEBCAMD_CFG}" "cam ${i}" "device" \
+        cc="$(crudini --get "${CROWSNEST_CFG}" "cam ${i}" "device" \
         | awk '{print $1}')"
         if [ "$(available "${cc}")" -ne 0 ] && [ "$(is_lost "${cc}")" -ne 0 ]; then
             log_msg "WATCHDOG: Lost Device: '${cc}'"

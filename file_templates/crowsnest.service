@@ -1,4 +1,4 @@
-#### webcamd - A webcam Service for multiple Cams and Stream Services.
+#### crowsnest - A webcam Service for multiple Cams and Stream Services.
 ####
 #### Written by Stephan Wendel aka KwadFan <me@stephanwe.de>
 #### Copyright 2021
@@ -8,7 +8,7 @@
 ####
 
 [Unit]
-Description=webcamd - Multi Webcam/Streamer Control Deamon
+Description=crowsnest - Multi Webcam/Streamer Control Deamon
 Documentation=https://github.com/mainsail-crew/crowsnest
 After=udev.service network-online.target nss-lookup.target
 Wants=udev.service network-online.target
@@ -17,14 +17,13 @@ StartLimitBurst=10
 StartLimitIntervalSec=180
 
 [Install]
-Alias=crowsnest
 WantedBy=multi-user.target
 
 [Service]
-Environment=WEBCAMD_CONFIG=/home/pi/klipper_config/webcam.conf
+Environment=CROWSNEST_CONFIG=/home/pi/klipper_config/crowsnest.conf
 Type=exec
 User=pi
 RemainAfterExit=Yes
-ExecStart= /usr/local/bin/webcamd -c ${WEBCAMD_CONFIG}
+ExecStart= /usr/local/bin/crowsnest -c ${CROWSNEST_CONFIG}
 Restart=on-failure
 RestartSec=5

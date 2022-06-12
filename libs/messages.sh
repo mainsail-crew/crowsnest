@@ -2,7 +2,7 @@
 
 #### message library
 
-#### webcamd - A webcam Service for multiple Cams and Stream Services.
+#### crowsnest - A webcam Service for multiple Cams and Stream Services.
 ####
 #### Written by Stephan Wendel aka KwadFan <me@stephanwe.de>
 #### Copyright 2021
@@ -20,20 +20,20 @@ set -Ee
 
 ## core lib
 function missing_args_msg {
-    echo -e "webcamd: Missing Arguments!"
-    echo -e "\n\tTry: webcamd -h\n"
+    echo -e "crowsnest: Missing Arguments!"
+    echo -e "\n\tTry: crowsnest -h\n"
 }
 
 function wrong_args_msg {
-    echo -e "webcamd: Wrong Arguments!"
-    echo -e "\n\tTry: webcamd -h\n"
+    echo -e "crowsnest: Wrong Arguments!"
+    echo -e "\n\tTry: crowsnest -h\n"
 }
 
 function help_msg {
-    echo -e "webcamd - webcam deamon\nUsage:"
-    echo -e "\t webcamd [Options]"
+    echo -e "crowsnest - webcam deamon\nUsage:"
+    echo -e "\t crowsnest [Options]"
     echo -e "\n\t\t-h Prints this help."
-    echo -e "\n\t\t-v Prints Version of webcamd."
+    echo -e "\n\t\t-v Prints Version of crowsnest."
     echo -e "\n\t\t-c </path/to/configfile>\n\t\t\tPath to your webcam.conf\n"
 }
 

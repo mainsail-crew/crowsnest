@@ -2,7 +2,7 @@
 
 #### Configparser library
 
-#### webcamd - A webcam Service for multiple Cams and Stream Services.
+#### crowsnest - A webcam Service for multiple Cams and Stream Services.
 ####
 #### Written by Stephan Wendel aka KwadFan <me@stephanwe.de>
 #### Copyright 2021
@@ -21,7 +21,7 @@ set -Ee
 # spits out raw value
 function get_param {
     local cfg section param
-    cfg="${WEBCAMD_CFG}"
+    cfg="${CROWSNEST_CFG}"
     section="${1}"
     param="${2}"
     crudini --get "${cfg}" "${section}" "${param}" 2> /dev/null | \
@@ -40,9 +40,9 @@ function check_cfg {
 ## Spits out all [cam <nameornumber>] configured sections
 function configured_cams {
     local cams cfg
-    cfg="${WEBCAMD_CFG}"
+    cfg="${CROWSNEST_CFG}"
     for i in $(crudini --existing=file --get "${cfg}" | \
-    sed '/webcamd/d;s/cam//'); do
+    sed '/crowsnest/d;s/cam//'); do
         cams+=("${i}")
     done
     echo "${cams[@]}"
@@ -54,7 +54,7 @@ function check_section {
     local section exist param must_exist missing
     section="cam ${1}"
     # Ignore missing custom flags
-    exist="$(crudini --existing=param --get "${WEBCAMD_CFG}" "${section}" \
+    exist="$(crudini --existing=param --get "${CROWSNEST_CFG}" "${section}" \
     2> /dev/null | sed '/custom_flags/d;/v4l2ctl/d')"
     for i in ${exist}; do
         param+=("${i}")

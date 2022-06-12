@@ -2,7 +2,7 @@
 
 #### Core library
 
-#### webcamd - A webcam Service for multiple Cams and Stream Services.
+#### crowsnest - A webcam Service for multiple Cams and Stream Services.
 ####
 #### Written by Stephan Wendel aka KwadFan <me@stephanwe.de>
 #### Copyright 2021
@@ -16,7 +16,7 @@
 # Exit upon Errors
 set -Ee
 
-## Version of webcamd
+## Version of crowsnest
 function self_version {
     pushd "${BASE_CN_PATH}" &> /dev/null
     git describe --always --tags
@@ -116,13 +116,13 @@ function initial_check {
     check_apps
     versioncontrol
     # print cfg if ! log_level: quiet
-    if [ -z "$(check_cfg "${WEBCAMD_CFG}")" ]; then
+    if [ -z "$(check_cfg "${CROWSNEST_CFG}")" ]; then
         if [ "$(log_level)" != "quiet" ]; then
             print_cfg
         fi
     fi
     # in systemd show always config file
-    logger -t webcamd -f "${WEBCAMD_CFG}"
+    logger -t crowsnest -f "${CROWSNEST_CFG}"
     log_msg "INFO: Detect available Devices"
     print_cams
 }

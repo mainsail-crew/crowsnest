@@ -2,7 +2,7 @@
 
 #### Logging library
 
-#### webcamd - A webcam Service for multiple Cams and Stream Services.
+#### crowsnest - A webcam Service for multiple Cams and Stream Services.
 ####
 #### Written by Stephan Wendel aka KwadFan <me@stephanwe.de>
 #### Copyright 2021
@@ -19,7 +19,7 @@ set -Ee
 ## Logging
 function set_log_path {
     #Workaround sed ~ to BASH VAR $HOME
-    CROWSNEST_LOG_PATH=$(get_param webcamd log_path | sed "s#^~#${HOME}#gi")
+    CROWSNEST_LOG_PATH=$(get_param "crowsnest" log_path | sed "s#^~#${HOME}#gi")
     declare -g CROWSNEST_LOG_PATH
     #Workaround: Make Dir if not exist
     if [ ! -d "$(dirname "${CROWSNEST_LOG_PATH}")" ]; then
@@ -30,14 +30,14 @@ function set_log_path {
 function init_logging {
     set_log_path
     delete_log
-    log_msg "webcamd - A webcam Service for multiple Cams and Stream Services."
+    log_msg "crowsnest - A webcam Service for multiple Cams and Stream Services."
     log_msg "Version: $(self_version)"
     log_msg "Prepare Startup ..."
 }
 
 function log_level {
     local loglevel
-    loglevel="$(get_param webcamd log_level 2> /dev/null)"
+    loglevel="$(get_param crowsnest log_level 2> /dev/null)"
     # Set default log_level to quiet
     if [ -z "${loglevel}" ] || [[ "${loglevel}" != @(quiet|verbose|debug) ]];
     then
@@ -49,7 +49,7 @@ function log_level {
 
 function delete_log {
     local del_log
-    del_log="$(get_param "webcamd" delete_log 2> /dev/null)"
+    del_log="$(get_param "crowsnest" delete_log 2> /dev/null)"
     if [ "${del_log}" = "true" ]; then
         rm -rf "${CROWSNEST_LOG_PATH}"
     fi
@@ -58,9 +58,9 @@ function delete_log {
 function log_msg {
     local msg prefix
     msg="${1}"
-    prefix="$(date +'[%D %T]') webcamd:"
-    echo -e "${prefix} ${msg}" | tr -s ' ' >> "${CROWSNEST_LOG_PATH}" 2>&1
-    echo -e "${msg}" | logger -t webcamd
+    prefix="$(date +'[%D %T]') crowsnest:"
+    echo -e "${prefix} ${msg}" | tr -s ' ' | tee -a "${CROWSNEST_LOG_PATH}" 2>&1
+    echo -e "${msg}" | logger -t crowsnest
 }
 
 #call '| log_output "<prefix>"'
@@ -73,7 +73,7 @@ function log_output {
         fi
         if [ -n "${line}" ]; then
             # needed to prettify ustreamers output
-            echo "${line//^--/ustreamer}" | logger -t webcamd
+            echo "${line//^--/ustreamer}" | logger -t crowsnest
         fi
     done
 }
@@ -81,10 +81,10 @@ function log_output {
 function print_cfg {
     local prefix
     prefix="\t\t"
-    log_msg "INFO: Print Configfile: '${WEBCAMD_CFG}'"
+    log_msg "INFO: Print Configfile: '${CROWSNEST_CFG}'"
     while read -r line; do
         log_msg "${prefix}${line}"
-    done < "${WEBCAMD_CFG}"
+    done < "${CROWSNEST_CFG}"
 }
 
 function print_cams {
@@ -120,6 +120,6 @@ function debug_msg {
     prefix="Develop -- DEBUG:"
     while read -r msg; do
         log_msg "${prefix} ${msg}"
-        echo -e "${msg}" | logger -t webcamd
+        echo -e "${msg}" | logger -t crowsnest
     done <<< "${1}"
 }

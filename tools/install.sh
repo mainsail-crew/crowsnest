@@ -40,7 +40,7 @@ function welcome_msg {
 }
 
 function detect_msg {
-    echo -e "Found an existing 'webcamd'. This will be removed."
+    echo -e "Found an existing 'crowsnest'. This will be removed."
     echo -e "Since we dont use mjpg-streamer it will also removed."
     echo -e "You can use KIAUH for example to reinstall.\n"
 }
@@ -128,17 +128,17 @@ function import_config {
     fi
 }
 
-### Detect webcamd.
-function detect_existing_webcamd {
+### Detect crowsnest.
+function detect_existing_crowsnest {
     local remove
-    if  [ -x "/usr/local/bin/webcamd" ] && [ -d "${HOME}/mjpg-streamer" ]; then
+    if  [ -x "/usr/local/bin/crowsnest" ] && [ -d "${HOME}/mjpg-streamer" ]; then
         detect_msg
-        read -rp "Do you want to remove existing 'webcamd'? (YES/NO) " remove
+        read -rp "Do you want to remove existing 'crowsnest'? (YES/NO) " remove
         if [ "${remove}" = "YES" ]; then
-            echo -en "\nStopping webcamd.service ...\r"
-            sudo systemctl stop webcamd.service &> /dev/null
-            echo -e "Stopping webcamd.service ... \t[OK]\r"
-            remove_existing_webcamd
+            echo -en "\nStopping crowsnest.service ...\r"
+            sudo systemctl stop crowsnest.service &> /dev/null
+            echo -e "Stopping crowsnest.service ... \t[OK]\r"
+            remove_existing_crowsnest
         else
             echo -e "\nYou answered '${remove}'! Installation will be aborted..."
             echo -e "GoodBye...\n"
@@ -147,47 +147,47 @@ function detect_existing_webcamd {
     fi
 }
 
-### Remove existing webcamd
-function remove_existing_webcamd {
-    if [ -x "/usr/local/bin/webcamd" ]; then
-        echo -en "Removing 'webcamd' ...\r"
-        sudo rm -f /usr/local/bin/webcamd > /dev/null
-        echo -e "Removing 'webcamd' ... \t\t[OK]\r"
+### Remove existing crowsnest
+function remove_existing_crowsnest {
+    if [ -x "/usr/local/bin/crowsnest" ]; then
+        echo -en "Removing 'crowsnest' ...\r"
+        sudo rm -f /usr/local/bin/crowsnest > /dev/null
+        echo -e "Removing 'crowsnest' ... \t\t[OK]\r"
     fi
     if [ -d "${HOME}/mjpg-streamer" ]; then
         echo -en "Removing 'mjpg-streamer' ...\r"
         sudo rm -rf "${HOME}"/mjpg-streamer > /dev/null
         echo -e "Removing 'mjpg-streamer' ... \t[OK]\r"
     fi
-    if [ -f "/etc/systemd/system/webcamd.service" ]; then
-        echo -en "Removing 'webcamd.service' ...\r"
-        sudo rm -f /etc/systemd/system/webcamd.service > /dev/null
-        echo -e "Removing 'webcamd.service' ... \t[OK]\r"
+    if [ -f "/etc/systemd/system/crowsnest.service" ]; then
+        echo -en "Removing 'crowsnest.service' ...\r"
+        sudo rm -f /etc/systemd/system/crowsnest.service > /dev/null
+        echo -e "Removing 'crowsnest.service' ... \t[OK]\r"
     fi
-    if [ -f "/var/log/webcamd.log" ]; then
-        echo -en "Removing 'webcamd.log' ...\r"
-        sudo rm -f /var/log/webcamd.log > /dev/null
-        sudo rm -f "${HOME}"/klipper_logs/webcamd.log > /dev/null
-        echo -e "Removing 'webcamd.log' ... \t[OK]\r"
+    if [ -f "/var/log/crowsnest.log" ]; then
+        echo -en "Removing 'crowsnest.log' ...\r"
+        sudo rm -f /var/log/crowsnest.log > /dev/null
+        sudo rm -f "${HOME}"/klipper_logs/crowsnest.log > /dev/null
+        echo -e "Removing 'crowsnest.log' ... \t[OK]\r"
     fi
-    if [ -f "/etc/logrotate.d/webcamd" ]; then
-        echo -en "Removing 'webcamd' logrotate...\r"
-        sudo rm -f /etc/logrotate.d/webcamd > /dev/null
-        echo -e "Removing 'webcamd' logrotate ... \t[OK]\r"
+    if [ -f "/etc/logrotate.d/crowsnest" ]; then
+        echo -en "Removing 'crowsnest' logrotate...\r"
+        sudo rm -f /etc/logrotate.d/crowsnest > /dev/null
+        echo -e "Removing 'crowsnest' logrotate ... \t[OK]\r"
     fi
-    echo -e "\nOld 'webcamd' completly removed."
+    echo -e "\nOld 'crowsnest' completly removed."
     echo -e "webcam.txt kept,but no longer necessary ..."
 }
 
 
 function install_crowsnest {
     local addconf bin_path logrotatefile moonraker_conf moonraker_update
-    local webcamd_bin servicefile template
+    local crowsnest_bin servicefile template
     bin_path="/usr/local/bin"
-    webcamd_bin="${HOME}/crowsnest/webcamd"
+    crowsnest_bin="${HOME}/crowsnest/crowsnest"
     template="${PWD}/sample_configs/${CROWSNEST_DEFAULT_CONF}"
-    servicefile="${PWD}/file_templates/webcamd.service"
-    logrotatefile="${HOME}/crowsnest/file_templates/logrotate_webcamd"
+    servicefile="${PWD}/file_templates/crowsnest.service"
+    logrotatefile="${HOME}/crowsnest/file_templates/logrotate_crowsnest"
     moonraker_conf="${HOME}/klipper_config/moonraker.conf"
     moonraker_update="${PWD}/file_templates/moonraker_update.txt"
     ## helper func moonraker update_manager
@@ -205,39 +205,39 @@ function install_crowsnest {
             echo -e "moonraker.conf is missing ... [SKIPPED]"
         fi
     }
-    echo -e "\nInstall webcamd Service ..."
+    echo -e "\nInstall crowsnest Service ..."
     ## Install Dependencies
     echo -e "Installing 'crowsnest' Dependencies ..."
     # shellcheck disable=2086
     sudo apt install --yes --no-install-recommends ${CROWSNEST_CROWSNEST_DEPS} > /dev/null
     echo -e "Installing 'crowsnest' Dependencies ... [OK]"
-    ## Link webcamd to $PATH
-    echo -en "Linking webcamd ...\r"
-    sudo ln -sf "${webcamd_bin}" "${bin_path}" > /dev/null
-    echo -e "Linking webcamd ... [OK]\r"
-    ## Copy webcam.conf
+    ## Link crowsnest to $PATH
+    echo -en "Linking crowsnest ...\r"
+    sudo ln -sf "${crowsnest_bin}" "${bin_path}" > /dev/null
+    echo -e "Linking crowsnest ... [OK]\r"
+    ## Copy crowsnest.conf
     # Make sure config directory exists!
     if [ ! -d "${CROWSNEST_DEFAULT_CONF_DIR}" ]; then
         sudo -u "${BASE_USER}" mkdir -p "${CROWSNEST_DEFAULT_CONF_DIR}"
     fi
     # Make sure not to overwrite existing!
-    if [ ! -f "${CROWSNEST_DEFAULT_CONF_DIR}/webcam.conf" ]; then
-        echo -en "Copying webcam.conf ...\r"
-        sudo -u "${BASE_USER}" cp -rf "${template}" "${CROWSNEST_DEFAULT_CONF_DIR}"/webcam.conf
-        echo -e "Copying webcam.conf ... [OK]\r"
+    if [ ! -f "${CROWSNEST_DEFAULT_CONF_DIR}/crowsnest.conf" ]; then
+        echo -en "Copying crowsnest.conf ...\r"
+        sudo -u "${BASE_USER}" cp -rf "${template}" "${CROWSNEST_DEFAULT_CONF_DIR}"/crowsnest.conf
+        echo -e "Copying crowsnest.conf ... [OK]\r"
     fi
-    ## Copy webcamd.service
-    echo -en "Copying webcamd.service file ...\r"
-    sudo cp -rf "${servicefile}" /etc/systemd/system/webcamd.service > /dev/null
+    ## Copy crowsnest.service
+    echo -en "Copying crowsnest.service file ...\r"
+    sudo cp -rf "${servicefile}" /etc/systemd/system/crowsnest.service > /dev/null
     if [ ! "${BASE_USER}" == "pi" ]; then
-        sudo sed -i 's|pi|'"${BASE_USER}"'|g' /etc/systemd/system/webcamd.service
+        sudo sed -i 's|pi|'"${BASE_USER}"'|g' /etc/systemd/system/crowsnest.service
     fi
-    echo -e "Copying webcamd.service file ... [OK]\r"
+    echo -e "Copying crowsnest.service file ... [OK]\r"
     ## Copy logrotate
     echo -en "Linking logrotate file ...\r"
-    sudo cp -rf "${logrotatefile}" /etc/logrotate.d/webcamd
+    sudo cp -rf "${logrotatefile}" /etc/logrotate.d/crowsnest
     if [ ! "${BASE_USER}" == "pi" ]; then
-        sudo sed -i 's|pi|'"${BASE_USER}"'|g' /etc/logrotate.d/webcamd
+        sudo sed -i 's|pi|'"${BASE_USER}"'|g' /etc/logrotate.d/crowsnest
     fi
     echo -e "Linking logrotate file ... [OK]\r"
     ## update systemd if not unattended
@@ -246,10 +246,10 @@ function install_crowsnest {
         sudo systemctl daemon-reload
         echo -e "Reload systemd to enable new daemon ... [OK]"
     fi
-    ## enable webcamd.service
-    echo -en "Enable webcamd.service on boot ...\r"
-    sudo systemctl enable webcamd.service
-    echo -e "Enable webcamd.service on boot ... [OK]\r"
+    ## enable crowsnest.service
+    echo -en "Enable crowsnest.service on boot ...\r"
+    sudo systemctl enable crowsnest.service
+    echo -e "Enable crowsnest.service on boot ... [OK]\r"
     ## Add moonraker update manager entry
     ## Unattended
     if [ "${UNATTENDED}" == "true" ] &&
@@ -360,7 +360,7 @@ install_cleanup_trap
 import_config
 welcome_msg
 if [ "${UNATTENDED}" != "true" ]; then
-    detect_existing_webcamd
+    detect_existing_crowsnest
 fi
 echo -e "Running apt update first ..."
 sudo apt update
