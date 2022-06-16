@@ -119,7 +119,7 @@ function print_cams {
 
 function print_host {
     local disksize generic_model memtotal sbc_model
-    generic_model="$(grep "model name" /proc/cpuinfo | cut -d':' -f2)"
+    generic_model="$(grep "model name" /proc/cpuinfo | cut -d':' -f2 | awk NR==1)"
     sbc_model="$(grep "Model" /proc/cpuinfo | cut -d':' -f2)"
     memtotal="$(grep "MemTotal:" /proc/meminfo | awk '{print $2" "$3}')"
     disksize="$(LC_ALL=C df -h / | awk 'NR==2 {print $4" / "$2}')"
@@ -143,7 +143,8 @@ function print_host {
         if [ -n "${sbc_model}" ]; then
             log_msg "Host Info: Model: ${sbc_model}"
         fi
-        if [ -n "${generic_model}" ]; then
+        if [ -n "${generic_model}" ] &&
+        [ -z "${sbc_model}" ]; then
             log_msg "Host Info: Model: ${generic_model}"
         fi
         ## CPU count
