@@ -1,4 +1,8 @@
-[![license](https://img.shields.io/github/license/mainsail-crew/crowsnest?style=flat-square&color=green)](https://github.com/mainsail-crew/crowsnest/blob/master/LICENSE) [![language](https://img.shields.io/github/languages/top/mainsail-crew/crowsnest?style=flat-square&logo=gnubash&logoColor=white)](https://github.com/mainsail-crew/crowsnest/search?l=shell) [![commit-activity](https://img.shields.io/github/commit-activity/m/mainsail-crew/crowsnest?style=flat-square)](https://github.com/mainsail-crew/crowsnest/commits) [![issue-search](https://img.shields.io/github/issues/mainsail-crew/crowsnest?style=flat-square)](https://github.com/mainsail-crew/crowsnest/issues) ![downloads](https://img.shields.io/github/downloads/mainsail-crew/crowsnest/total?style=flat-square) [![discord](https://img.shields.io/discord/758059413700345988?color=%235865F2&label=discord&logo=discord&logoColor=white&style=flat-square)](https://discord.gg/skWTwTD)
+[![license](https://img.shields.io/github/license/mainsail-crew/crowsnest?style=flat-square&color=green)](https://github.com/mainsail-crew/crowsnest/blob/master/LICENSE) [![language](https://img.shields.io/github/languages/top/mainsail-crew/crowsnest?style=flat-square&logo=gnubash&logoColor=white)](https://github.com/mainsail-crew/crowsnest/search?l=shell) [![commit-activity](https://img.shields.io/github/commit-activity/m/mainsail-crew/crowsnest?style=flat-square)](https://github.com/mainsail-crew/crowsnest/commits) [![issue-search](https://img.shields.io/github/issues/mainsail-crew/crowsnest?style=flat-square)](https://github.com/mainsail-crew/crowsnest/issues) [![discord](https://img.shields.io/discord/758059413700345988?color=%235865F2&label=discord&logo=discord&logoColor=white&style=flat-square)](https://discord.gg/skWTwTD)
+
+<p align="center">
+<img src=".github/crowsnest-logo.png" style="width:30%">
+</p>
 
 # crowsnest
 
@@ -16,7 +20,7 @@ So, this will be the 'lookout point' for your Printer.
 ### Install on Raspberry Pi OS
 
     cd ~
-    git clone --recurse-submodules https://github.com/mainsail-crew/crowsnest.git
+    git clone https://github.com/mainsail-crew/crowsnest.git
     cd ~/crowsnest
     make install
 
@@ -25,7 +29,7 @@ feel free to open a Pull Request to enhance Documentation._
 
 After successful Instalation you should consider to add
 
-    [update_manager webcamd]
+    [update_manager crowsnest]
     type: git_repo
     path: ~/crowsnest
     origin: https://github.com/mainsail-crew/crowsnest.git
@@ -48,8 +52,6 @@ or
 
     make help
 
-## _NOTE: This project has WIP Status! Changes may occure and possibly break things!_
-
 ---
 
 ## Simple Configuration
@@ -62,8 +64,8 @@ Open the 'config' section, there should be the mentioned file.
 
 By default it look like this:
 
-    [webcamd]
-    log_path: ~/klipper_logs/webcamd.log
+    [crowsnest]
+    log_path: ~/klipper_logs/crowsnest.log
     log_level: quiet
 
     [cam 1]
@@ -75,7 +77,7 @@ By default it look like this:
 
 What that basicly means is:
 
-    log_path: ~/klipper_logs/webcamd.log
+    log_path: ~/klipper_logs/crowsnest.log
 
 Where crowsnest (webcamd) should store its Logfile.
 
@@ -86,24 +88,27 @@ You can choose:
 This Option shows a bare minimum Logfile.\
 For example:
 
-    [11/02/21 20:47:52] webcamd: webcamd - A webcam Service for multiple Cams and Stream Services.
-    [11/02/21 20:47:53] webcamd: Version: v0.1.3-9-g7e278cd
-    [11/02/21 20:47:53] webcamd: Prepare Startup ...
-    [11/02/21 20:47:53] webcamd: INFO: Checking Dependencys
-    [11/02/21 20:47:53] webcamd: Dependency: 'crudini' found in /usr/bin/crudini.
-    [11/02/21 20:47:53] webcamd: Dependency: 'mjpg_streamer' found in /usr/local/bin/mjpg_streamer.
-    [11/02/21 20:47:53] webcamd: Dependency: 'ustreamer' found in /usr/local/bin/ustreamer.
-    [11/02/21 20:47:53] webcamd: Dependency: 'v4l2rtspserver' found in /usr/local/bin/v4l2rtspserver.
-    [11/02/21 20:47:54] webcamd: INFO: Detect available Cameras
-    [11/02/21 20:47:54] webcamd: INFO: Found 2 available Camera(s)
-    [11/02/21 20:47:54] webcamd: /dev/v4l/by-id/usb-USB_Camera_USB_Camera_SN0001-video-index0 -> /dev/video1
-    [11/02/21 20:47:54] webcamd: Detected 'Raspicam' Device -> /dev/video0
-    [11/02/21 20:47:54] webcamd: Try to start configured Cams / Services...
-    [11/02/21 20:47:55] webcamd: INFO: Configuration of Section [cam 1] looks good. Continue...
-    [11/02/21 20:47:55] webcamd: Starting mjpeg-streamer with Device /dev/video0 ...
-    [11/02/21 20:48:03] webcamd: INFO: Configuration of Section [cam usb_black] looks good. Continue...
-    [11/02/21 20:48:04] webcamd: Starting ustreamer with Device /dev/v4l/by-id/usb-USB_Camera_USB_Camera_SN0001-video-index0 ...
-    [11/02/21 20:48:11] webcamd: ... Done!
+    [06/16/22 09:57:01] crowsnest: crowsnest - A webcam Service for multiple Cams and Stream Services.
+    [06/16/22 09:57:01] crowsnest: Version: v2.4.0-15-ge42799b
+    [06/16/22 09:57:01] crowsnest: Prepare Startup ...
+    [06/16/22 09:57:01] crowsnest: INFO: Checking Dependencys
+    [06/16/22 09:57:01] crowsnest: Dependency: 'crudini' found in /usr/bin/crudini.
+    [06/16/22 09:57:02] crowsnest: Dependency: 'find' found in /usr/bin/find.
+    [06/16/22 09:57:02] crowsnest: Dependency: 'logger' found in /usr/bin/logger.
+    [06/16/22 09:57:02] crowsnest: Dependency: 'xargs' found in /usr/bin/xargs.
+    [06/16/22 09:57:02] crowsnest: Dependency: 'ffmpeg' found in /usr/bin/ffmpeg.
+    [06/16/22 09:57:02] crowsnest: Dependency: 'ustreamer' found in bin/ustreamer/ustreamer.
+    [06/16/22 09:57:02] crowsnest: Dependency: 'rtsp-simple-server' found in bin/rtsp-simple-server/rtsp-simple-server.
+    [06/16/22 09:57:02] crowsnest: INFO: Detect available Devices
+    [06/16/22 09:57:02] crowsnest: INFO: Found 1 total available Device(s)
+    [06/16/22 09:57:02] crowsnest: Detected 'Raspicam' Device -> /dev/video0
+    [06/16/22 09:57:02] crowsnest: INFO: No usable CSI Devices found.
+    [06/16/22 09:57:02] crowsnest: V4L2 Control:
+    [06/16/22 09:57:02] crowsnest: No parameters set for [cam 1]. Skipped.
+    [06/16/22 09:57:02] crowsnest: Try to start configured Cams / Services...
+    [06/16/22 09:57:03] crowsnest: INFO: Configuration of Section [cam 1] looks good. Continue...
+    [06/16/22 09:57:03] crowsnest: Starting ustreamer with Device /dev/video0 ...
+    [06/16/22 09:57:05] crowsnest: ... Done!
 
 The next option is
 
@@ -112,40 +117,8 @@ The next option is
 This gives you a little more Informations.
 It prints out you existing webcam.conf and shows
 a detailed info about your configured ( and connected ) cams.\
-Like that:
 
-    [10/24/21 02:46:00] webcamd: INFO: Detect available Cameras
-    [10/24/21 02:46:00] webcamd: INFO: Found 1 available Camera(s)
-    [10/24/21 02:46:00] webcamd: Detected 'Raspicam' Device -> /dev/video0
-    [10/24/21 02:46:00] webcamd: Supported Formats:
-    [10/24/21 02:46:00] webcamd: 		[0]: 'YU12' (Planar YUV 4:2:0)
-    [10/24/21 02:46:01] webcamd: 		Size: Stepwise 32x32 - 2592x1944 with step 2/2
-    [10/24/21 02:46:01] webcamd: 		[1]: 'YUYV' (YUYV 4:2:2)
-    [10/24/21 02:46:01] webcamd: 		Size: Stepwise 32x32 - 2592x1944 with step 2/2
-    [10/24/21 02:46:01] webcamd: 		[2]: 'RGB3' (24-bit RGB 8-8-8)
-    [10/24/21 02:46:01] webcamd: 		Size: Stepwise 32x32 - 2592x1944 with step 2/2
-    [10/24/21 02:46:01] webcamd: 		[3]: 'JPEG' (JFIF JPEG, compressed)
-    [10/24/21 02:46:01] webcamd: 		Size: Stepwise 32x32 - 2592x1944 with step 2/2
-    [10/24/21 02:46:01] webcamd: 		[4]: 'H264' (H.264, compressed)
-    [10/24/21 02:46:01] webcamd: 		Size: Stepwise 32x32 - 2592x1944 with step 2/2
-    [10/24/21 02:46:02] webcamd: 		[5]: 'MJPG' (Motion-JPEG, compressed)
-    [10/24/21 02:46:02] webcamd: 		Size: Stepwise 32x32 - 2592x1944 with step 2/2
-    [10/24/21 02:46:02] webcamd: 		[6]: 'YVYU' (YVYU 4:2:2)
-    [10/24/21 02:46:02] webcamd: 		Size: Stepwise 32x32 - 2592x1944 with step 2/2
-    [10/24/21 02:46:02] webcamd: 		[7]: 'VYUY' (VYUY 4:2:2)
-    [10/24/21 02:46:02] webcamd: 		Size: Stepwise 32x32 - 2592x1944 with step 2/2
-    [10/24/21 02:46:02] webcamd: 		[8]: 'UYVY' (UYVY 4:2:2)
-    [10/24/21 02:46:02] webcamd: 		Size: Stepwise 32x32 - 2592x1944 with step 2/2
-    [10/24/21 02:46:02] webcamd: 		[9]: 'NV12' (Y/CbCr 4:2:0)
-    [10/24/21 02:46:03] webcamd: 		Size: Stepwise 32x32 - 2592x1944 with step 2/2
-    [10/24/21 02:46:03] webcamd: 		[10]: 'BGR3' (24-bit BGR 8-8-8)
-    [10/24/21 02:46:03] webcamd: 		Size: Stepwise 32x32 - 2592x1944 with step 2/2
-    [10/24/21 02:46:03] webcamd: 		[11]: 'YV12' (Planar YVU 4:2:0)
-    [10/24/21 02:46:03] webcamd: 		Size: Stepwise 32x32 - 2592x1944 with step 2/2
-    [10/24/21 02:46:03] webcamd: 		[12]: 'NV21' (Y/CrCb 4:2:0)
-    [10/24/21 02:46:03] webcamd: 		Size: Stepwise 32x32 - 2592x1944 with step 2/2
-    [10/24/21 02:46:03] webcamd: 		[13]: 'RX24' (32-bit XBGR 8-8-8-8)
-    [10/24/21 02:46:03] webcamd: 		Size: Stepwise 32x32 - 2592x1944 with step 2/2
+You will find an example log [here](log-example.md).
 
 This is useful to determine what the Hardware Encoder of your Camera is capable of.\
 In this case a "cheap" raspicam for about 7€ was used.\
@@ -191,7 +164,10 @@ You can choose:
 
     mode: rtsp
 
-This let you use external viewer like vlc for example.
+This let you use external viewer like vlc for example.\
+To view the stream use a proper player like [VLC](https://www.videolan.org/).\
+**The stream url will be _rtsp://\<printeriporname\>:8554/\<yourcamerasectionname\>_** \
+As an example: _rtsp://mainsail.local:8554/1_ \
 _NOTE: There will be no preview in your Browser!_
 
 ---
@@ -231,6 +207,8 @@ This needs some to read further Information.
 If you enable this in your [cam whatevernameyouset],\
 you can add parameters according to your needs.\
 Those will be appended to the default/preconfigured parameters.
+
+**_Note: These are seperated by a single space not comma seperated!_**
 
 To setup Services to your need you have to take a closer look to the documentation of the Project.\
 As a pointer in the right direction:
@@ -340,7 +318,7 @@ Thanks to [Pedro Lamas](https://github.com/pedrolamas), for the ISSUE_TEMPLATES.
 ---
 
 <p align="center">
-<img src="https://raw.githubusercontent.com/meteyou/mainsail/master/docs/assets/img/logo.png">
+<img src="https://github.com/mainsail-crew/docs/raw/master/assets/img/logo.png">
 </p>
 
 **So, with all that said, get your position seaman! Prepare to get wet feets on your Journey.**
