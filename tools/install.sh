@@ -370,7 +370,8 @@ if [ "${UNATTENDED}" != "true" ] &&
 [ "${CROWSNEST_FORCE_RASPICAMFIX}" != "0" ]; then
     install_raspicam_fix
 fi
-if [ "$(get_os_version bullseye)" != "0" ]; then
+if [ "$(get_os_version bullseye)" != "0" ] &&
+[ -f "/boot/config.txt" ]; then
     enable_legacy_cam
 fi
 goodbye_msg
