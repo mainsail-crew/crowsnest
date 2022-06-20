@@ -96,6 +96,9 @@ function uninstall_crowsnest {
     echo -en "\nStopping crowsnest.service ...\r"
     sudo systemctl stop crowsnest.service &> /dev/null
     echo -e "Stopping crowsnest.service ... \t[OK]\r"
+    echo -en "\nDisable crowsnest.service ...\r"
+    sudo systemctl disable crowsnest.service &> /dev/null
+    echo -e "Disablecrowsnest.service ... \t[OK]\r"
     echo -en "Uninstalling crowsnest.service...\r"
     if [ -f "${servicefile}" ]; then
         sudo rm -f "${servicefile}"
