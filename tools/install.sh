@@ -128,7 +128,7 @@ function import_config {
     fi
 
     ## rpi os bullseye
-    if [ "$(uname -m)" != "aarch64" ] &&
+    if [ "$(uname -m)" == "aarch64" ] &&
     [ "$(get_os_version ubuntu)" != "0" ] &&
     [ -f "tools/config.bullseye" ]; then
         # shellcheck disable=SC1091
