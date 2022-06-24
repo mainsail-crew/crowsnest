@@ -15,6 +15,8 @@
 
 # Paths
 USTREAMER_PATH = ustreamer
+USTREAMER_REPO = https://github.com/pikvm/ustreamer.git
+USTREAMER_OMX_BRANCH = 61ab2a8
 ARCH = $(shell uname -m)
 RTSP_PATH = rtsp-simple-server
 RTSP_ARCH = $(shell uname -m | cut -c '-5' | sed 's/x86_6/amd64/;s/aarch/arm64v8/')
@@ -34,7 +36,11 @@ all:
 
 # Build ustreamer
 ustreamer:
+	$(shell if ! [ -d "bin/ustreamer" ]; then \
+	git clone $(USTREAMER_REPO) ustreamer; fi)
 ifeq ($(OMX_SUPPORT), 1)
+	$(shell cd ustreamer; git reset -q --hard $(USTREAMER_OMX_BRANCH) &> /dev/null \
+	; cd ..)
 	$(info Compiling ustreamer with OMX Support.)
 	WITH_OMX=1 $(MAKE) -C $(USTREAMER_PATH)
 else
