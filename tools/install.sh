@@ -137,17 +137,17 @@ function import_config {
     fi
 }
 
-### Detect crowsnest.
-function detect_existing_crowsnest {
+### Detect legacy webcamd.
+function detect_existing_webcamd {
     local remove
-    if  [ -x "/usr/local/bin/crowsnest" ] && [ -d "${HOME}/mjpg-streamer" ]; then
+    if  [ -x "/usr/local/bin/webcamd" ] && [ -d "${HOME}/mjpg-streamer" ]; then
         detect_msg
-        read -rp "Do you want to remove existing 'crowsnest'? (YES/NO) " remove
+        read -rp "Do you want to remove existing 'webcamd'? (YES/NO) " remove
         if [ "${remove}" = "YES" ]; then
-            echo -en "\nStopping crowsnest.service ...\r"
-            sudo systemctl stop crowsnest.service &> /dev/null
-            echo -e "Stopping crowsnest.service ... \t[OK]\r"
-            remove_existing_crowsnest
+            echo -en "\nStopping webcamd.service ...\r"
+            sudo systemctl stop webcamd.service &> /dev/null
+            echo -e "Stopping webcamd.service ... \t[OK]\r"
+            remove_existing_webcamd
         else
             echo -e "\nYou answered '${remove}'! Installation will be aborted..."
             echo -e "GoodBye...\n"
@@ -156,35 +156,36 @@ function detect_existing_crowsnest {
     fi
 }
 
-### Remove existing crowsnest
-function remove_existing_crowsnest {
-    if [ -x "/usr/local/bin/crowsnest" ]; then
-        echo -en "Removing 'crowsnest' ...\r"
-        sudo rm -f /usr/local/bin/crowsnest > /dev/null
-        echo -e "Removing 'crowsnest' ... \t\t[OK]\r"
+### Remove existing webcamd
+function remove_existing_webcamd {
+    if [ -x "/usr/local/bin/webcamd" ]; then
+        echo -en "Removing 'webcamd' ...\r"
+        sudo rm -f /usr/local/bin/webcamd > /dev/null
+        echo -e "Removing 'webcamd' ... \t\t[OK]\r"
     fi
     if [ -d "${HOME}/mjpg-streamer" ]; then
         echo -en "Removing 'mjpg-streamer' ...\r"
         sudo rm -rf "${HOME}"/mjpg-streamer > /dev/null
         echo -e "Removing 'mjpg-streamer' ... \t[OK]\r"
     fi
-    if [ -f "/etc/systemd/system/crowsnest.service" ]; then
-        echo -en "Removing 'crowsnest.service' ...\r"
-        sudo rm -f /etc/systemd/system/crowsnest.service > /dev/null
-        echo -e "Removing 'crowsnest.service' ... \t[OK]\r"
+    if [ -f "/etc/systemd/system/webcamd.service" ]; then
+        echo -en "Removing 'webcamd.service' ...\r"
+        sudo systemctl disable webcamd.service &> /dev/null
+        sudo rm -f /etc/systemd/system/webcamd.service > /dev/null
+        echo -e "Removing 'webcamd.service' ... \t[OK]\r"
     fi
-    if [ -f "/var/log/crowsnest.log" ]; then
-        echo -en "Removing 'crowsnest.log' ...\r"
-        sudo rm -f /var/log/crowsnest.log > /dev/null
-        sudo rm -f "${HOME}"/klipper_logs/crowsnest.log > /dev/null
-        echo -e "Removing 'crowsnest.log' ... \t[OK]\r"
+    if [ -f "/var/log/webcamd.log" ]; then
+        echo -en "Removing 'webcamd.log' ...\r"
+        sudo rm -f /var/log/webcamd.log > /dev/null
+        sudo rm -f "${HOME}"/klipper_logs/webcamd.log > /dev/null
+        echo -e "Removing 'webcamd.log' ... \t[OK]\r"
     fi
-    if [ -f "/etc/logrotate.d/crowsnest" ]; then
-        echo -en "Removing 'crowsnest' logrotate...\r"
-        sudo rm -f /etc/logrotate.d/crowsnest > /dev/null
-        echo -e "Removing 'crowsnest' logrotate ... \t[OK]\r"
+    if [ -f "/etc/logrotate.d/webcamd" ]; then
+        echo -en "Removing 'webcamd' logrotate...\r"
+        sudo rm -f /etc/logrotate.d/webcamd > /dev/null
+        echo -e "Removing 'webcamd' logrotate ... \t[OK]\r"
     fi
-    echo -e "\nOld 'crowsnest' completly removed."
+    echo -e "\nOld 'webcamd' completly removed."
     echo -e "webcam.txt kept,but no longer necessary ..."
 }
 
@@ -369,7 +370,7 @@ install_cleanup_trap
 import_config
 welcome_msg
 if [ "${UNATTENDED}" != "true" ]; then
-    detect_existing_crowsnest
+    detect_existing_webcamd
 fi
 echo -e "Running apt update first ..."
 sudo apt update
