@@ -58,7 +58,7 @@ or
 
 ---
 
-All you need to get your Camera up and running is a small block of code in your _webcam.conf_\
+All you need to get your Camera up and running is a small block of code in your _crowsnest.conf_\
 In MainsailOS you can do that in mainsail Web Interface.\
 Open the 'config' section, there should be the mentioned file.
 
