@@ -2,9 +2,9 @@
 
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset=".github/crowsnest-logo-darkmode.png">
-    <source media="(prefers-color-scheme: light)" srcset=".github/crowsnest-logo-lightmode.png">
-    <img alt="Crowsnest Logo" src=".github/crowsnest-logo-lightmode.png" style="width: 30%">
+    <source media="(prefers-color-scheme: dark)" srcset="https://user-images.githubusercontent.com/5130466/176508627-17defb6f-49e0-4701-a473-a9421103b21b.png">
+    <source media="(prefers-color-scheme: light)" srcset="https://user-images.githubusercontent.com/5130466/176508621-0c437056-025a-4ef6-a3f1-f6729f1e05ac.png">
+    <img alt="Crowsnest Logo" src="https://user-images.githubusercontent.com/5130466/176508621-0c437056-025a-4ef6-a3f1-f6729f1e05ac.png" style="width: 30%">
   </picture>
 </p>
 
