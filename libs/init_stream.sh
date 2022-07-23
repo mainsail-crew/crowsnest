@@ -26,7 +26,7 @@ function construct_streamer {
         mode="$(get_param "cam ${cams}" mode)"
         check_section "${cams}"
         case ${mode} in
-            mjpg)
+            mjpg | mjpeg)
                 MJPG_INSTANCES+=( "${cams}" )
             ;;
             rtsp)
