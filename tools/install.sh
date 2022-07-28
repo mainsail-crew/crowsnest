@@ -203,6 +203,10 @@ function install_crowsnest {
     ## helper func moonraker update_manager
     function add_update_entry {
         if [ -f "${moonraker_conf}" ]; then
+            # make sure no file exist
+            if [ -f "/tmp/moonraker.conf" ]; then
+                sudo rm -f /tmp/moonraker.conf
+            fi
             echo -e "Adding [update_manager] entry ..."
             sudo -u "${BASE_USER}" \
             cp "${moonraker_conf}" "${moonraker_conf}.backup" &&
