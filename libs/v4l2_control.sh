@@ -72,12 +72,11 @@ function brokenfocus {
     }
 
     # checks if device has "focus_absolute"
-    # call has_focus_absolute <mycamnameornumber>
-    # returns greater 0 if true, 0 if false
+    # call has_focus_absolute <device>
+    # returns 1 if true, 0 if false
     function has_focus_absolute {
-        local cam
-        cam="${1}"
-        v4l2-ctl -d "${cam}" -L 2> /dev/null | grep -c "focus_absolute"
+        v4l2-ctl -d "${1}" -C "focus_absolute" &> /dev/null \
+        && echo "1" || echo "0"
     }
 
     # call get_conf_value <mycamnameornumber>
@@ -118,7 +117,7 @@ function brokenfocus {
             device="$(get_param "cam ${cam}" device)"
             cur_val="$(get_current_value "${device}")"
             conf_val="$(get_conf_value "${cam}")"
-            if [ "$(has_focus_absolute "${cam}")" != "0" ] &&
+            if [ "$(has_focus_absolute "${device}")" == "1" ] &&
             [ "$(if_focus_absolute "${cam}")" == "1" ] &&
             [ "${cur_val}" != "${conf_val}" ]; then
                 detected_broken_dev_msg
