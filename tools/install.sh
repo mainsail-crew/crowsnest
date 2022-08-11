@@ -111,17 +111,19 @@ function import_config {
 
     ## rpi os buster
     if [ "$(uname -m)" != "x86_64" ] &&
+    [ "$(cut -d " " -f1 < /proc/device-tree/model)" == "Raspberry" ] &&
     [ "$(get_os_version buster)" != "0" ] &&
-    [ -f "tools/config.buster" ]; then
+    [ -f "tools/config.rpi-buster" ]; then
         # shellcheck disable=SC1091
-        source tools/config.buster
+        source tools/config.rpi-buster
         return 0
     fi
 
     ## rpi os bullseye
     if [ "$(uname -m)" != "x86_64" ] &&
     [ "$(get_os_version bullseye)" != "0" ] &&
-    [ -f "tools/config.bullseye" ]; then
+    [ "$(cut -d " " -f1 < /proc/device-tree/model)" == "Raspberry" ] &&
+    [ -f "tools/config.rpi-bullseye" ]; then
         # shellcheck disable=SC1091
         source tools/config.bullseye
         return 0
@@ -129,6 +131,36 @@ function import_config {
 
     ## Ubuntu ARM (aarch64) tested on v22.04
     if [ "$(uname -m)" == "aarch64" ] &&
+    [ "$(get_os_version ubuntu)" != "0" ] &&
+    [ -f "tools/config.buntu64" ]; then
+        # shellcheck disable=SC1091
+        source tools/config.buntu64
+        return 0
+    fi
+
+    ## armbian buster
+    if [ "$(uname -m)" != "x86_64" ] &&
+    [ -f "/etc/armbian-release" ] &&
+    [ "$(get_os_version buster)" != "0" ] &&
+    [ -f "tools/config.armbian-buster" ]; then
+        # shellcheck disable=SC1091
+        source tools/config.armbian-buster
+        return 0
+    fi
+
+    ## armbian bullseye
+    if [ "$(uname -m)" != "x86_64" ] &&
+    [ -f "/etc/armbian-release" ] &&
+    [ "$(get_os_version bullseye)" != "0" ] &&
+    [ -f "tools/config.armbian-bullseye" ]; then
+        # shellcheck disable=SC1091
+        source tools/config.armbian-bullseye
+        return 0
+    fi
+
+    ## armbian jammy
+    if [ "$(uname -m)" != "x86_64" ] &&
+    [ -f "/etc/armbian-release" ] &&
     [ "$(get_os_version ubuntu)" != "0" ] &&
     [ -f "tools/config.buntu64" ]; then
         # shellcheck disable=SC1091
