@@ -152,7 +152,7 @@ function print_host {
         ## Avail mem
         log_msg "Host Info: Available Memory: ${memtotal}"
         ## Avail disk size
-        log_msg "Host Info: Diskspace (used / total): ${disksize}"
+        log_msg "Host Info: Diskspace (avail. / total): ${disksize}"
     fi
 }
 
