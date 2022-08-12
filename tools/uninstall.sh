@@ -72,17 +72,26 @@ trap 'err_exit $? $LINENO' ERR
 function ask_uninstall {
     local remove
     if  [ -x "/usr/local/bin/crowsnest" ] && [ -d "${HOME}/crowsnest" ]; then
-        read -rp "Do you REALLY want to remove existing 'crowsnest'? (YES/NO) " remove
-        if [ "${remove}" = "YES" ]; then
-            uninstall_crowsnest
-            remove_raspicam_fix
-            remove_logrotate
-            goodbye_msg
-        else
-            echo -e "\nYou answered '${remove}'! Uninstall will be aborted..."
-            echo -e "GoodBye...\n"
-            exit 1
-        fi
+        while true; do
+        read -erp "Do you REALLY want to remove existing 'crowsnest'? (y/N) " -i "N" remove
+            case "${remove}" in
+                y|Y|yes|Yes|YES)
+                    uninstall_crowsnest
+                    remove_raspicam_fix
+                    remove_logrotate
+                    goodbye_msg
+                    break
+                ;;
+                n|N|no|No|NO)
+                    echo -e "\nYou answered '${remove}'! Uninstall will be aborted..."
+                    echo -e "GoodBye...\n"
+                    exit 1
+                ;;
+                *)
+                    echo -e "\nInvalid input, please try again."
+                ;;
+            esac
+        done
     else
         echo -e "\n'crowsnest' seems not installed."
         echo -e "Exiting. GoodBye ..."
@@ -98,7 +107,7 @@ function uninstall_crowsnest {
     echo -e "Stopping crowsnest.service ... \t[OK]\r"
     echo -en "\nDisable crowsnest.service ...\r"
     sudo systemctl disable crowsnest.service &> /dev/null
-    echo -e "Disablecrowsnest.service ... \t[OK]\r"
+    echo -e "Disable crowsnest.service ... \t[OK]\r"
     echo -en "Uninstalling crowsnest.service...\r"
     if [ -f "${servicefile}" ]; then
         sudo rm -f "${servicefile}"

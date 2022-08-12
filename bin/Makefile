@@ -30,18 +30,26 @@ MAKEFLAGS += -j$(shell nproc)
 # OpenMAX IL Support
 OMX_SUPPORT = $(shell [ -d /opt/vc/include ] && echo 1 || echo 0)
 
+# Ustreamer cloned?
+USTREAMER_EXIST = $(shell [ -d ustreamer ] > /dev/null && echo 1 || echo 0)
+
 all:
-	$(MAKE) ustreamer
+ifeq ($(USTREAMER_EXIST), 0)
+	$(info INFO: ustreamer not found, cloning repository.)
+	$(shell git clone $(USTREAMER_REPO) ustreamer)
+else
+	$(info INFO: ustreamer found.)
+endif
+	$(MAKE) ustreamer-bin
 	$(MAKE) rtsp
 
 # Build ustreamer
-ustreamer:
-	$(shell if ! [ -d "bin/ustreamer" ]; then \
-	git clone $(USTREAMER_REPO) ustreamer; fi)
+ustreamer-bin:
 ifeq ($(OMX_SUPPORT), 1)
-	$(shell cd ustreamer; git reset -q --hard $(USTREAMER_OMX_BRANCH) &> /dev/null \
-	; cd ..)
 	$(info Compiling ustreamer with OMX Support.)
+	$(info Changening to commit '$(USTREAMER_OMX_BRANCH)' )
+	$(shell cd ustreamer; git reset -q --hard $(USTREAMER_OMX_BRANCH) \
+	; cd ..)
 	WITH_OMX=1 $(MAKE) -C $(USTREAMER_PATH)
 else
 	$(info Compiling ustreamer without OMX Support.)

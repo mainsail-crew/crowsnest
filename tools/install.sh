@@ -111,19 +111,17 @@ function import_config {
 
     ## rpi os buster
     if [ "$(uname -m)" != "x86_64" ] &&
-    [ "$(cut -d " " -f1 < /proc/device-tree/model)" == "Raspberry" ] &&
     [ "$(get_os_version buster)" != "0" ] &&
     [ -f "tools/config.rpi-buster" ]; then
         # shellcheck disable=SC1091
-        source tools/config.rpi-buster
+        source tools/config.buster
         return 0
     fi
 
-    ## rpi os bullseye
+    ## bullseye
     if [ "$(uname -m)" != "x86_64" ] &&
     [ "$(get_os_version bullseye)" != "0" ] &&
-    [ "$(cut -d " " -f1 < /proc/device-tree/model)" == "Raspberry" ] &&
-    [ -f "tools/config.rpi-bullseye" ]; then
+    [ -f "tools/config.bullseye" ]; then
         # shellcheck disable=SC1091
         source tools/config.bullseye
         return 0
@@ -174,17 +172,27 @@ function detect_existing_webcamd {
     local remove
     if  [ -x "/usr/local/bin/webcamd" ] && [ -d "${HOME}/mjpg-streamer" ]; then
         detect_msg
-        read -rp "Do you want to remove existing 'webcamd'? (YES/NO) " remove
-        if [ "${remove}" = "YES" ]; then
-            echo -en "\nStopping webcamd.service ...\r"
-            sudo systemctl stop webcamd.service &> /dev/null
-            echo -e "Stopping webcamd.service ... \t[OK]\r"
-            remove_existing_webcamd
-        else
-            echo -e "\nYou answered '${remove}'! Installation will be aborted..."
-            echo -e "GoodBye...\n"
-            exit 1
-        fi
+        read -erp "Do you want to remove existing 'webcamd'? (y/N) " -i "N" remove
+        case "${remove}" in
+            y|Y|yes|Yes|YES)
+                echo -en "\nStopping webcamd.service ...\r"
+                sudo systemctl stop webcamd.service &> /dev/null
+                echo -e "Stopping webcamd.service ... \t[OK]\r"
+                remove_existing_webcamd
+            ;;
+
+            n|N|no|No|NO)
+                echo -e "\nYou have to remove webcamd to use crowsnest!"
+                echo -e "Installation will be aborted..."
+                echo -e "GoodBye...\n"
+                exit 1
+            ;;
+            *)
+                echo -e "\nYou answered '${remove}'! Invalid input ... [EXITING]"
+                echo -e "GoodBye...\n"
+                exit 1
+            ;;
+        esac
     fi
 }
 
@@ -294,7 +302,7 @@ function install_crowsnest {
     fi
     ## enable crowsnest.service
     echo -en "Enable crowsnest.service on boot ...\r"
-    sudo systemctl enable crowsnest.service
+    sudo systemctl enable crowsnest.service &> /dev/null
     echo -e "Enable crowsnest.service on boot ... [OK]\r"
     ## Add moonraker update manager entry
     ## Unattended
@@ -308,16 +316,28 @@ function install_crowsnest {
     ## Manual install
     if [ "${UNATTENDED}" != "true" ] &&
     [ "${CROWSNEST_ADD_CROWSNEST_MOONRAKER}" != "0" ]; then
-        read -rp "Do you want to add [update_manager] entry?(y/n) " addconf
-        case "${addconf}" in
-            y*|Y*)
-                add_update_entry
-            ;;
+        while true; do
+            read -erp "Do you want to add [update_manager] entry? (y/N) " -i "N" addconf
+            case "${addconf}" in
+                y|Y|yes|Yes|YES)
+                    if [ "$(grep -c "crowsnest" "${moonraker_conf}")" == "0" ]; then
+                        add_update_entry
+                    else
+                        echo -e "Update Manager entry already exists moonraker.conf ... [SKIPPED]"
+                    fi
+                    break
+                ;;
 
-            n*|N*)
-                echo -e "Adding Crowsnest Update Manager entry to moonraker.conf ... [SKIPPED]"
-            ;;
-        esac
+                n|N|no|No|NO)
+                    echo -e "Adding Crowsnest Update Manager entry to moonraker.conf ... [SKIPPED]"
+                    break
+                ;;
+
+                *)
+                echo -e "\nInvalid input, please try again."
+                ;;
+            esac
+        done
     fi
 
     ## add $USER to group video
