@@ -125,7 +125,7 @@ function import_config {
     [ "$(cut -d " " -f1 < /proc/device-tree/model)" == "Raspberry" ] &&
     [ -f "tools/config.rpi-bullseye" ]; then
         # shellcheck disable=SC1091
-        source tools/config.bullseye
+        source tools/config.rpi-bullseye
         return 0
     fi
 
