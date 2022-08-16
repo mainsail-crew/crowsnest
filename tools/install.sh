@@ -112,7 +112,7 @@ function import_config {
     ## rpi os buster
     if [ "$(uname -m)" != "x86_64" ] &&
     [ "$(get_os_version buster)" != "0" ] &&
-    [ -f "tools/config.rpi-buster" ]; then
+    [ -f "tools/config.buster" ]; then
         # shellcheck disable=SC1091
         source tools/config.buster
         return 0
