@@ -40,12 +40,12 @@ function run_ustreamer {
         start_param+=( -m MJPEG --device-timeout=5 --buffers=3 )
     else
         start_param+=( -d "${dev}" --device-timeout=2 )
+        # Use MJPEG Hardware encoder if possible
+        if [ "$(detect_mjpeg "${cam_sec}")" = "1" ]; then
+            start_param+=( -m MJPEG --encoder=HW )
+        fi
     fi
     start_param+=( -r "${res}" -f "${fps}" )
-    # Use MJPEG Hardware encoder if possible
-    if [ "$(detect_mjpeg "${cam_sec}")" = "1" ]; then
-        start_param+=( -m MJPEG --encoder=HW )
-    fi
     # webroot & allow crossdomain requests
     start_param+=( --allow-origin=\* --static "${BASE_CN_PATH}/ustreamer-www" )
     # Custom Flag Handling (append to defaults)
