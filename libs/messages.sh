@@ -68,3 +68,8 @@ function detected_broken_dev_msg {
 function debug_focus_val_msg {
     log_msg "DEBUG: Value is now: ${1}"
 }
+
+## blockyfix
+function blockyfix_msg_1 {
+    log_msg "INFO: Blockyfix: Setting video_bitrate_mode to constant."
+}

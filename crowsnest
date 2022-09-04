@@ -65,6 +65,7 @@ done
 init_logging
 initial_check
 v4l2_control
+blockyfix
 construct_streamer
 brokenfocus
 
