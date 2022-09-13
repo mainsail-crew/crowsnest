@@ -127,6 +127,19 @@ function import_config {
         return 0
     fi
 
+    ## Ubuntu ARM (armv7l) tested on v20.04
+    # Thanks to https://github.com/gdachs
+    # To my sadness he didnt make wanted changes in
+    # https://github.com/mainsail-crew/crowsnest/pull/32
+    # But I appriciate your work, thx gdachs!
+    if [ "$(uname -m)" == "armv7l" ] &&
+    [ "$(get_os_version ubuntu)" != "0" ] &&
+    [ -f "tools/config.buntu64" ]; then
+        # shellcheck disable=SC1091
+        source tools/config.buntu64
+        return 0
+    fi
+
     ## Ubuntu ARM (aarch64) tested on v22.04
     if [ "$(uname -m)" == "aarch64" ] &&
     [ "$(get_os_version ubuntu)" != "0" ] &&
