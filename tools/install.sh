@@ -276,7 +276,7 @@ function install_crowsnest {
     ## Install Dependencies
     echo -e "Installing 'crowsnest' Dependencies ..."
     # shellcheck disable=2086
-    sudo apt install --yes --no-install-recommends ${CROWSNEST_CROWSNEST_DEPS} > /dev/null
+    sudo apt-get install --quiet --yes --no-install-recommends ${CROWSNEST_CROWSNEST_DEPS}
     echo -e "Installing 'crowsnest' Dependencies ... [OK]"
     ## Link crowsnest to $PATH
     echo -en "Linking crowsnest ...\r"
