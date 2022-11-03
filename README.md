@@ -1,69 +1,55 @@
 [![license](https://img.shields.io/github/license/mainsail-crew/crowsnest?style=flat-square&color=green)](https://github.com/mainsail-crew/crowsnest/blob/master/LICENSE) [![language](https://img.shields.io/github/languages/top/mainsail-crew/crowsnest?style=flat-square&logo=gnubash&logoColor=white)](https://github.com/mainsail-crew/crowsnest/search?l=shell) [![commit-activity](https://img.shields.io/github/commit-activity/m/mainsail-crew/crowsnest?style=flat-square)](https://github.com/mainsail-crew/crowsnest/commits) [![issue-search](https://img.shields.io/github/issues/mainsail-crew/crowsnest?style=flat-square)](https://github.com/mainsail-crew/crowsnest/issues) [![discord](https://img.shields.io/discord/758059413700345988?color=%235865F2&label=discord&logo=discord&logoColor=white&style=flat-square)](https://discord.gg/mainsail)
 
+# Crowsnest the 'lookout point' for your 3d Printer.
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset=".github/crowsnest-logo-darkmode.png">
     <source media="(prefers-color-scheme: light)" srcset=".github/crowsnest-logo-lightmode.png">
-    <img alt="Crowsnest Logo" src=".github/crowsnest-logo-lightmode.png" style="width: 30%">
+    <img alt="Crowsnest Logo" src=".github/crowsnest-logo-lightmode.png" style="width: 20%">
   </picture>
 </p>
 
-# crowsnest
+## What is "crowsnest"
 
-A webcam daemon for Raspberry Pi OS Lite images like mainsailOS
+Crowsnest is a webcam daemon for Unix-like OS (e.g. raspian, debian)
 
----
-
-## It inherited his name from Sail ships Crow's nest.
-
+## What has that to do with my 3d Printer 
+It inherited it´s name from Sail ships Crow's nest.
 > A crow's nest is a structure in the upper part of the main mast of a ship or a structure that is used as a lookout point.\
 > See https://en.wikipedia.org/wiki/Crow's_nest
 
 So, this will be the 'lookout point' for your Printer.
 
-### Install on Raspberry Pi OS
+## What software do i need ?
+Hopefully any Unix OS will do, but we tested it with Raspian and Debian 5.10
+It works with Mainsail and Fluidd
+
+### Install 
 
     cd ~
     git clone https://github.com/mainsail-crew/crowsnest.git
     cd ~/crowsnest
     make install
 
-_This is not tested on other Distributions. If you test that on other Distributions,\
-feel free to open a Pull Request to enhance Documentation._
-
-After successful Instalation you should consider to add
+After the successful installation you should consider to add "the auto updater" to the moonraker.cfg This is offered by the install process.
+In any problem case here is the text for the moonraker.conf.
 
     [update_manager crowsnest]
     type: git_repo
     path: ~/crowsnest
     origin: https://github.com/mainsail-crew/crowsnest.git
 
-to your moonraker.conf, to get latest and possibly greatest Features.
-
-### To unsinstall 'crowsnest'
+### To uninstall 'crowsnest'
 
     cd ~/crowsnest
     make uninstall
 
-### Are there more options?
-
-Yes.
-
-    cd ~/crowsnest
-    make
-
-or
-
-    make help
-
----
-
-## Simple Configuration
+## After installation: First and simple configuration
 
 ---
 
 All you need to get your Camera up and running is a small block of code in your _crowsnest.conf_\
-In MainsailOS you can do that in mainsail Web Interface.\
+In MainsailOS/Fluidd you can do that via the Web Interface.\
 Open the 'config' section, there should be the mentioned file.
 
 By default it look like this:
