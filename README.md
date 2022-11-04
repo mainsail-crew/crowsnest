@@ -26,7 +26,8 @@ So, this will be the 'lookout point' for your Printer.
     cd ~
     git clone https://github.com/mainsail-crew/crowsnest.git
     cd ~/crowsnest
-    make install
+    make config
+    sudo make install
 
 _This is not tested on other Distributions. If you test that on other Distributions,\
 feel free to open a Pull Request to enhance Documentation._
@@ -37,6 +38,7 @@ After successful Instalation you should consider to add
     type: git_repo
     path: ~/crowsnest
     origin: https://github.com/mainsail-crew/crowsnest.git
+    install_script: tools/install.sh
 
 to your moonraker.conf, to get latest and possibly greatest Features.
 

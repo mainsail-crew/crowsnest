@@ -5,3 +5,4 @@ type: git_repo
 path: ~/crowsnest
 origin: https://github.com/mainsail-crew/crowsnest.git
 managed_services: crowsnest
+install_script: tools/install.sh

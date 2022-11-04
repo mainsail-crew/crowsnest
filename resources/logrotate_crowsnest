@@ -1,22 +1,20 @@
 # crowsnest logrotate file
-
 #### crowsnest - A webcam Service for multiple Cams and Stream Services.
 ####
 #### Written by Stephan Wendel aka KwadFan <me@stephanwe.de>
-#### Copyright 2021
+#### Copyright 2021 - 2022
 #### https://github.com/mainsail-crew/crowsnest
 ####
 #### This File is distributed under GPLv3
 ####
 
-
-/home/pi/klipper_logs/crowsnest.log {
-    rotate 3
-    missingok
-    notifempty
-    copy
-    daily
-    dateext
-    dateformat .%Y-%m-%d
-    maxsize 4M
+%LOGPATH% {
+rotate 3
+missingok
+notifempty
+copy
+daily
+dateext
+dateformat .%Y-%m-%d
+maxsize 4M
 }
