@@ -330,6 +330,7 @@ clone_ustreamer() {
     if [[ -d bin/ustreamer ]]; then
         rm -rf bin/ustreamer
     fi
+    sudo -u "${BASE_USER}" \
     git clone "${CROWSNEST_USTREAMER_REPO_SHIP}" \
     -b "${CROWSNEST_USTREAMER_REPO_BRANCH}" bin/ustreamer
     ## Buster workaround
@@ -347,7 +348,7 @@ build_apps() {
     echo -e "Cloning ustreamer repository ..."
     clone_ustreamer
     pushd bin > /dev/null
-    make all
+    sudo -u "${BASE_USER}" make all
     popd > /dev/null
 }
 
