@@ -121,7 +121,7 @@ import_config() {
 create_filestructure() {
     for i in "${CROWSNEST_CONFIG_PATH}" "${CROWSNEST_LOG_PATH%/*.*}" "${CROWSNEST_ENV_PATH}"; do
         if [[ ! -d "${i}" ]]; then
-            mkdir -p "${i}"
+            sudo -u "${BASE_USER}" mkdir -p "${i}"
         fi
     done
 }
