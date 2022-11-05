@@ -252,7 +252,7 @@ install_crowsnest() {
         echo -en "Copying crowsnest.conf ...\r"
         sudo -u "${BASE_USER}" \
         cp -f "${CROWSNEST_DEFAULT_CONF}" "${config}" &> /dev/null
-        sed -i 's|%LOGPATH%|'"${CROWSNEST_LOG_PATH}"'|g' "${config}"
+        sed -i 's|%LOGPATH%|'"${CROWSNEST_LOG_PATH}/crowsnest.log"'|g' "${config}"
         # Strip full path to tilde
         sed -i 's|'"/home/${BASE_USER}"'|~|g' "${config}"
         echo -e "Copying crowsnest.conf ... [${CN_OK}]\r"
