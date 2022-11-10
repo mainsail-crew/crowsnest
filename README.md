@@ -26,7 +26,6 @@ So, this will be the 'lookout point' for your Printer.
     cd ~
     git clone https://github.com/mainsail-crew/crowsnest.git
     cd ~/crowsnest
-    make config
     sudo make install
 
 _This is not tested on other Distributions. If you test that on other Distributions,\
@@ -57,6 +56,12 @@ Yes.
 or
 
     make help
+
+For advanced users it is possible to configure the installer.
+
+Simply run:
+
+    make config
 
 ---
 
