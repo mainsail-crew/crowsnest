@@ -19,7 +19,7 @@ set -Ee
 
 # Global Vars
 TITLE="\e[31mcrowsnest\e[0m - A webcam daemon for multiple Cams and stream services."
-[[ -n "${BASE_USER}" ]] || BASE_USER="$(whoami)"
+[[ -n "${BASE_USER}" ]] || BASE_USER="$(logname)"
 [[ -n "${CROWSNEST_UNATTENDED}" ]] || CROWSNEST_UNATTENDED="0"
 [[ -n "${CROWSNEST_DEFAULT_CONF}" ]] || CROWSNEST_DEFAULT_CONF="resources/crowsnest.conf"
 
@@ -55,8 +55,8 @@ welcome_msg() {
 
 ### Config Message
 config_msg() {
-    echo -e "\nConfig file not found!\n\tYOU NEED TO CREATE A CONFIGURATION!"
-    echo -e "\tPlease use 'make config' first!\nExiting..."
+    echo -e "\nConfig file not found!\n\tUsing defaults ..."
+    echo -e "\tThis uses paths located in 'printer_data' of your Home Folder."
     exit 1
 }
 
@@ -112,9 +112,15 @@ import_config() {
         # shellcheck disable=SC1091
         source tools/.config
         return 0
-    else
-        config_msg
-        return 0
+    fi
+    if [[ ! -f tools/.config ]] &&
+    [[ "${CROWSNEST_UNATTENDED}" != "1" ]]; then
+        CROWSNEST_CONFIG_PATH="/home/${BASE_USER}/printer_data/config"
+        CROWSNEST_LOG_PATH="/home/${BASE_USER}/printer_data/logs"
+        CROWSNEST_ENV_PATH="/home/${BASE_USER}/printer_data/systemd"
+        CROWSNEST_USTREAMER_REPO_SHIP="https://github.com/pikvm/ustreamer.git"
+        CROWSNEST_USTREAMER_REPO_BRANCH="master"
+
     fi
 }
 

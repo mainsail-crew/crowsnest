@@ -20,7 +20,7 @@ set -Ee
 # Global Vars
 TITLE="\e[31mcrowsnest\e[0m - $(basename "${0}")"
 DH_VERSION="v0.0.0"
-[[ -n "${BASE_USER}" ]] || BASE_USER="$(whoami)"
+[[ -n "${BASE_USER}" ]] || BASE_USER="$(logname)"
 
 # Set fallback lang
 export LC_ALL=C
