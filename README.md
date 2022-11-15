@@ -76,7 +76,7 @@ Open the 'config' section, there should be the mentioned file.
 By default it look like this:
 
     [crowsnest]
-    log_path: ~/klipper_logs/crowsnest.log
+    log_path: ~/printer_data/logs/crowsnest.log
     log_level: quiet
 
     [cam 1]
@@ -88,7 +88,7 @@ By default it look like this:
 
 What that basicly means is:
 
-    log_path: ~/klipper_logs/crowsnest.log
+    log_path: ~/printer_data/logs/crowsnest.log
 
 Where crowsnest (webcamd) should store its Logfile.
 
@@ -151,6 +151,15 @@ Another Option that affects the 'logging' behavior is
     delete_log: true
 
 If you enable that option, everytime you restart, your existing log file will be deleted.
+
+If you want to run crowsnest without any proxy set up,\
+you can use
+
+    no_proxy: true
+
+This forces ustreamer to listen on all available network interfaces.
+
+---
 
 Now the more interessting part.
 

@@ -16,7 +16,7 @@
 # Exit upon Errors
 set -Ee
 
-function run_mjpg {
+run_mjpg() {
     local cams
     cams="${1}"
     for instance in ${cams} ; do
@@ -24,7 +24,7 @@ function run_mjpg {
     done
 }
 
-function run_ustreamer {
+run_ustreamer() {
     local cam_sec ust_bin dev pt res fps cstm start_param
     cam_sec="${1}"
     ust_bin="${BASE_CN_PATH}/bin/ustreamer/ustreamer"
@@ -33,10 +33,16 @@ function run_ustreamer {
     res=$(get_param "cam ${cam_sec}" resolution)
     fps=$(get_param "cam ${cam_sec}" max_fps)
     cstm="$(get_param "cam ${cam_sec}" custom_flags 2> /dev/null)"
+    noprx="$(get_param "crowsnest" no_proxy 2> /dev/null)"
     # construct start parameter
-    start_param=( --host 127.0.0.1 -p "${pt}" )
+    if [[ -n "${noprx}" ]] && [[ "${noprx}" = "true" ]]; then
+        start_param=( --host 0.0.0.0 -p "${pt}" )
+        log_msg "INFO: Set to 'no_proxy' mode! Using 0.0.0.0 !"
+    else
+        start_param=( --host 127.0.0.1 -p "${pt}" )
+    fi
     #Raspicam Workaround
-    if [ "${dev}" = "$(dev_is_raspicam)" ]; then
+    if [[ "${dev}" = "$(dev_is_raspicam)" ]]; then
         start_param+=( -m MJPEG --device-timeout=5 --buffers=3 )
     else
         start_param+=( -d "${dev}" --device-timeout=2 )
@@ -49,7 +55,7 @@ function run_ustreamer {
     # webroot & allow crossdomain requests
     start_param+=( --allow-origin=\* --static "${BASE_CN_PATH}/ustreamer-www" )
     # Custom Flag Handling (append to defaults)
-    if [ -n "${cstm}" ]; then
+    if [[ -n "${cstm}" ]]; then
         start_param+=( "${cstm}" )
     fi
     # Log start_param
