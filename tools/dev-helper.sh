@@ -150,7 +150,7 @@ mem_info() {
 
 disk_info() {
     echo_blue "Disk Info:"
-    df -h
+    df -h /
     echo -e "\n"
 }
 
