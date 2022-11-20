@@ -28,10 +28,13 @@ So, this will be the 'lookout point' for your Printer.
     cd ~/crowsnest
     sudo make install
 
-_This is not tested on other Distributions. If you test that on other Distributions,\
+Tested on the following distributions:  
+ --Ubuntu Server 20.04
+
+If you test that on other Distributions,\
 feel free to open a Pull Request to enhance Documentation._
 
-After successful Instalation you should consider to add
+After successful Installation you should consider to add
 
     [update_manager crowsnest]
     type: git_repo
@@ -41,7 +44,7 @@ After successful Instalation you should consider to add
 
 to your moonraker.conf, to get latest and possibly greatest Features.
 
-### To unsinstall 'crowsnest'
+### To uninstall 'crowsnest'
 
     cd ~/crowsnest
     make uninstall
