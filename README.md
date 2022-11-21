@@ -26,7 +26,7 @@ So, this will be the 'lookout point' for your Printer.
     cd ~
     git clone https://github.com/mainsail-crew/crowsnest.git
     cd ~/crowsnest
-    sudo make install
+    make install
 
 _This is not tested on other Distributions. If you test that on other Distributions,\
 feel free to open a Pull Request to enhance Documentation._
