@@ -29,7 +29,7 @@ So, this will be the 'lookout point' for your Printer.
     sudo make install
 
 Tested on the following distributions:  
- --Ubuntu Server 20.04
+ * Ubuntu Server 20.04
 
 If you test that on other Distributions,\
 feel free to open a Pull Request to enhance Documentation._
