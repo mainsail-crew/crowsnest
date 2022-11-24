@@ -191,8 +191,8 @@ Now the more interessting part.
     resolution: 640x480
     max_fps: 15
 
-> _Note: You can name the cam, how you want!_\
-> _ex.: [cam raspicam]_
+_**Note:** You can name the cam, how you want! ex.: [cam raspicam]_
+**Attention: Do not skip the keyword 'cam'**
 
 ---
 
