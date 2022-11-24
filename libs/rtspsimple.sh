@@ -51,7 +51,7 @@ function run_ffmpeg {
     else
         start_param+=( -c:v copy )
     fi
-    start_param+=(-f rtsp rtsp://localhost:8554/"${cam_section}" )
+    start_param+=(-f rtsp -rtsp_transport tcp rtsp://localhost:8554/"${cam_section}" )
     # Log start_param
     log_msg "Starting ffmpeg (rtsp stream source) with Device ${dev} ..."
     echo "Parameters: ${start_param[*]}" | \
