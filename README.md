@@ -29,7 +29,7 @@ Thank you for choosing crowsnest as your stream service.
 
 If you have any trouble that isnt corelated to my bad code :wink:
 see [FAQ](#faq) section for first aid.\
-Please join our Discord server if you need further help.
+Please join our [Discord](https://discord.gg/mainsail) server if you need further help.
 
 Do not open issues that are based on misconfiguration!\
 This makes it harder for me to keep track of issues in my code.
