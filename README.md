@@ -25,11 +25,13 @@ So, this will be the 'lookout point' for your Printer.
 
 Thank you for choosing crowsnest as your stream service.
 
+**Please read carefully on [how to configre](#simple-configuration) crowsnest to your needs!**
+
 If you have any trouble that isnt corelated to my bad code :wink:
-See [FAQ](#faq) section for first aid.
+see [FAQ](#faq) section for first aid.\
 Please join our Discord server if you need further help.
 
-Do not open issues that are based on misconfiguration!
+Do not open issues that are based on misconfiguration!\
 This makes it harder for me to keep track of issues in my code.
 
 Thanks in advance
