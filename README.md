@@ -32,6 +32,7 @@ Tested on the following distributions:
 
 -   Ubuntu Server 20.04
 -   Ubuntu Server 22.04 LTS (Raspberry Pi Variant)
+-   Linux Mint 21 (Codename: vanessa)
 
 _If you test that on other Distributions, feel free to open a Pull Request to enhance Documentation._
 
