@@ -66,7 +66,7 @@ function run_ffmpeg {
 function run_rtsp_srv {
     local rtsp_bin config
     rtsp_bin="${BASE_CN_PATH}/bin/rtsp-simple-server/rtsp-simple-server"
-    config="${BASE_CN_PATH}/file_templates/crowsnest-rtsp.yml"
+    config="${BASE_CN_PATH}/resources/crowsnest-rtsp.yml"
     log_msg "Starting rtsp-simple-server with config ${config} ..."
     echo "Config file: ${config}" | \
     log_output "rtsp-simple-server [cam ${cam_section}]"
