@@ -21,6 +21,20 @@ A webcam daemon for Raspberry Pi OS Lite images like mainsailOS
 
 So, this will be the 'lookout point' for your Printer.
 
+## Foreword
+
+Thank you for choosing crowsnest as your stream service.
+
+If you have any trouble that isnt corelated to my bad code :wink:
+See [FAQ](#faq) section for first aid.
+Please join our Discord server if you need further help.
+
+Do not open issues that are based on misconfiguration!
+This makes it harder for me to keep track of issues in my code.
+
+Thanks in advance
+Regards KwadFan
+
 ### Installation
 
     cd ~
@@ -304,6 +318,56 @@ You have to "play around" with those settings if it matches your needs.
 simply repeat the commands as mentioned earlier in your ssh connection.
 
 If you have discoverd your setup write that to your webcam.conf as described.
+
+---
+
+## FAQ
+
+---
+
+**Q:** I get / keep getting Error 127 in line 31. What can I do?
+
+**A:** Simple fix. For what ever Reason ustreamer wont start. Run the following commands please.
+
+    sudo systemctl stop crowsnest.service
+    cd ~/crowsnest
+    make buildclean
+    make build
+    sudo systemctl start crowsnest.service
+
+Did it work? If your answer is yes... Was easy right? :wink:
+
+---
+
+**Q:** I set `mode` to rtsp, but I get now stream in VLC. What should I do?
+**A:** Read your log. If you are not using a raspicam or a camera with an inbuilt "H264" encoder, chances are equal to zero, to get a rtsp stream. Sorry :man_shrugging:
+
+---
+
+**Q:** I have twice the same model of a USB Cam, cant get both to show up. What can I do?
+**A:** Easy fix: Run
+
+    ls -l /dev/v4l/by-path
+
+Grab the two equal named devices, ending with `index0`
+
+Use that paths as device path in your crowsnest.conf!
+
+---
+
+**Q:** How do I contribute the best way?
+**A:** Well..-
+
+1. Create an Issue related to your topic.
+2. Prepare an _tested_ Pull Request against the develop branch
+    - Please use commits formatted according to [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
+    - Make sure not to ignore code formating as provided via .editorconfig of this repo
+3. Be patient. Every PR has to pass some sort of "internal gates" before it will hit the master branch, unless an immediate reaction is crutial.
+
+---
+
+**Q:** But Kwad I want you to support in person, because \<fillinyourreason>! How?
+**A:** Buy me a coffee at [ko-fi.com](https://ko-fi.com/U7U2GK66P)
 
 ---
 
