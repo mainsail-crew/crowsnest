@@ -21,18 +21,19 @@ A webcam daemon for Raspberry Pi OS Lite images like mainsailOS
 
 So, this will be the 'lookout point' for your Printer.
 
-### Install on Raspberry Pi OS
+### Installation
 
     cd ~
     git clone https://github.com/mainsail-crew/crowsnest.git
     cd ~/crowsnest
     sudo make install
 
-Tested on the following distributions:  
- * Ubuntu Server 20.04
+Tested on the following distributions:
 
-If you test that on other Distributions,\
-feel free to open a Pull Request to enhance Documentation._
+-   Ubuntu Server 20.04
+-   Ubuntu Server 22.04 LTS (Raspberry Pi Variant)
+
+_If you test that on other Distributions, feel free to open a Pull Request to enhance Documentation._
 
 After successful Installation you should consider to add
 
