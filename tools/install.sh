@@ -416,6 +416,39 @@ enable_legacy_cam() {
     fi
 }
 
+## Ubuntu on RPI Workaround
+## Using seperate function to not distract existing behavior
+
+enable_buntu_cam() {
+    local cfg
+    local -a model
+    cfg="$(find /boot/ -type f -name "config.txt" -printf "%p\n")"
+    model=(pi3 pi4)
+    if [[ -f "${cfg}" ]]; then
+
+        # Helper func
+        get_val() {
+            crudini --get "${cfg}" "${1}" gpu_mem 2> /dev/null
+        }
+
+        echo -en "Enable legacy camera stack ... \r"
+        sed -i "s/camera_auto_detect=1/#camera_auto_detect=1/" "${cfg}"
+        if [[ "$(grep -c "start_x" "${cfg}")" = "0" ]]; then
+            crudini --set --inplace "${cfg}" all start_x 1 &> /dev/null
+        fi
+
+        for d in "${model[@]}"; do
+            if [[ "$(get_val "${d}")" -lt "129" ]]; then
+                crudini --set --inplace "${cfg}" "${d}" gpu_mem 256 &> /dev/null
+            fi
+        done
+        if [[ "$(get_val pi0)" -lt "129" ]]; then
+                sudo crudini --set --inplace "${cfg}" pi0 gpu_mem 160 &> /dev/null
+        fi
+        echo -e "Enable legacy camera stack ... [${CN_OK}]"
+    fi
+}
+
 ## enable service
 enable_service() {
     echo -en "Enable crowsnest.service on boot ...\r"
@@ -490,6 +523,13 @@ main() {
     if [[ "$(get_os_version bullseye)" != "0" ]] &&
     [[ -f "/boot/config.txt" ]]; then
         enable_legacy_cam
+    fi
+
+    ### buntu workaround
+    ### see L#422
+    if [[ "$(get_os_version buntu)" != "0" ]] &&
+    [[ "$(is_raspberry_pi)" = "1" ]]; then
+        enable_buntu_cam
     fi
 
     ## Step 8: Install service File
