@@ -111,7 +111,7 @@ What that basicly means is:
 
     log_path: ~/printer_data/logs/crowsnest.log
 
-Where crowsnest (webcamd) should store its Logfile.
+**_NOTE: Do not change after Installation! This will prevent logrotate properly handling the log file rotation!_**
 
 You can choose:
 
