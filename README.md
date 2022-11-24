@@ -341,7 +341,7 @@ Did it work? If your answer is yes... Was easy right? :wink:
 
 ---
 
-**Q:** I set `mode` to rtsp, but I get now stream in VLC. What should I do?
+**Q:** I set `mode` to `rtsp`, but I get no stream in VLC. What should I do?
 **A:** Read your log. If you are not using a raspicam or a camera with an inbuilt "H264" encoder, chances are equal to zero, to get a rtsp stream. Sorry :man_shrugging:
 
 ---
