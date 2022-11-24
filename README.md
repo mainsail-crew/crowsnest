@@ -368,7 +368,7 @@ Use that paths as device path in your crowsnest.conf!
 
 ---
 
-**Q:** But Kwad I want you to support in person, because \<fillinyourreason>! How?\
+**Q:** But Kwad I want to support you in person, because \<fillinyourreason>! How?\
 **A:** Buy me a coffee at [ko-fi.com](https://ko-fi.com/U7U2GK66P)
 
 ---
