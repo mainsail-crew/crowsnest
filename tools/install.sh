@@ -19,7 +19,7 @@ set -Ee
 
 # Global Vars
 TITLE="\e[31mcrowsnest\e[0m - A webcam daemon for multiple Cams and stream services."
-[[ -n "${BASE_USER}" ]] || BASE_USER="$(logname)"
+[[ -n "${BASE_USER}" ]] || BASE_USER="$(logname 2> /dev/null || echo "${PWD}" | cut -d'/' -f3)"
 [[ -n "${CROWSNEST_UNATTENDED}" ]] || CROWSNEST_UNATTENDED="0"
 [[ -n "${CROWSNEST_DEFAULT_CONF}" ]] || CROWSNEST_DEFAULT_CONF="resources/crowsnest.conf"
 
