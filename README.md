@@ -346,7 +346,7 @@ Did it work? If your answer is yes... Was easy right? :wink:
 
 ---
 
-**Q:** I have twice the same model of a USB Cam, cant get both to show up. What can I do?
+**Q:** I have twice the same model of a USB Cam, cant get both to show up. What can I do?\
 **A:** Easy fix: Run
 
     ls -l /dev/v4l/by-path
@@ -357,7 +357,7 @@ Use that paths as device path in your crowsnest.conf!
 
 ---
 
-**Q:** How do I contribute the best way?
+**Q:** How do I contribute the best way?\
 **A:** Well..-
 
 1. Create an Issue related to your topic.
@@ -368,7 +368,7 @@ Use that paths as device path in your crowsnest.conf!
 
 ---
 
-**Q:** But Kwad I want you to support in person, because \<fillinyourreason>! How?
+**Q:** But Kwad I want you to support in person, because \<fillinyourreason>! How?\
 **A:** Buy me a coffee at [ko-fi.com](https://ko-fi.com/U7U2GK66P)
 
 ---
