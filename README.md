@@ -339,6 +339,16 @@ If you have discoverd your setup write that to your webcam.conf as described.
 
 Did it work? If your answer is yes... Was easy right? :wink:
 
+If it doesn't work for you, you probably updated a Debian "Buster" to latest "Bullseye" right?
+
+Here is the catch, Buster uses a proprietary Firmware for the GPU called OpenMaxIL. This isn't included any more in "Bullseye".
+These File are located in `/opt/vc`.\
+Please backup these files and delete this folder by
+
+    sudo rm -rf /opt/vc
+
+Now run the commands mentioned in the beginning.
+
 ---
 
 **Q:** I set `mode` to `rtsp`, but I get no stream in VLC. What should I do?
