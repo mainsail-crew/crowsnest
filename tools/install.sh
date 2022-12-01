@@ -216,7 +216,7 @@ install_packages() {
     # disable because we want 'wordsplitting'
     sudo apt-get install -q -y --no-install-recommends ${PKGLIST}
 
-    if [[ "$(get_os_version buster)" != "0" ]]; then
+    if [[ "$(get_os_version buster)" != "0" ]] && [[ "$(is_raspberry_pi)" = "1" ]]; then
         sudo apt-get install -q -y --no-install-recommends libraspberrypi-dev
     fi
     echo -e "Installing 'crowsnest' Dependencies ... [${CN_OK}]"
