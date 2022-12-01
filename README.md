@@ -367,6 +367,26 @@ Use that paths as device path in your crowsnest.conf!
 
 ---
 
+**Q:** How to install/use a Raspicam (V1/V2 are tested, HQ Variant untested)?
+
+**A:** Well...
+If your device is a Raspberry Pi, one of the mentioned Cameras **and** your OS is a Raspberry Pi OS based one, simply do nothing!
+I tried as much as I can to reduce the steps to get that done.
+Use `/dev/video0` as device in your _crowsnest.conf_
+That is the device path I try to force for Raspicams.
+
+---
+
+**Q:** I use a Raspicam and a USB one but I cant get them both for unknown reason. How do I fix that?
+
+**A:** My "force action" for Raspicams has a downside. If your USB Cam was attached before you extended a raspicam, the path `/dev/video0` is blocked by that USB Cam.
+
+To fix that please unplug the USB one and reboot.
+Plug the USB Cam in, after the stream of the raspicam is shown.
+After that use the `/dev/v4l/by-id/<whateveryourdeviceidis>-index0` for the USB one and restart crowsnest.
+
+---
+
 **Q:** How do I contribute the best way?\
 **A:** Well..-
 
