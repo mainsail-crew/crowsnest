@@ -224,12 +224,15 @@ According to that 8080 will be /webcam, port 8081 will be /webcam2 and so on._**
 
     device: /dev/video0
 
-The Videodevice (Camera) what should be used by choosen Streamservice.
+This setting defines what video device will be used by the selected service.
+
+If you are not using a Raspberry Pi then `/dev/video0` might not work and you might encounter an "`Video capture not supported by the device`" error in the `crowsnest.log` log file.
+
+In this case you should use the direct device ID for the USB camera found in the `/dev/4vl/by-id` directory, like in the following example:
 
     device: /dev/v4l/by-id/usb-PixArt_Imaging_Inc._USB2.0_Camera-video-index0
 
-is also valid. Your devices are listed in your log-file on every run.\
-So, you can easily copy it from there.
+Please be aware that all available devices are always listed in the `crowsnest.log` log file, so you can always copy the appropriate device ID from there.
 
 ---
 
