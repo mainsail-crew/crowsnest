@@ -414,6 +414,10 @@ enable_legacy_cam() {
         fi
         echo -e "Enable legacy camera stack ... [${CN_OK}]"
     fi
+    ## crudini workaround
+    ## used version of crudini puts spaces between values and parameters
+    ## This causes unwanted side effects
+    sed -i 's/[[:alnum:]][[:blank:]]=[[:blank:]][[:alnum:]]/=/g' "${cfg}"
 }
 
 ## Ubuntu on RPI Workaround
@@ -447,6 +451,10 @@ enable_buntu_cam() {
         fi
         echo -e "Enable legacy camera stack ... [${CN_OK}]"
     fi
+    ## crudini workaround
+    ## used version of crudini puts spaces between values and parameters
+    ## This causes unwanted side effects
+    sed -i 's/[[:alnum:]][[:blank:]]=[[:blank:]][[:alnum:]]/=/g' "${cfg}"
 }
 
 ## enable service
