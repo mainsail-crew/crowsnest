@@ -417,7 +417,7 @@ enable_legacy_cam() {
     ## crudini workaround
     ## used version of crudini puts spaces between values and parameters
     ## This causes unwanted side effects
-    sed -i 's/[[:alnum:]][[:blank:]]=[[:blank:]][[:alnum:]]/=/g' "${cfg}"
+    sed -i 's/[[:blank:]]=[[:blank:]]/=/g' "${cfg}"
 }
 
 ## Ubuntu on RPI Workaround
@@ -454,7 +454,7 @@ enable_buntu_cam() {
     ## crudini workaround
     ## used version of crudini puts spaces between values and parameters
     ## This causes unwanted side effects
-    sed -i 's/[[:alnum:]][[:blank:]]=[[:blank:]][[:alnum:]]/=/g' "${cfg}"
+    sed -i 's/[[:blank:]]=[[:blank:]]/=/g' "${cfg}"
 }
 
 ## enable service
