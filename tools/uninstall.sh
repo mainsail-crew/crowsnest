@@ -10,6 +10,9 @@
 
 # shellcheck enable=require-variable-braces
 
+### Disable SC2317 due Trap usage
+# shellcheck disable=SC2317
+
 ## Exit on Error
 set -Ee
 
