@@ -46,9 +46,22 @@ Regards KwadFan
 
 Tested on the following distributions:
 
--   Ubuntu Server 20.04
--   Ubuntu Server 22.04 LTS (Raspberry Pi Variant)
--   Linux Mint 21 (Codename: vanessa)
+Legend:
+Tested and work as intended: :heavy_check_mark:
+Tested and/or did not work: :x:
+Should work but not tested: :question:
+Not available: :heavy_minus_sign:
+
+|         Operating System          |  X86 Architecture  |     ARM Archticture      |
+| :-------------------------------: | :----------------: | :----------------------: |
+|        MainsailOS (<0.7.1)        | :heavy_minus_sign: | :heavy_check_mark: (rpi) |
+|        MainsailOS (>1.0.0)        | :heavy_minus_sign: | :heavy_check_mark: (rpi) |
+|              Armbian              |     :question:     |    :heavy_check_mark:    |
+|        Ubuntu Server 20.04        | :heavy_check_mark: |        :question:        |
+|      Ubuntu Server 22.04 LTS      | :heavy_check_mark: | :heavy_check_mark: (rpi) |
+| Linux Mint 21 (Codename: vanessa) | :heavy_check_mark: |        :question:        |
+|    Archlinux (and derivatives)    |        :x:         |           :x:            |
+|           Alpine Linux            |        :x:         |           :x:            |
 
 _If you test that on other Distributions, feel free to open a Pull Request to enhance Documentation._
 
