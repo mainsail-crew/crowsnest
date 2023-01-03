@@ -381,7 +381,10 @@ install_raspicam_fix() {
             CROWSNEST_RASPICAMFIX="0"
         fi
     fi
-    if [[ "${CROWSNEST_RASPICAMFIX}" == "1" ]]; then
+    # This is also used for unattended Install
+    # Needs special handling if targeted Image is not for Raspberry Pi's!
+    if [[ "${CROWSNEST_RASPICAMFIX}" == "1" ]] &&
+    [[ -f /boot/config.txt ]]; then
         echo -en "Applying Raspicam Fix ... \r"
         bash -c 'echo "bcm2835-v4l2" >> /etc/modules'
         cp resources/bcm2835-v4l2.conf /etc/modprobe.d/
