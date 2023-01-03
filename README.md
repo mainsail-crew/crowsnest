@@ -47,10 +47,10 @@ Regards KwadFan
 Tested on the following distributions:
 
 Legend:
-Tested and work as intended: :heavy_check_mark:
-Tested and/or did not work: :x:
-Should work but not tested: :question:
-Not available: :heavy_minus_sign:
+Tested and work as intended: :heavy_check_mark:\
+Tested and/or did not work: :x:\
+Should work but not tested: :question:\
+Not available: :heavy_minus_sign:\
 
 |         Operating System          |  X86 Architecture  |     ARM Archticture      |
 | :-------------------------------: | :----------------: | :----------------------: |
