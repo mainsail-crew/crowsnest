@@ -52,7 +52,7 @@ Tested and/or did not work: :x:\
 Should work but not tested: :question:\
 Not available: :heavy_minus_sign:
 
-|         Operating System          |  X86 Architecture  |     ARM Archticture      |
+|         Operating System          |  X86 Architecture  |     ARM Archtecture      |
 | :-------------------------------: | :----------------: | :----------------------: |
 |        MainsailOS (<0.7.1)        | :heavy_minus_sign: | :heavy_check_mark: (rpi) |
 |        MainsailOS (>1.0.0)        | :heavy_minus_sign: | :heavy_check_mark: (rpi) |
