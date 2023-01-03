@@ -46,7 +46,7 @@ Regards KwadFan
 
 Tested on the following distributions:
 
-Legend:
+**Legend:**\
 Tested and work as intended: :heavy_check_mark:\
 Tested and/or did not work: :x:\
 Should work but not tested: :question:\
