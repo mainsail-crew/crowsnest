@@ -241,7 +241,7 @@ This setting defines what video device will be used by the selected service.
 
 If you are not using a Raspberry Pi then `/dev/video0` might not work and you might encounter an "`Video capture not supported by the device`" error in the `crowsnest.log` log file.
 
-In this case you should use the direct device ID for the USB camera found in the `/dev/4vl/by-id` directory, like in the following example:
+In this case you should use the direct device ID for the USB camera found in the `/dev/v4l/by-id` directory, like in the following example:
 
     device: /dev/v4l/by-id/usb-PixArt_Imaging_Inc._USB2.0_Camera-video-index0
 
