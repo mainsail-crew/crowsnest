@@ -43,7 +43,7 @@ function v4l2_control {
                     opt_avail="$(v4l2-ctl -d "${device}" -L | \
                     grep -c "${valueless}" || true)"
                     if [ "${opt_avail}" -eq "0" ]; then
-                        log_msg "Parameter '${param}' not available for '${device}'. Skipped."
+                        log_msg "Parameter '${param}' not available for '${device}'. V4L2 control skipped."
                     else
                         v4l2-ctl -d "${device}" -c "${param}" 2> /dev/null
                     fi
@@ -52,7 +52,7 @@ function v4l2_control {
                         v4l2-ctl -d "${device}" -L | log_output "v4l2ctl"
                     fi
             else
-                log_msg "No parameters set for [cam ${cam}]. Skipped."
+                log_msg "No parameters set for [cam ${cam}]. V4L2 control skipped."
             fi
         done
     }
