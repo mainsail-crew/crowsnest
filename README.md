@@ -10,16 +10,59 @@
 
 # crowsnest
 
-A webcam daemon for Raspberry Pi OS Lite images like mainsailOS
+A webcam daemon for Raspberry Pi OS Lite images like [MainsailOS](https://github.com/mainsail-crew/MainsailOS)
 
 ---
 
-## It inherited his name from Sail ships Crow's nest.
+## It inherited his name from sailing ships crow's nest.
 
-> A crow's nest is a structure in the upper part of the main mast of a ship or a structure that is used as a lookout point.\
+> A crow's nest is a structure in the upper part of the main mast of a ship or a structure that is used as a lookout point. \
 > See https://en.wikipedia.org/wiki/Crow's_nest
 
-So, this will be the 'lookout point' for your Printer.
+So, this will be the 'lookout point' for your printer.
+
+---
+
+<br>
+<br>
+<br>
+
+## Index:
+
+- [Foreword](#foreword)
+- [Installation](#installation)
+
+<br>
+
+- [Configuration :exclamation: **READ THIS** :exclamation:](#simple-configuration)
+
+<br>
+
+- [FAQ :exclamation: **READ THIS** :exclamation:](#faq)
+  - [I get / keep getting Error 127 in line 31](#question-i-get--keep-getting-error-127-in-line-31-what-can-i-do)
+  - [I set `mode` to `rtsp`, but I get no stream in VLC](#question-i-set-mode-to-rtsp-but-i-get-no-stream-in-vlc-what-should-i-do)
+  - [I have twice the same model of a USB Cam, cant get both to show up](#question-i-have-twice-the-same-model-of-a-usb-cam-cant-get-both-to-show-up-what-can-i-do)
+  - [How to install/use a Raspicam (V1/V2 are tested, HQ Variant untested)](#question-how-to-installuse-a-raspicam-v1v2-are-tested-hq-variant-untested)
+  - [I use a Raspicam and a USB one but I cant get them both for unknown reason](#question-i-use-a-raspicam-and-a-usb-one-but-i-cant-get-them-both-for-unknown-reason-how-do-i-fix-that)
+
+<br>
+
+- [How do I contribute the best way](#question-how-do-i-contribute-the-best-way)
+- [I want to support you in person, because \<fillinyourreason>! - How? ](#question-but-kwad-i-want-to-support-you-in-person-because-fillinyourreason-how)
+
+<br>
+
+- [CustomPiOS-module](#custompios-module)
+- [What 'Backends' uses crowsnest?](#what-backends-uses-crowsnest)
+- [Credits](#credits)
+
+<br>
+<br>
+<br>
+
+---
+
+<br>
 
 ## Foreword
 
@@ -27,17 +70,26 @@ Thank you for choosing crowsnest as your stream service.
 
 **Please read carefully on [how to configre](#simple-configuration) crowsnest to your needs!**
 
-If you have any trouble that isnt corelated to my bad code :wink:
-see [FAQ](#faq) section for first aid.\
+If you have any trouble that isn't corelated to my bad code :wink:
+
+see [FAQ](#faq) section for first aid. :rotating_light:
+
 Please join our [Discord](https://discord.gg/mainsail) server if you need further help.
 
-Do not open issues that are based on misconfiguration!\
+Do not open issues that are based on misconfiguration!
+
 This makes it harder for me to keep track of issues in my code.
 
-Thanks in advance
+Thanks in advance \
 Regards KwadFan
 
-### Installation
+<br>
+
+---
+
+<br>
+
+## Installation
 
     cd ~
     git clone https://github.com/mainsail-crew/crowsnest.git
@@ -46,10 +98,10 @@ Regards KwadFan
 
 Tested on the following distributions:
 
-**Legend:**\
-Tested and work as intended: :heavy_check_mark:\
-Tested and/or did not work: :x:\
-Should work but not tested: :question:\
+**Legend:** \
+Tested and work as intended: :heavy_check_mark: \
+Tested and/or did not work: :x: \
+Should work but not tested: :question: \
 Not available: :heavy_minus_sign:
 
 |         Operating System          |  X86 Architecture  |     ARM Architecture     |
@@ -59,13 +111,13 @@ Not available: :heavy_minus_sign:
 |              Armbian              |     :question:     |    :heavy_check_mark:    |
 |        Ubuntu Server 20.04        | :heavy_check_mark: |        :question:        |
 |      Ubuntu Server 22.04 LTS      | :heavy_check_mark: | :heavy_check_mark: (rpi) |
-| Linux Mint 21 (Codename: vanessa) | :heavy_check_mark: |        :question:        |
+| Linux Mint 21 (codename: vanessa) | :heavy_check_mark: |        :question:        |
 |    Archlinux (and derivatives)    |        :x:         |           :x:            |
 |           Alpine Linux            |        :x:         |           :x:            |
 
-_If you test that on other Distributions, feel free to open a Pull Request to enhance Documentation._
+_If you test that on other distributions, feel free to open a Pull Request to enhance documentation._
 
-After successful Installation you should consider to add
+After successful installation you should consider to add
 
     [update_manager crowsnest]
     type: git_repo
@@ -73,7 +125,7 @@ After successful Installation you should consider to add
     origin: https://github.com/mainsail-crew/crowsnest.git
     install_script: tools/install.sh
 
-to your moonraker.conf, to get latest and possibly greatest Features.
+to your _moonraker.conf_, to get latest and possibly greatest features.
 
 ### To uninstall 'crowsnest'
 
@@ -99,12 +151,12 @@ Simply run:
 
 ---
 
+<br>
+
 ## Simple Configuration
 
----
-
-All you need to get your Camera up and running is a small block of code in your _crowsnest.conf_\
-In MainsailOS you can do that in mainsail Web Interface.\
+All you need to get your camera up and running is a small block of code in your _crowsnest.conf_ \
+In MainsailOS you can do that in mainsail web interface. \
 Open the 'config' section, there should be the mentioned file.
 
 By default it look like this:
@@ -124,13 +176,13 @@ What that basicly means is:
 
     log_path: ~/printer_data/logs/crowsnest.log
 
-**_NOTE: Do not change after Installation! This will prevent logrotate properly handling the log file rotation!_**
+**:warning: _Do not change after installation! This will prevent logrotate properly handling the log file rotation!_ :warning:**
 
 You can choose:
 
     log_level: quiet
 
-This Option shows a bare minimum Logfile.\
+This option shows a bare minimum logfile. \
 For example:
 
     [06/16/22 09:57:01] crowsnest: crowsnest - A webcam Service for multiple Cams and Stream Services.
@@ -159,34 +211,32 @@ The next option is
 
     log_level: verbose
 
-This gives you a little more Informations.
-It prints out you existing webcam.conf and shows
-a detailed info about your configured ( and connected ) cams.\
+This gives you a little more informations. \
+It prints out you existing _webcam.conf_ and shows a detailed info about your configured ( and connected ) cams.
 
 You will find an example log [here](log-example.md).
 
-This is useful to determine what the Hardware Encoder of your Camera is capable of.\
-In this case a "cheap" raspicam for about 7€ was used.\
+This is useful to determine what the hardware encoder of your camera is capable of. \
+In this case a "cheap" raspicam for about 7€ was used. \
 So, truly made for 'Helper for Setup' purposes.
 
-If you want to get the full Details, please use
+If you want to get the full details, please use
 
     log_level: debug
 
-This will show you barely the same as 'verbose' but it prints also your\
-configured Start Parameters ( and the defaults ), also it shows\
-the Output of your choosen Streamer.\
+This will show you barely the same as 'verbose' but it prints also your configured start parameters ( and the defaults ), \
+also it shows the output of your choosen streamer. \
 This option ist more for debugging purposes and has a tendency to overwhelm you if you are not familiar with that.
 
 ---
 
-Another Option that affects the 'logging' behavior is
+Another option that affects the 'logging' behavior is
 
     delete_log: true
 
 If you enable that option, everytime you restart, your existing log file will be deleted.
 
-If you want to run crowsnest without any proxy set up,\
+If you want to run crowsnest without any proxy set up, \
 you can use
 
     no_proxy: true
@@ -213,16 +263,17 @@ This section should be pretty much self explantory.
 
     mode: mjpg
 
-means your choosen streamservice will be ustreamer with the well known mjpg-protocol.\
+means your choosen streamservice will be ustreamer with the well known mjpg-protocol. \
 You can choose:
 
     mode: rtsp
 
-This let you use external viewer like vlc for example.\
-To view the stream use a proper player like [VLC](https://www.videolan.org/).\
+This let you use external viewer like vlc for example. \
+To view the stream use a proper player like [VLC](https://www.videolan.org/).
+
 **The stream url will be _rtsp://\<printeriporname\>:8554/\<yourcamerasectionname\>_** \
 As an example: _rtsp://mainsail.local:8554/1_ \
-_NOTE: There will be no preview in your Browser!_
+> _There will be no preview in your Browser!_
 
 ---
 
@@ -230,8 +281,8 @@ _NOTE: There will be no preview in your Browser!_
 
 This will only affect the used port of ustreamer.
 
-**_NOTE: Ports 8080 - 8084 are covered by nginx reverse proxy in MainsailOS \
-According to that 8080 will be /webcam, port 8081 will be /webcam2 and so on._**
+> **_Ports 8080 - 8084 are covered by nginx reverse proxy in MainsailOS_** \
+> **_According to that 8080 will be /webcam, port 8081 will be /webcam2 and so on._**
 
 ---
 
@@ -251,29 +302,27 @@ Please be aware that all available devices are always listed in the `crowsnest.l
 
     resolution: 640x480
 
-Your desired FPS Settings has to match what your Camera able to deliver!
-_NOTE: For the most part ignored in rtsp mode!_
+Your desired FPS settings has to match what your camera able to deliver! \
+> _For the most part ignored in rtsp mode!_
 
     max_fps: 15
 
-This last option only affects ustreamer:\
-This needs some to read further Information.
+This last option only affects ustreamer: \
+This needs some to read further information.
 
     custom_flags:
 
-If you enable this in your [cam whatevernameyouset],\
-you can add parameters according to your needs.\
+If you enable this in your `[cam whatevernameyouset]`, \
+you can add parameters according to your needs. \
 Those will be appended to the default/preconfigured parameters.
 
-**_Note: These are seperated by a single space not comma seperated!_**
+> **_These are seperated by a single space not comma seperated!_**
 
-To setup Services to your need you have to take a closer look to the documentation of the Project.\
+To setup services to your need you have to take a closer look to the documentation of the project. \
 As a pointer in the right direction:
 
--   ustreamer
-
-    -   For sake of simplicity I converted ustreamers manpage to
-        [ustreamer's manpage](./ustreamer_manpage.md)
+- ustreamer
+  - For sake of simplicity I converted ustreamers manpage to [ustreamer's manpage](./ustreamer_manpage.md)
 
 ---
 
@@ -281,22 +330,22 @@ As a pointer in the right direction:
 
     v4l2ctl:
 
-This optional parameter allows you to setup your Cam due v4l2-ctl options.
-Unfortunatly this is a complex topic. But I try to explain it, as good I can.
+This optional parameter allows you to setup your Cam due v4l2-ctl options. \
+Unfortunatly this is a complex topic. \
+But I try to explain it, as good I can.
 
 ### As an Example
 
-You own a Logitech C920 Camera, these camera needs some tweaks to get a sharp picture.\
+You own a Logitech C920 Camera, these camera needs some tweaks to get a sharp picture. \
 A solution was to use a cronjob (timed actions due scripts) that runs a script with some v4l2-ctl commands.
 
     v4l2-ctl -d /dev/video0 -c focus_auto=0
     v4l2-ctl -d /dev/video0 -c focus_absolute=30
 
-That script gets executed when th Pi boots up.\
+That script gets executed when th Pi boots up. \
 Not a comfortable solution.
 
-alexz from the mainsail-crew mentioned it would be a good move when \
-this could happen by crowsnest, hassle free for the user.
+[_alexz_](https://github.com/zellneralex) from the [mainsail-crew](https://github.com/orgs/mainsail-crew/people) mentioned it would be a good move when this could happen by crowsnest, hassle free for the user.
 
 Take a look at [alexz webcam.conf](https://github.com/zellneralex/klipper_config/blob/11f4f8db8ac0e273e25134b571d0a93291f3511e/webcam.conf)
 
@@ -308,7 +357,7 @@ Simply add
 to your camera setup section. \
 Restart webcamd via mainsail (or your used UI) and you're good to go.
 
-To determine which options or better said parameters your Webcam provides, set at least
+To determine which options or better said parameters your webcam provides, set at least
 
     log_level: verbose
 
@@ -332,20 +381,23 @@ This will show you a list with available options. Like this:
     [04/02/22 15:07:46] webcamd: 		exposure_absolute 0x009a0902 (int) : min=5 max=2500 step=1 default=5 value=5 flags=inactive
     [04/02/22 15:07:46] webcamd: 		exposure_auto_priority 0x009a0903 (bool) : default=0 value=0
 
-You have to "play around" with those settings if it matches your needs.
-simply repeat the commands as mentioned earlier in your ssh connection.
-
-If you have discoverd your setup write that to your webcam.conf as described.
+You have to "play around" with those settings if it matches your needs. \
+simply repeat the commands as mentioned earlier in your ssh connection. \
+If you have discoverd your setup write that to your _webcam.conf_ as described.
 
 ---
+
+<br>
 
 ## FAQ
 
 ---
 
-**Q:** I get / keep getting Error 127 in line 31. What can I do?
+#### :question: I get / keep getting Error 127 in line 31. What can I do?
 
-**A:** Simple fix. For what ever Reason ustreamer wont start. Run the following commands please.
+**Solution:**
+
+Simple fix. For what ever reason ustreamer wont start. Run the following commands please.
 
     sudo systemctl stop crowsnest.service
     cd ~/crowsnest
@@ -353,12 +405,11 @@ If you have discoverd your setup write that to your webcam.conf as described.
     make build
     sudo systemctl start crowsnest.service
 
-Did it work? If your answer is yes... Was easy right? :wink:
-
-If it doesn't work for you, you probably updated a Debian "Buster" to latest "Bullseye" right?
-
-Here is the catch, Buster uses a proprietary Firmware for the GPU called OpenMaxIL. This isn't included any more in "Bullseye".
-These File are located in `/opt/vc`.\
+Did it work? If your answer is yes... Was easy right? :wink: \
+If it doesn't work for you, you probably updated a Debian "Buster" to latest "Bullseye" right? \
+Here is the catch, Buster uses a proprietary Firmware for the GPU called OpenMaxIL. \
+This isn't included any more in "Bullseye". \
+These files are located in `/opt/vc`. \
 Please backup these files and delete this folder by
 
     sudo rm -rf /opt/vc
@@ -367,87 +418,103 @@ Now run the commands mentioned in the beginning.
 
 ---
 
-**Q:** I set `mode` to `rtsp`, but I get no stream in VLC. What should I do?
-**A:** Read your log. If you are not using a raspicam or a camera with an inbuilt "H264" encoder, chances are equal to zero, to get a rtsp stream. Sorry :man_shrugging:
+#### :question: I set `mode` to `rtsp`, but I get no stream in VLC. What should I do?
+
+**Solution:**
+
+Read your log. \
+If you are not using a raspicam or a camera with an inbuilt "H264" encoder, chances are equal to zero, to get a rtsp stream. \
+Sorry :man_shrugging:
 
 ---
 
-**Q:** I have twice the same model of a USB Cam, cant get both to show up. What can I do?\
-**A:** Easy fix: Run
+#### :question: I have twice the same model of a USB Cam, cant get both to show up. What can I do?
+
+**Solution:**
+
+Easy fix: Run
 
     ls -l /dev/v4l/by-path
 
-Grab the two equal named devices, ending with `index0`
-
-Use that paths as device path in your crowsnest.conf!
+Grab the two equal named devices, ending with `index0` \
+Use that paths as device path in your _crowsnest.conf_!
 
 ---
 
-**Q:** How to install/use a Raspicam (V1/V2 are tested, HQ Variant untested)?
+#### :question: How to install/use a Raspicam (V1/V2 are tested, HQ Variant untested)?
 
-**A:** Well...
-If your device is a Raspberry Pi, one of the mentioned Cameras **and** your OS is a Raspberry Pi OS based one, simply do nothing!
-I tried as much as I can to reduce the steps to get that done.
-Use `/dev/video0` as device in your _crowsnest.conf_
+**Solution:**
+
+Well...
+
+If your device is a Raspberry Pi, one of the mentioned cameras **and** your OS is a Raspberry Pi OS based one, simply do nothing! \
+I tried as much as I can to reduce the steps to get that done. \
+Use `/dev/video0` as device in your _crowsnest.conf_ \
 That is the device path I try to force for Raspicams.
 
 ---
 
-**Q:** I use a Raspicam and a USB one but I cant get them both for unknown reason. How do I fix that?
+#### :question: I use a Raspicam and a USB one but I cant get them both for unknown reason. How do I fix that?
 
-**A:** My "force action" for Raspicams has a downside. If your USB Cam was attached before you extended a raspicam, the path `/dev/video0` is blocked by that USB Cam.
+**Solution:**
 
-To fix that please unplug the USB one and reboot.
-Plug the USB Cam in, after the stream of the raspicam is shown.
-After that use the `/dev/v4l/by-id/<whateveryourdeviceidis>-index0` for the USB one and restart crowsnest.
+My "force action" for Raspicams has a downside. If your USB Cam was attached before you extended a raspicam, the path `/dev/video0` is blocked by that USB Cam.
+
+To fix that please unplug the USB one and reboot. \
+Plug the USB Cam in, after the stream of the raspicam is shown. \
+After that use the `/dev/v4l/by-id/<whateveryourdeviceidis>-index0` for the USB one and restart crowsnest. \
 
 ---
 
-**Q:** How do I contribute the best way?\
-**A:** Well..-
+#### :question: How do I contribute the best way?
+
+**Solution:**
+
+Well...
 
 1. Create an Issue related to your topic.
 2. Prepare an _tested_ Pull Request against the develop branch
     - Please use commits formatted according to [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
-    - Make sure not to ignore code formating as provided via .editorconfig of this repo
+    - Make sure not to ignore code formating as provided via [_.editorconfig_](.editorconfig) of this repo
 3. Be patient. Every PR has to pass some sort of "internal gates" before it will hit the master branch, unless an immediate reaction is crutial.
 
 ---
 
-**Q:** But Kwad I want to support you in person, because \<fillinyourreason>! How?\
-**A:** Buy me a coffee at [ko-fi.com](https://ko-fi.com/U7U2GK66P)
+#### :question: But Kwad I want to support you in person, because \<fillinyourreason>! How?
+
+**Solution:**
+
+Buy me a coffee at [ko-fi.com](https://ko-fi.com/U7U2GK66P)
 
 ---
 
 ## CustomPIOS Module
 
-I have decided to provide an [CustomPiOS Module](https://github.com/guysoft/CustomPiOS) to make it easier to integrate to other Distributions like MainsailOS or similar.
-Please see [README.md](./custompios/README.md) in the module folder for\
-further Informations.
+I have decided to provide an [CustomPiOS Module](https://github.com/guysoft/CustomPiOS) to make it easier to integrate to other distributions like MainsailOS or similar. \
+Please see [README.md](./custompios/README.md) in the module folder for further informations.
 
 ---
 
 ## What 'Backends' uses crowsnest?
 
--   ustreamer - A streamserver from Pi-KVM Project\
-    active maintained by [Maxim Devaev](https://github.com/mdevaev)\
-    [ustreamer on github](https://github.com/pikvm/ustreamer)
+- ustreamer - A streamserver from Pi-KVM project \
+  active maintained by [Maxim Devaev](https://github.com/mdevaev) \
+  [ustreamer on github](https://github.com/pikvm/ustreamer)
 
--   rtsp-simple-server
-
-    -   This server provides rtsp streams and more\
-        at this point of development are only 'rtsp' features enabled\
-        More features are planned.
-        [rtsp-simple-server](https://github.com/aler9/rtsp-simple-server) is written in Go by [aler9](https://github.com/aler9)
+- rtsp-simple-server
+  - This server provides rtsp streams and more \
+    at this point of development are only 'rtsp' features enabled \
+    More features are planned. \
+    [rtsp-simple-server](https://github.com/aler9/rtsp-simple-server) is written in Go by [aler9](https://github.com/aler9)
 
 ---
 
 ## Credits
 
-I want to give a huge shoutout to _lixxbox_ and _alexz_ from the mainsail-crew.\
+I want to give a huge shoutout to [_lixxbox_](https://github.com/lixxbox) and [_alexz_](https://github.com/zellneralex) from the [mainsail-crew](https://github.com/orgs/mainsail-crew/people). \
 Without these guys it simply were not possible to get that done.
 
-They both mentioned improvements and tested a heck out of there machines to get this all functioning well.\
+They both mentioned improvements and tested a heck out of there machines to get this all functioning well. \
 Thank you, mates :) Proud to be a part of.
 
 Thanks to [Pedro Lamas](https://github.com/pedrolamas), for the ISSUE_TEMPLATES.
@@ -455,9 +522,9 @@ Thanks to [Pedro Lamas](https://github.com/pedrolamas), for the ISSUE_TEMPLATES.
 ---
 
 <p align="center">
-<img src="https://github.com/mainsail-crew/docs/raw/master/assets/img/logo.png">
+  <img src="https://github.com/mainsail-crew/docs/raw/master/assets/img/logo.png">
 </p>
 
-**So, with all that said, get your position seaman! Prepare to get wet feets on your Journey.**
+**So, with all that said, get your position seaman! Prepare to get wet feets on your journey.**
 
 ## ARRRR yooo rrready to sail?
