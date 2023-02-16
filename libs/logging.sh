@@ -29,6 +29,7 @@ function set_log_path {
 
 function init_logging {
     set_log_path
+    set_log_level
     delete_log
     log_msg "crowsnest - A webcam Service for multiple Cams and Stream Services."
     log_msg "Version: $(self_version)"
@@ -36,16 +37,16 @@ function init_logging {
     print_host
 }
 
-function log_level {
+function set_log_level {
     local loglevel
     loglevel="$(get_param crowsnest log_level 2> /dev/null)"
     # Set default log_level to quiet
-    if [ -z "${loglevel}" ] || [[ "${loglevel}" != @(quiet|verbose|debug) ]];
-    then
-        echo "quiet"
+    if [ -z "${loglevel}" ] || [[ "${loglevel}" != @(quiet|verbose|debug) ]]; then
+        CROWSNEST_LOG_LEVEL="quiet"
     else
-        echo "${loglevel}"
+        CROWSNEST_LOG_LEVEL="${loglevel}"
     fi
+    declare -r CROWSNEST_LOG_LEVEL
 }
 
 function delete_log {
@@ -69,10 +70,10 @@ function log_output {
     local prefix
     prefix="DEBUG: ${1}"
     while read -r line; do
-        if [ "$(log_level)" == "debug" ]; then
+        if [[ "${CROWSNEST_LOG_LEVEL}" = "debug" ]]; then
             log_msg "${prefix}: ${line}"
         fi
-        if [ -n "${line}" ]; then
+        if [[ -n "${line}" ]]; then
             # needed to prettify ustreamers output
             echo "${line//^--/ustreamer}" | logger -t crowsnest
         fi
@@ -94,25 +95,25 @@ function print_cams {
     v4l="$(find /dev/v4l/by-id/ -iname "*index0" 2> /dev/null | wc -l)"
     csi="$(find /dev/v4l/by-path/ -iname "*csi*index0" 2> /dev/null | wc -l)"
     total="$((v4l+$(detect_raspicam)+csi))"
-    if [ "${total}" -eq 0 ]; then
+    if [[ "${total}" -eq 0 ]]; then
         log_msg "ERROR: No usable Devices Found. Stopping $(basename "${0}")."
         exit 1
     else
         log_msg "INFO: Found ${total} total available Device(s)"
     fi
-    if [ "$(detect_raspicam)" -ne 0 ]; then
+    if [[ "$(detect_raspicam)" -ne 0 ]]; then
         raspicam="$(v4l2-ctl --list-devices |  grep -A1 -e 'mmal' | \
         awk 'NR==2 {print $1}')"
         log_msg "Detected 'Raspicam' Device -> ${raspicam}"
-        if [ ! "$(log_level)" = "quiet" ]; then
+        if [[ ! "${CROWSNEST_LOG_LEVEL}" = "quiet" ]]; then
             list_cam_formats "${raspicam}"
             list_cam_v4l2ctrls "${raspicam}"
         fi
     fi
-    if [ -d "/dev/v4l/by-id/" ]; then
+    if [[ -d "/dev/v4l/by-id/" ]]; then
         detect_avail_cams
     fi
-    if [ -d "/dev/v4l/by-path" ]; then
+    if [[ -d "/dev/v4l/by-path" ]]; then
         detect_avail_csi
     fi
 }
@@ -123,28 +124,28 @@ function print_host {
     sbc_model="$(grep "Model" /proc/cpuinfo | cut -d':' -f2)"
     memtotal="$(grep "MemTotal:" /proc/meminfo | awk '{print $2" "$3}')"
     disksize="$(LC_ALL=C df -h / | awk 'NR==2 {print $4" / "$2}')"
-    ## print only if not log_level: quiet
-    if [ "$(log_level)" != "quiet" ]; then
+    ## print only if not "${CROWSNEST_LOG_LEVEL}": quiet
+    if [[ "${CROWSNEST_LOG_LEVEL}" != "quiet" ]]; then
         log_msg "INFO: Host information:"
         ## OS Infos
         ## OS Version
-        if [ -f /etc/os-release ]; then
+        if [[ -f /etc/os-release ]]; then
             log_msg "Host Info: Distribution: $(grep "PRETTY" /etc/os-release | \
             cut -d '=' -f2 | sed 's/^"//;s/"$//')"
         fi
         ## Release Version of MainsailOS (if file present)
-        if [ -f /etc/mainsailos-release ]; then
+        if [[ -f /etc/mainsailos-release ]]; then
             log_msg "Host Info: Release: $(cat /etc/mainsailos-release)"
         fi
         ## Kernel version
         log_msg "Host Info: Kernel: $(uname -s) $(uname -rm)"
         ## Host Machine Infos
         ## Host model
-        if [ -n "${sbc_model}" ]; then
+        if [[ -n "${sbc_model}" ]]; then
             log_msg "Host Info: Model: ${sbc_model}"
         fi
-        if [ -n "${generic_model}" ] &&
-        [ -z "${sbc_model}" ]; then
+        if [[ -n "${generic_model}" ]] &&
+        [[ -z "${sbc_model}" ]]; then
             log_msg "Host Info: Model: ${generic_model}"
         fi
         ## CPU count

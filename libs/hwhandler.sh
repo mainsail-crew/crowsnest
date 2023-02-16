@@ -21,13 +21,13 @@ function detect_avail_cams {
     local avail realpath
     avail="$(find /dev/v4l/by-id/ -iname "*index0" 2> /dev/null)"
     count="$(echo "${avail}" | wc -l)"
-    if [ -d "/dev/v4l/by-id/" ] &&
-    [ -n "${avail}" ]; then
+    if [[ -d "/dev/v4l/by-id/" ]] &&
+    [[ -n "${avail}" ]]; then
         log_msg "INFO: Found ${count} available camera(s)"
         echo "${avail}" | while read -r v4l; do
             realpath=$(readlink -e "${v4l}")
             log_msg "${v4l} -> ${realpath}"
-            if [ "$(log_level)" != "quiet" ]; then
+            if [[ "${CROWSNEST_LOG_LEVEL}" != "quiet" ]]; then
                 list_cam_formats "${v4l}"
                 list_cam_v4l2ctrls "${v4l}"
             fi
@@ -41,8 +41,8 @@ function detect_avail_csi {
     local avail count realpath
     avail="$(find /dev/v4l/by-path/ -iname "*csi*index0" 2> /dev/null)"
     count="$(echo "${avail}" | wc -l)"
-    if [ -d "/dev/v4l/by-path/" ] &&
-    [ -n "${avail}" ]; then
+    if [[ -d "/dev/v4l/by-path/" ]] &&
+    [[ -n "${avail}" ]]; then
         log_msg "INFO: Found ${count} available csi device(s)"
         echo "${avail}" | while read -r csi; do
             realpath=$(readlink -e "${csi}")
@@ -77,7 +77,7 @@ function list_cam_v4l2ctrls {
 # Determine connected "raspicam" device
 function detect_raspicam {
     local avail
-    if [ -f /proc/device-tree/model ] &&
+    if [[ -f /proc/device-tree/model ]] &&
     grep -q "Raspberry" /proc/device-tree/model; then
         avail="$(vcgencmd get_camera | awk -F '=' '{ print $3 }' | cut -d',' -f1)"
     else

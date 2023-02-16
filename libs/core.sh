@@ -115,9 +115,9 @@ function initial_check {
     check_dep "ffmpeg"
     check_apps
     versioncontrol
-    # print cfg if ! log_level: quiet
+    # print cfg if ! "${CROWSNEST_LOG_LEVEL}": quiet
     if [ -z "$(check_cfg "${CROWSNEST_CFG}")" ]; then
-        if [ "$(log_level)" != "quiet" ]; then
+        if [[ "${CROWSNEST_LOG_LEVEL}" != "quiet" ]]; then
             print_cfg
         fi
     fi

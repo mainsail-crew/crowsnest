@@ -29,7 +29,7 @@ function v4l2_control {
             # get v4l2ctl parameters
             v4l2ctl="$(get_param "cam ${cam}" v4l2ctl)"
             # if not empty do
-            if [ -n "${v4l2ctl}" ]; then
+            if [[ -n "${v4l2ctl}" ]]; then
                 # Write configured options to Log
                 log_msg "Device: [cam ${cam}]"
                 log_msg "Options: ${v4l2ctl}"
@@ -48,7 +48,7 @@ function v4l2_control {
                         v4l2-ctl -d "${device}" -c "${param}" 2> /dev/null
                     fi
                 done
-                    if [ "$(log_level)" == "debug" ]; then
+                    if [[ "${CROWSNEST_LOG_LEVEL}" == "debug" ]]; then
                         v4l2-ctl -d "${device}" -L | log_output "v4l2ctl"
                     fi
             else
@@ -123,7 +123,7 @@ function brokenfocus {
                 detected_broken_dev_msg
                 set_focus_absolute "${device}" "${conf_val}"
             fi
-            if [ "$(log_level)" == "debug" ] && [ -n "${cur_val}" ]; then
+            if [[ "${CROWSNEST_LOG_LEVEL}" == "debug" ]] && [[ -n "${cur_val}" ]]; then
                 debug_focus_val_msg "$(get_current_value "${device}")"
             fi
         done
