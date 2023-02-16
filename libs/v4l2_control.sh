@@ -19,7 +19,9 @@
 set -eE
 
 function v4l2_control {
-    log_msg "V4L2 Control:"
+    v4c_log_msg() {
+        log_msg "V4L2 Control: ${1}"
+    }
 
     function main {
         local device v4l2ctl valueless opt_avail
@@ -31,8 +33,8 @@ function v4l2_control {
             # if not empty do
             if [[ -n "${v4l2ctl}" ]]; then
                 # Write configured options to Log
-                log_msg "Device: [cam ${cam}]"
-                log_msg "Options: ${v4l2ctl}"
+                v4c_log_msg "Device: [cam ${cam}]"
+                v4c_log_msg "Options: ${v4l2ctl}"
                 # Split options to array
                 IFS=',' read -ra opt < <(echo "${v4l2ctl}"); unset IFS
                 # loop through options
@@ -52,7 +54,7 @@ function v4l2_control {
                         v4l2-ctl -d "${device}" -L | log_output "v4l2ctl"
                     fi
             else
-                log_msg "No parameters set for [cam ${cam}]. Skipped."
+                v4c_log_msg "No parameters set for [cam ${cam}]. Skipped."
             fi
         done
     }
