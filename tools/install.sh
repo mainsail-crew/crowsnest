@@ -566,8 +566,7 @@ main() {
     install_raspicam_fix
 
     ## Step 12: Add moonraker update_manager entry
-    if [[ "${CROWSNEST_UNATTENDED}" = "1" ]] ||
-    [[ "${CROWSNEST_ADD_CROWSNEST_MOONRAKER}" = "1" ]]; then
+    if [[ "${CROWSNEST_ADD_CROWSNEST_MOONRAKER}" = "1" ]]; then
         add_update_entry
     fi
 
