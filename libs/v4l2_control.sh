@@ -44,10 +44,11 @@ function v4l2_control {
                     valueless="$(echo "${param}" | cut -d "=" -f1)"
                     opt_avail="$(v4l2-ctl -d "${device}" -L | \
                     grep -c "${valueless}" || true)"
-                    if [ "${opt_avail}" -eq "0" ]; then
-                        log_msg "Parameter '${param}' not available for '${device}'. Skipped."
+                    if [[ "${opt_avail}" -eq "0" ]]; then
+                        v4c_log_msg "Parameter '${param}' not available for '${device}'. Skipped."
                     else
-                        v4l2-ctl -d "${device}" -c "${param}" 2> /dev/null
+                        v4l2-ctl -d "${device}" -c "${param}" 2> /dev/null ||
+                        v4c_log_msg "Failed to set parameter: '${param}' ..."
                     fi
                 done
                     if [[ "${CROWSNEST_LOG_LEVEL}" == "debug" ]]; then
