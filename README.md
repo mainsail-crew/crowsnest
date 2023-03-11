@@ -29,32 +29,31 @@ So, this will be the 'lookout point' for your printer.
 
 ## Index:
 
-- [Foreword](#foreword)
-- [Installation](#installation)
+-   [Foreword](#foreword)
+-   [Installation](#installation)
 
 <br>
 
-- [Configuration :exclamation: **READ THIS** :exclamation:](#simple-configuration)
+-   [Configuration :exclamation: **READ THIS** :exclamation:](#simple-configuration)
 
 <br>
 
-- [FAQ :exclamation: **READ THIS** :exclamation:](#faq)
-  - [I get / keep getting Error 127 in line 31](#question-i-get--keep-getting-error-127-in-line-31-what-can-i-do)
-  - [I set `mode` to `rtsp`, but I get no stream in VLC](#question-i-set-mode-to-rtsp-but-i-get-no-stream-in-vlc-what-should-i-do)
-  - [I have twice the same model of a USB Cam, cant get both to show up](#question-i-have-twice-the-same-model-of-a-usb-cam-cant-get-both-to-show-up-what-can-i-do)
-  - [How to install/use a Raspicam (V1/V2 are tested, HQ Variant untested)](#question-how-to-installuse-a-raspicam-v1v2-are-tested-hq-variant-untested)
-  - [I use a Raspicam and a USB one but I cant get them both for unknown reason](#question-i-use-a-raspicam-and-a-usb-one-but-i-cant-get-them-both-for-unknown-reason-how-do-i-fix-that)
+-   [FAQ :exclamation: **READ THIS** :exclamation:](#faq)
+    -   [I get / keep getting Error 127 in line 31](#question-i-get--keep-getting-error-127-in-line-31-what-can-i-do)
+    -   [I have twice the same model of a USB Cam, cant get both to show up](#question-i-have-twice-the-same-model-of-a-usb-cam-cant-get-both-to-show-up-what-can-i-do)
+    -   [How to install/use a Raspicam (V1/V2 are tested, HQ Variant untested)](#question-how-to-installuse-a-raspicam-v1v2-are-tested-hq-variant-untested)
+    -   [I use a Raspicam and a USB one but I cant get them both for unknown reason](#question-i-use-a-raspicam-and-a-usb-one-but-i-cant-get-them-both-for-unknown-reason-how-do-i-fix-that)
 
 <br>
 
-- [How do I contribute the best way](#question-how-do-i-contribute-the-best-way)
-- [I want to support you in person, because \<fillinyourreason>! - How? ](#question-but-kwad-i-want-to-support-you-in-person-because-fillinyourreason-how)
+-   [How do I contribute the best way](#question-how-do-i-contribute-the-best-way)
+-   [I want to support you in person, because \<fillinyourreason>! - How? ](#question-but-kwad-i-want-to-support-you-in-person-because-fillinyourreason-how)
 
 <br>
 
-- [CustomPiOS-module](#custompios-module)
-- [What 'Backends' uses crowsnest?](#what-backends-uses-crowsnest)
-- [Credits](#credits)
+-   [CustomPiOS-module](#custompios-module)
+-   [What 'Backends' uses crowsnest?](#what-backends-uses-crowsnest)
+-   [Credits](#credits)
 
 <br>
 <br>
@@ -249,6 +248,8 @@ Now the more interessting part.
 
     [cam 1]
     mode: mjpg
+    enable_rtsp: false
+    rtsp_port: 8554
     port: 8080
     device: /dev/video0
     resolution: 640x480
@@ -266,13 +267,19 @@ This section should be pretty much self explantory.
 means your choosen streamservice will be ustreamer with the well known mjpg-protocol. \
 You can choose:
 
-    mode: rtsp
+    mode: multi
 
-This let you use external viewer like vlc for example. \
+This let you use the newer stream service 'camera-streamer'
+
+To use RTSP functionality you need to set
+
+    enable_rtsp: true
+
 To view the stream use a proper player like [VLC](https://www.videolan.org/).
 
 **The stream url will be _rtsp://\<printeriporname\>:8554/\<yourcamerasectionname\>_** \
 As an example: _rtsp://mainsail.local:8554/1_ \
+
 > _There will be no preview in your Browser!_
 
 ---
@@ -303,6 +310,7 @@ Please be aware that all available devices are always listed in the `crowsnest.l
     resolution: 640x480
 
 Your desired FPS settings has to match what your camera able to deliver! \
+
 > _For the most part ignored in rtsp mode!_
 
     max_fps: 15
@@ -321,8 +329,8 @@ Those will be appended to the default/preconfigured parameters.
 To setup services to your need you have to take a closer look to the documentation of the project. \
 As a pointer in the right direction:
 
-- ustreamer
-  - For sake of simplicity I converted ustreamers manpage to [ustreamer's manpage](./ustreamer_manpage.md)
+-   ustreamer
+    -   For sake of simplicity I converted ustreamers manpage to [ustreamer's manpage](./ustreamer_manpage.md)
 
 ---
 
@@ -416,18 +424,6 @@ Please backup these files and delete this folder by
 
 Now run the commands mentioned in the beginning.
 
----
-
-#### :question: I set `mode` to `rtsp`, but I get no stream in VLC. What should I do?
-
-**Solution:**
-
-Read your log. \
-If you are not using a raspicam or a camera with an inbuilt "H264" encoder, chances are equal to zero, to get a rtsp stream. \
-Sorry :man_shrugging:
-
----
-
 #### :question: I have twice the same model of a USB Cam, cant get both to show up. What can I do?
 
 **Solution:**
@@ -497,15 +493,15 @@ Please see [README.md](./custompios/README.md) in the module folder for further 
 
 ## What 'Backends' uses crowsnest?
 
-- ustreamer - A streamserver from Pi-KVM project \
-  active maintained by [Maxim Devaev](https://github.com/mdevaev) \
-  [ustreamer on github](https://github.com/pikvm/ustreamer)
+-   ustreamer - A streamserver from Pi-KVM project \
+    active maintained by [Maxim Devaev](https://github.com/mdevaev) \
+    [ustreamer on github](https://github.com/pikvm/ustreamer)
 
-- rtsp-simple-server
-  - This server provides rtsp streams and more \
-    at this point of development are only 'rtsp' features enabled \
-    More features are planned. \
-    [rtsp-simple-server](https://github.com/aler9/rtsp-simple-server) is written in Go by [aler9](https://github.com/aler9)
+-   rtsp-simple-server
+    -   This server provides rtsp streams and more \
+        at this point of development are only 'rtsp' features enabled \
+        More features are planned. \
+        [rtsp-simple-server](https://github.com/aler9/rtsp-simple-server) is written in Go by [aler9](https://github.com/aler9)
 
 ---
 
