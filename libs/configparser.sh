@@ -26,6 +26,7 @@ function get_param {
     param="${2}"
     crudini --get "${cfg}" "${section}" "${param}" 2> /dev/null | \
     sed 's/\#.*//;s/[[:space:]]*$//'
+    return
 }
 
 # Check for existing file
@@ -34,6 +35,8 @@ function check_cfg {
     if [ ! -r "${1}" ]; then
         log_msg "ERROR: No Configuration File found. Exiting!"
         exit 1
+    else
+        return 0
     fi
 }
 
@@ -46,12 +49,14 @@ function configured_cams {
         cams+=("${i}")
     done
     echo "${cams[@]}"
+    return
 }
 
 # Checks [cam <nameornumber>] if all needed configuration sections are present
 # call check_section <nameornumber> ex.: check_section foobar
 function check_section {
-    local section exist param must_exist missing
+    local section exist param
+    local -a must_exist missing
     section="cam ${1}"
     # Ignore missing custom flags
     exist="$(crudini --existing=param --get "${CROWSNEST_CFG}" "${section}" \
@@ -67,15 +72,22 @@ function check_section {
         fi
     done
     must_exist=(mode port device resolution max_fps)
-    missing="$(echo "${param[@]}" "${must_exist[@]}" | \
-    tr ' ' '\n' | sort | uniq -u)"
-    for i in "${missing[@]}"; do
-        if [ -n "${i}" ]; then
-            log_msg "ERROR: Parameter ${missing} not found in \
-            Section [${section}]. Start skipped!"
-        else
-            log_msg "INFO: Configuration of Section [${section}] looks good. \
-            Continue..."
+    missing=()
+    for i in "${must_exist[@]}"; do
+        if [[ -z "$(get_param "${section}" "${i}")" ]]; then
+            missing+=("${i}")
         fi
     done
+
+    if [[ "${#missing[@]}" != "0" ]]; then
+        for param in "${missing[@]}"; do
+            log_msg "ERROR: Parameter ${param} not found in Section [${section}]."
+        done
+        log_msg "ERROR: Please check your configuration!"
+        exit 1
+    fi
+    if [[ "${#missing[@]}" == "0" ]]; then
+        log_msg "INFO: Configuration of Section [${section}] looks good. Continue ..."
+    fi
+    return
 }

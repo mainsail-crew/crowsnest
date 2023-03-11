@@ -22,7 +22,7 @@ set -Ee
 
 # Global Vars
 TITLE="\e[31mcrowsnest\e[0m - A webcam daemon for multiple Cams and stream services."
-[[ -n "${BASE_USER}" ]] || BASE_USER="$(logname 2> /dev/null || echo "${PWD}" | cut -d'/' -f3)"
+[[ -n "${BASE_USER}" ]] || BASE_USER=""
 [[ -n "${CROWSNEST_UNATTENDED}" ]] || CROWSNEST_UNATTENDED="0"
 [[ -n "${CROWSNEST_DEFAULT_CONF}" ]] || CROWSNEST_DEFAULT_CONF="resources/crowsnest.conf"
 
@@ -37,10 +37,18 @@ if [[ "${DEBIAN_FRONTEND}" != "noninteractive" ]]; then
 fi
 
 ### Check non-root
-if [[ ${UID} != '0' ]]; then
-    echo -e "\n\tYOU NEED TO RUN INSTALLER AS ROOT!"
+if [[ -z "${BASE_USER}" ]] && [[ -z "${SUDO_USER}" ]]; then
+    echo -e "\n\tYou need to run this script with sudo priviledges!"
     echo -e "\tPlease try '\e[32msudo make install\e[0m'\n\nExiting..."
     exit 1
+fi
+## Determine BASE_USER
+if [[ -z "${BASE_USER}" ]] && [[ "${SUDO_USER}" == "root" ]]; then
+        printf "\n\tPlease do NOT run this script as root!\n"
+        printf "\tLogin in as regular user and run with '\e[32msudo make install\e[0m'\n\n"
+        exit 1
+else
+    BASE_USER="${SUDO_USER}"
 fi
 
 ### Global functions
@@ -123,7 +131,8 @@ import_config() {
         CROWSNEST_ENV_PATH="/home/${BASE_USER}/printer_data/systemd"
         CROWSNEST_USTREAMER_REPO_SHIP="https://github.com/pikvm/ustreamer.git"
         CROWSNEST_USTREAMER_REPO_BRANCH="master"
-
+        CROWSNEST_CAMERA_STREAMER_REPO_SHIP="https://github.com/ayufan/camera-streamer.git"
+        CROWSNEST_CAMERA_STREAMER_REPO_BRANCH="master"
     fi
 }
 
@@ -138,7 +147,7 @@ create_filestructure() {
 ### Detect legacy webcamd.
 detect_existing_webcamd() {
     local remove
-    if  [ -x "/usr/local/bin/webcamd" ] && [ -d "${HOME}/mjpg-streamer" ]; then
+    if  [ -x "/usr/local/bin/webcamd" ] && [ -d "/home/${BASE_USER}/mjpg-streamer" ]; then
         detect_msg
         read -erp "Do you want to remove existing 'webcamd'? (y/N) " -i "N" remove
         case "${remove}" in
@@ -207,8 +216,9 @@ install_packages() {
     PKGLIST="git crudini bsdutils findutils v4l-utils curl"
     ### Ustreamer Dependencies
     PKGLIST="${PKGLIST} build-essential libevent-dev libjpeg-dev libbsd-dev"
-    ### simple-rtsp-server Dependencies
-    PKGLIST="${PKGLIST} libxcomposite1 libxtst6 ffmpeg"
+    ### Camera-Streamer Dependencies
+    PKGLIST="${PKGLIST} cmake libavformat-dev libavutil-dev libavcodec-dev libcamera-dev"
+    PKGLIST="${PKGLIST} liblivemedia-dev pkg-config xxd build-essential cmake libssl-dev"
 
     echo -e "Running apt update first ..."
     ### Run apt update
@@ -341,24 +351,38 @@ clone_ustreamer() {
     fi
     sudo -u "${BASE_USER}" \
     git clone "${CROWSNEST_USTREAMER_REPO_SHIP}" \
-    -b "${CROWSNEST_USTREAMER_REPO_BRANCH}" bin/ustreamer
-    ## Buster workaround
-    ## ustreamer support omx only till version 4.13
-    ## so stick to that version
+    -b "${CROWSNEST_USTREAMER_REPO_BRANCH}" \
+    --depth=1 --single-branch bin/ustreamer
     if [[ "$(get_os_version buster)" != "0" ]]; then
-        pushd bin/ustreamer &> /dev/null || exit 1
-        git reset --hard 61ab2a8
-        popd &> /dev/null || exit 1
+        printf "NOTE: Crowsnest has dropped support for OMX in ustreamer ... \n"
     fi
+}
+
+clone_cstreamer() {
+    ## remove bin/ustreamer if exist
+    if [[ -d bin/camera-streamer ]]; then
+        rm -rf bin/camera-streamer
+    fi
+    sudo -u "${BASE_USER}" \
+    git clone "${CROWSNEST_CAMERA_STREAMER_REPO_SHIP}" --recursive \
+    -b "${CROWSNEST_CAMERA_STREAMER_REPO_BRANCH}" \
+    --depth=1 --single-branch bin/camera-streamer
 }
 
 build_apps() {
     echo -e "Build dependend Stream Apps ..."
     echo -e "Cloning ustreamer repository ..."
     clone_ustreamer
-    pushd bin > /dev/null
-    sudo -u "${BASE_USER}" make all
-    popd > /dev/null
+    ## Detect Image build for Raspberrys
+    if [[ "$(is_raspberry_pi)" = "1" ]] ||
+    [[ -f "/etc/rpi-issue" ]]; then
+        echo -e "Cloning camera-streamer repository ..."
+        clone_cstreamer
+    fi
+    if [[ "$(is_raspberry_pi)" = "0" ]]; then
+        echo -e "Install of camera-streamer skipped, only supported on Raspberry Pi's! ... "
+    fi
+    sudo -u "${BASE_USER}" bin/build.sh --build
 }
 
 is_raspberry_pi() {
@@ -370,33 +394,11 @@ is_raspberry_pi() {
     fi
 }
 
-install_raspicam_fix() {
-    if [[ "${CROWSNEST_RASPICAMFIX}" == "auto" ]]; then
-        if [[ "$(is_raspberry_pi)" = "1" ]]; then
-            echo -e "Device is a Raspberry Pi"
-            CROWSNEST_RASPICAMFIX="1"
-        fi
-        if [[ "$(is_raspberry_pi)" = "0" ]]; then
-            echo -e "Device is \e[31mNOT\e[0m a Raspberry Pi ... [${CN_SK}]"
-            CROWSNEST_RASPICAMFIX="0"
-        fi
-    fi
-    # This is also used for unattended Install
-    # Needs special handling if targeted Image is not for Raspberry Pi's!
-    if [[ "${CROWSNEST_RASPICAMFIX}" == "1" ]] &&
-    [[ -f /boot/config.txt ]]; then
-        echo -en "Applying Raspicam Fix ... \r"
-        bash -c 'echo "bcm2835-v4l2" >> /etc/modules'
-        cp resources/bcm2835-v4l2.conf /etc/modprobe.d/
-        echo -e "Applying Raspicam Fix ... [${CN_OK}]"
-    fi
-}
-
-enable_legacy_cam() {
+set_gpu_mem() {
     local cfg
     local -a model
     cfg="/boot/config.txt"
-    model=(pi3 pi4)
+    model=(pi3 pi4 cm4)
     if [[ -f "${cfg}" ]] && [[ "$(is_raspberry_pi)" = "1" ]]; then
 
         # Helper func
@@ -404,10 +406,11 @@ enable_legacy_cam() {
             crudini --get "${cfg}" "${1}" gpu_mem 2> /dev/null
         }
 
-        echo -en "Enable legacy camera stack ... \r"
-        sed -i "s/camera_auto_detect=1/#camera_auto_detect=1/" "${cfg}"
+        echo -en "Set gpu_mem ... \r"
         if [[ "$(grep -c "start_x" "${cfg}")" = "0" ]]; then
             crudini --set --inplace "${cfg}" all start_x 1 &> /dev/null
+            sed -i 's/^#start_x/start_x/g' "${cfg}"
+            sed -i 's/^start_x=0/start_x=1/g' "${cfg}"
         fi
 
         for d in "${model[@]}"; do
@@ -418,7 +421,7 @@ enable_legacy_cam() {
         if [[ "$(get_val pi0)" -lt "129" ]]; then
                 sudo crudini --set --inplace "${cfg}" pi0 gpu_mem 160 &> /dev/null
         fi
-        echo -e "Enable legacy camera stack ... [${CN_OK}]"
+        echo -e "Set gpu_mem ... [${CN_OK}]"
     fi
     ## crudini workaround
     ## used version of crudini puts spaces between values and parameters
@@ -536,7 +539,7 @@ main() {
     ## Step 7: Enable Legacy Camera Stack
     if [[ "$(get_os_version bullseye)" != "0" ]] &&
     [[ -f "/boot/config.txt" ]]; then
-        enable_legacy_cam
+        set_gpu_mem
     fi
 
     ### buntu workaround
@@ -562,15 +565,12 @@ main() {
     ## Step 10: Install logrotate file
     install_logrotate
 
-    ## Step 11: Install raspicamfix
-    install_raspicam_fix
-
-    ## Step 12: Add moonraker update_manager entry
+    ## Step 11: Add moonraker update_manager entry
     if [[ "${CROWSNEST_ADD_CROWSNEST_MOONRAKER}" = "1" ]]; then
         add_update_entry
     fi
 
-    ## Step 13: Ask for reboot
+    ## Step 12: Ask for reboot
     ## Skip if UNATTENDED
     goodbye_msg
     if [[ "${CROWSNEST_UNATTENDED}" = "0" ]]; then

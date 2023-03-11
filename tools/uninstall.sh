@@ -43,7 +43,7 @@ welcome_msg() {
     echo -e "\t\e[34mAhoi!\e[0m"
     echo -e "\tTo sad that you want to uninstall crowsnest :("
     echo -e "\tThis will take a while ... "
-    echo -e "\tPlease reboot after installation has finished.\n"
+    echo -e "\tPlease reboot after uninstallation has finished.\n"
     sleep 1
 }
 
@@ -96,7 +96,6 @@ ask_uninstall() {
                 y|Y|yes|Yes|YES)
                     source_env_file
                     uninstall_crowsnest
-                    remove_raspicam_fix
                     remove_logrotate
                     ask_remove_config
                     goodbye_msg
@@ -172,21 +171,6 @@ ask_remove_config() {
         esac
     done
     return 0
-}
-
-remove_raspicam_fix() {
-    if [[ -f /etc/modprobe.d/bcm2835-v4l2.conf ]] &&
-    [[ -f /proc/device-tree/model ]] &&
-    grep -q "Raspberry" /proc/device-tree/model ; then
-        echo -en "Removing Raspicam Fix ...\r"
-        sudo sed -i '/bcm2835/d' /etc/modules
-        sudo rm -f /etc/modprobe.d/bcm2835-v4l2.conf
-        echo -e "Removing Raspicam Fix ... [${CN_OK}]"
-    else
-        echo -e "Removing Raspicam Fix ... [${CN_SK}]"
-        echo -e "\tThis is not a Raspberry Pi"
-        echo -e "\tor Raspicamfix not installed ... \n"
-    fi
 }
 
 function remove_logrotate {

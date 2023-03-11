@@ -26,11 +26,17 @@ function construct_streamer {
         mode="$(get_param "cam ${cams}" mode)"
         check_section "${cams}"
         case ${mode} in
+            [mM]ulti)
+                if [[ "$(is_raspberry_pi)" = "1" ]]; then
+                    MULTI_INSTANCES+=( "${cams}" )
+                else
+                    log_msg "WARN: Mode 'multi' is not supported on your device!"
+                    log_msg "WARN: Falling back to Mode 'mjpg'"
+                    MJPG_INSTANCES+=( "${cams}" )
+                fi
+            ;;
             mjpg | mjpeg)
                 MJPG_INSTANCES+=( "${cams}" )
-            ;;
-            rtsp)
-                RTSP_INSTANCES+=( "${cams}" )
             ;;
             ?|*)
                 unknown_mode_msg
@@ -39,11 +45,11 @@ function construct_streamer {
             ;;
         esac
     done
+    if [ "${#MULTI_INSTANCES[@]}" != "0" ]; then
+        run_multi "${MULTI_INSTANCES[*]}"
+    fi
     if [ "${#MJPG_INSTANCES[@]}" != "0" ]; then
         run_mjpg "${MJPG_INSTANCES[*]}"
-    fi
-    if [ "${#RTSP_INSTANCES[@]}" != "0" ]; then
-        run_rtsp "${RTSP_INSTANCES[*]}"
     fi
     sleep 2 & sleep_pid="$!" ; wait "${sleep_pid}"
     log_msg " ... Done!"

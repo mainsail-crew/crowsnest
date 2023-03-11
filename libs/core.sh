@@ -66,7 +66,7 @@ function shutdown {
 function check_dep {
     local dep
     dep="$(whereis "${1}" | awk '{print $2}')"
-    if [ -z "${dep}" ]; then
+    if [[ -z "${dep}" ]]; then
         log_msg "Dependency: '${1}' not found. Exiting!"
         exit 1
     else
@@ -75,30 +75,25 @@ function check_dep {
 }
 
 function check_apps {
-    local paths
-    paths=(
-        bin/ustreamer/ustreamer
-        bin/rtsp-simple-server/rtsp-simple-server
-        )
-    for chk in "${paths[@]}"; do
-        if [ -x "${BASE_CN_PATH}/${chk}" ]; then
-            log_msg "Dependency: '$(echo "${chk}" | cut -d '/' -f3)' found in ${chk}."
+    local cstreamer ustreamer
+    ustreamer="bin/ustreamer/ustreamer"
+    cstreamer="bin/camera-streamer/camera-streamer"
+
+    if [[ -x "${BASE_CN_PATH}/${ustreamer}" ]]; then
+        log_msg "Dependency: '${ustreamer##*/}' found in ${ustreamer}."
+    else
+        log_msg "Dependency: '${ustreamer##*/}' not found. Exiting!"
+        exit 1
+    fi
+
+    ## Avoid dependency check if non rpi sbc
+    if [[ "$(is_raspberry_pi)" = "1" ]]; then
+        if [[ -x "${BASE_CN_PATH}/${cstreamer}" ]]; then
+            log_msg "Dependency: '${cstreamer##*/}' found in ${cstreamer}."
         else
-            log_msg "Dependency: '$(echo "${chk}" | cut -d '/' -f3)' not found. Exiting!"
+            log_msg "Dependency: '${cstreamer##*/}' not found. Exiting!"
             exit 1
         fi
-    done
-}
-
-# checks availability of OpenMax IL feature on host and in apps.
-# 0 = false / 1 = true
-function check_omx {
-    if [ -d "/opt/vc/include" ] &&
-    [ ! "$(ffmpeg -hide_banner -buildconf | grep -c 'omx')" = "0" ] &&
-    [ "$("${BASE_CN_PATH}"/bin/ustreamer/ustreamer --features | grep -c '\+ WITH_OMX')" = "1" ]; then
-        echo "1"
-    else
-        echo "0"
     fi
 }
 
@@ -110,9 +105,7 @@ function initial_check {
     log_msg "INFO: Checking Dependencys"
     check_dep "crudini"
     check_dep "find"
-    check_dep "logger"
     check_dep "xargs"
-    check_dep "ffmpeg"
     check_apps
     versioncontrol
     # print cfg if ! "${CROWSNEST_LOG_LEVEL}": quiet
@@ -121,8 +114,7 @@ function initial_check {
             print_cfg
         fi
     fi
-    # in systemd show always config file
-    logger -t crowsnest -f "${CROWSNEST_CFG}"
     log_msg "INFO: Detect available Devices"
     print_cams
+    return
 }

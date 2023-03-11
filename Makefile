@@ -7,7 +7,7 @@
 #### This File is distributed under GPLv3
 ####
 
-.PHONY: build buildclean config help install unsinstall
+.PHONY: build buildclean config help install unsinstall update
 
 # Setup
 USER = $(shell whoami)
@@ -31,6 +31,7 @@ help:
 	@echo "   build        builds binaries"
 	@echo "   buildclean   cleans binaries (for recompile)"
 	@echo "   clean        Removes Installer config"
+	@echo "   update       Pulls latest updates from repository"
 	@echo ""
 
 install:
@@ -40,10 +41,10 @@ uninstall:
 	@bash -c 'tools/uninstall.sh'
 
 build:
-	$(MAKE) -C $(BIN_FOLDER)
+	bash -c 'bin/build.sh --build'
 
 buildclean:
-	$(MAKE) -C $(BIN_FOLDER) clean
+	bash -c 'bin/build.sh --clean'
 
 clean:
 	@if [ -f tools/.config ]; then rm -f tools/.config; fi
@@ -51,6 +52,9 @@ clean:
 
 config:
 	@bash -c 'tools/configure.sh'
+
+update:
+	@git fetch && git pull
 
 report:
 	@if [ -f ~/report.txt ]; then rm -f ~/report.txt; fi

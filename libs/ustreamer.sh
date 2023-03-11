@@ -18,10 +18,13 @@ set -Ee
 
 run_mjpg() {
     local cams
+    v4l2_control
     cams="${1}"
     for instance in ${cams} ; do
         run_ustreamer "${instance}" &
     done
+    brokenfocus
+    return
 }
 
 run_ustreamer() {
@@ -29,9 +32,9 @@ run_ustreamer() {
     cam_sec="${1}"
     ust_bin="${BASE_CN_PATH}/bin/ustreamer/ustreamer"
     dev="$(get_param "cam ${cam_sec}" device)"
-    pt=$(get_param "cam ${cam_sec}" port)
-    res=$(get_param "cam ${cam_sec}" resolution)
-    fps=$(get_param "cam ${cam_sec}" max_fps)
+    pt="$(get_param "cam ${cam_sec}" port)"
+    res="$(get_param "cam ${cam_sec}" resolution)"
+    fps="$(get_param "cam ${cam_sec}" max_fps)"
     cstm="$(get_param "cam ${cam_sec}" custom_flags 2> /dev/null)"
     noprx="$(get_param "crowsnest" no_proxy 2> /dev/null)"
     # construct start parameter
@@ -41,17 +44,15 @@ run_ustreamer() {
     else
         start_param=( --host 127.0.0.1 -p "${pt}" )
     fi
-    #Raspicam Workaround
-    if [[ "${dev}" = "$(dev_is_raspicam)" ]]; then
-        start_param+=( -m MJPEG --device-timeout=5 --buffers=3 )
-    else
-        start_param+=( -d "${dev}" --device-timeout=2 )
-        # Use MJPEG Hardware encoder if possible
-        if [ "$(detect_mjpeg "${cam_sec}")" = "1" ]; then
-            start_param+=( -m MJPEG --encoder=HW )
-        fi
+
+    # Use MJPEG Hardware encoder if possible
+    if [ "$(detect_mjpeg "${cam_sec}")" = "1" ]; then
+        start_param+=( -m MJPEG --encoder=HW )
     fi
+
+    # set max framerate
     start_param+=( -r "${res}" -f "${fps}" )
+
     # webroot & allow crossdomain requests
     start_param+=( --allow-origin=\* --static "${BASE_CN_PATH}/ustreamer-www" )
     # Custom Flag Handling (append to defaults)

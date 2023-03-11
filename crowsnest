@@ -20,18 +20,18 @@ set -Ee
 BASE_CN_PATH="$(dirname "$(readlink -f "${0}")")"
 
 ## Import Librarys
-# shellcheck source-path=SCRIPTDIR/libs/
-source "${BASE_CN_PATH}/libs/configparser.sh"
-source "${BASE_CN_PATH}/libs/core.sh"
-source "${BASE_CN_PATH}/libs/hwhandler.sh"
-source "${BASE_CN_PATH}/libs/init_stream.sh"
-source "${BASE_CN_PATH}/libs/logging.sh"
-source "${BASE_CN_PATH}/libs/messages.sh"
-source "${BASE_CN_PATH}/libs/rtspsimple.sh"
-source "${BASE_CN_PATH}/libs/ustreamer.sh"
-source "${BASE_CN_PATH}/libs/v4l2_control.sh"
-source "${BASE_CN_PATH}/libs/versioncontrol.sh"
-source "${BASE_CN_PATH}/libs/watchdog.sh"
+# shellcheck source-path=SCRIPTDIR/../libs/
+. "${BASE_CN_PATH}/libs/camera-streamer.sh"
+. "${BASE_CN_PATH}/libs/configparser.sh"
+. "${BASE_CN_PATH}/libs/core.sh"
+. "${BASE_CN_PATH}/libs/hwhandler.sh"
+. "${BASE_CN_PATH}/libs/init_stream.sh"
+. "${BASE_CN_PATH}/libs/logging.sh"
+. "${BASE_CN_PATH}/libs/messages.sh"
+. "${BASE_CN_PATH}/libs/ustreamer.sh"
+. "${BASE_CN_PATH}/libs/v4l2_control.sh"
+. "${BASE_CN_PATH}/libs/versioncontrol.sh"
+. "${BASE_CN_PATH}/libs/watchdog.sh"
 
 #### MAIN
 ## Args given?
@@ -41,7 +41,7 @@ if [ "$#" -eq 0 ]; then
 fi
 
 ## Parse Args
-while getopts ":vhc:" arg; do
+while getopts ":vhc:d" arg; do
     case "${arg}" in
         v )
             echo -e "\ncrowsnest Version: $(self_version)\n"
@@ -55,6 +55,9 @@ while getopts ":vhc:" arg; do
             check_cfg "${OPTARG}"
             export CROWSNEST_CFG="${OPTARG}"
         ;;
+        d )
+            set -x
+        ;;
         \?)
             wrong_args_msg
             exit 1
@@ -64,10 +67,7 @@ done
 
 init_logging
 initial_check
-v4l2_control
-blockyfix
 construct_streamer
-brokenfocus
 
 ## Loop and Watchdog
 ## In this case watchdog acts more like a "cable defect detector"

@@ -64,10 +64,12 @@ function crowsnest_watchdog {
     for i in $(get_conf_devices); do
         cc="$(crudini --get "${CROWSNEST_CFG}" "cam ${i}" "device" \
         | awk '{print $1}')"
-        if [ "$(available "${cc}")" -ne 0 ] && [ "$(is_lost "${cc}")" -ne 0 ]; then
+        if [[ ! "${cc}" =~ "/base/soc" ]] &&
+        [[ "$(available "${cc}")" -ne 0 ]] && [[ "$(is_lost "${cc}")" -ne 0 ]]; then
             log_msg "WATCHDOG: Lost Device: '${cc}'"
             lost_dev "${cc}"
-        elif [ "$(is_lost "${cc}")" -eq 0 ] && [ "$(available "${cc}")" -eq 0 ]; then
+        elif [[ ! "${cc}" =~ "/base/soc" ]] &&
+        [[ "$(is_lost "${cc}")" -eq 0 ]] && [[ "$(available "${cc}")" -eq 0 ]]; then
             log_msg "WATCHDOG: Device '${cc}' returned."
             returned_dev "${cc}"
         fi

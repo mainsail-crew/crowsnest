@@ -39,7 +39,7 @@ function help_msg {
 
 function deprecated_msg_1 {
     log_msg "Parameter 'streamer' is deprecated!"
-    log_msg "Please use mode: [ mjpg | rtsp ]"
+    log_msg "Please use mode: [ mjpg | multi ]"
     log_msg "ERROR: Please update your crowsnest.conf! Stopped."
 }
 
@@ -47,15 +47,6 @@ function unknown_mode_msg {
     log_msg "WARN: Unknown Mode configured!"
     log_msg "WARN: Using 'mode: mjpg' as fallback!"
 }
-
-function provides_omx_msg {
-    if [ "$(check_omx)" -eq 1 ]; then
-        log_msg "INFO: System provides OpenMAX IL features."
-    else
-        log_msg "WARN: System does not provide OpenMAX IL features."
-    fi
-}
-
 
 ## v4l2_control lib
 function detected_broken_dev_msg {

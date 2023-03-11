@@ -61,8 +61,8 @@ function log_msg {
     local msg prefix
     msg="${1}"
     prefix="$(date +'[%D %T]') crowsnest:"
-    echo -e "${prefix} ${msg}" | tr -s ' ' | tee -a "${CROWSNEST_LOG_PATH}" 2>&1
-    echo -e "${msg}" | logger -t crowsnest
+    printf "%s %s\n" "${prefix}" "${msg}" >> "${CROWSNEST_LOG_PATH}"
+    printf "%s\n" "${msg}"
 }
 
 #call '| log_output "<prefix>"'
@@ -73,48 +73,35 @@ function log_output {
         if [[ "${CROWSNEST_LOG_LEVEL}" = "debug" ]]; then
             log_msg "${prefix}: ${line}"
         fi
-        if [[ -n "${line}" ]]; then
-            # needed to prettify ustreamers output
-            echo "${line//^--/ustreamer}" | logger -t crowsnest
-        fi
     done
 }
 
 function print_cfg {
     local prefix
-    prefix="\t\t"
+    prefix="$(date +'[%D %T]') crowsnest:"
     log_msg "INFO: Print Configfile: '${CROWSNEST_CFG}'"
     (sed '/^#.*/d;/./,$!d' | cut -d'#' -f1) < "${CROWSNEST_CFG}" | \
     while read -r line; do
-        log_msg "${prefix}${line}"
+        printf "%s\t\t%s\n" "${prefix}" "${line}" >> "${CROWSNEST_LOG_PATH}"
+        printf "\t\t%s\n" "${line}"
     done
 }
 
 function print_cams {
-    local csi raspicam total v4l
+    local total v4l
     v4l="$(find /dev/v4l/by-id/ -iname "*index0" 2> /dev/null | wc -l)"
-    csi="$(find /dev/v4l/by-path/ -iname "*csi*index0" 2> /dev/null | wc -l)"
-    total="$((v4l+$(detect_raspicam)+csi))"
-    if [[ "${total}" -eq 0 ]]; then
+    total="$((v4l+($(detect_libcamera))))"
+    if [ "${total}" -eq 0 ]; then
         log_msg "ERROR: No usable Devices Found. Stopping $(basename "${0}")."
         exit 1
     else
         log_msg "INFO: Found ${total} total available Device(s)"
     fi
-    if [[ "$(detect_raspicam)" -ne 0 ]]; then
-        raspicam="$(v4l2-ctl --list-devices |  grep -A1 -e 'mmal' | \
-        awk 'NR==2 {print $1}')"
-        log_msg "Detected 'Raspicam' Device -> ${raspicam}"
-        if [[ ! "${CROWSNEST_LOG_LEVEL}" = "quiet" ]]; then
-            list_cam_formats "${raspicam}"
-            list_cam_v4l2ctrls "${raspicam}"
-        fi
+    if [[ "$(detect_libcamera)" -ne 0 ]]; then
+        log_msg "Detected 'libcamera' device -> $(get_libcamera_path)"
     fi
     if [[ -d "/dev/v4l/by-id/" ]]; then
         detect_avail_cams
-    fi
-    if [[ -d "/dev/v4l/by-path" ]]; then
-        detect_avail_csi
     fi
 }
 
@@ -155,13 +142,4 @@ function print_host {
         ## Avail disk size
         log_msg "Host Info: Diskspace (avail. / total): ${disksize}"
     fi
-}
-
-function debug_msg {
-    local prefix
-    prefix="Develop -- DEBUG:"
-    while read -r msg; do
-        log_msg "${prefix} ${msg}"
-        echo -e "${msg}" | logger -t crowsnest
-    done <<< "${1}"
 }

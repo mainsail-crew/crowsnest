@@ -36,7 +36,7 @@ function v4l2_control {
                 v4c_log_msg "Device: [cam ${cam}]"
                 v4c_log_msg "Options: ${v4l2ctl}"
                 # Split options to array
-                IFS=',' read -ra opt < <(echo "${v4l2ctl}"); unset IFS
+                IFS="," read -ra opt < <(echo "${v4l2ctl}" | tr -d " "); unset IFS
                 # loop through options
                 for param in "${opt[@]}"; do
                     # parameter available for device
@@ -135,31 +135,4 @@ function brokenfocus {
 ### MAIN
 main
 
-}
-
-# This function is to set bitrate on raspicams.
-# If raspicams set to variable bitrate, they tend to show
-# a "block-like" view after reboots
-# To prevent that blockyfix should apply constant bitrate befor start of ustreamer
-# See https://github.com/mainsail-crew/crowsnest/issues/33
-function blockyfix {
-    local dev v4l2ctl
-
-    # call set_bitrate <device>
-    function set_bitrate {
-        v4l2-ctl -d "${1}" -c video_bitrate_mode=1 2> /dev/null
-        v4l2-ctl -d "${1}" -c video_bitrate=15000000 2> /dev/null
-    }
-
-    for cam in $(configured_cams); do
-        dev="$(get_param "cam ${cam}" device)"
-        v4l2ctl="$(get_param "cam ${cam}" v4l2ctl)"
-        if [ "${dev}" = "$(dev_is_raspicam)" ]; then
-            if [ -z "${v4l2ctl}" ] ||
-            [ "$(grep -c "video_bitrate" <<< "${v4l2ctl}")" == "0" ]; then
-                set_bitrate "${dev}"
-                blockyfix_msg_1
-            fi
-        fi
-    done
 }

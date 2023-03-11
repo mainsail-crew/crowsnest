@@ -19,6 +19,10 @@ test*
 # tmp file workaround
 lost*
 
+# ignore bin paths
+bin/ustreamer
+bin/camera-streamer
+
 # Ignore rtsp-simple-server binary
 bin/rtsp-simple-server/rtsp*
 bin/rtsp-simple-server/*.yml
