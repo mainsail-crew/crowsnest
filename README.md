@@ -497,11 +497,10 @@ Please see [README.md](./custompios/README.md) in the module folder for further 
     active maintained by [Maxim Devaev](https://github.com/mdevaev) \
     [ustreamer on github](https://github.com/pikvm/ustreamer)
 
--   rtsp-simple-server
-    -   This server provides rtsp streams and more \
-        at this point of development are only 'rtsp' features enabled \
-        More features are planned. \
-        [rtsp-simple-server](https://github.com/aler9/rtsp-simple-server) is written in Go by [aler9](https://github.com/aler9)
+-   camera-streamer
+    -   This server provides mjpg, snapshots, webrtc and rtsp\
+        Currently limited to Raspberry SBC's and at least kernel 5.15.84!
+        [camera-streamer](https://github.com/ayufan/camera-streamer) is written by [ayufan](https://github.com/ayufan)
 
 ---
 
@@ -514,6 +513,8 @@ They both mentioned improvements and tested a heck out of there machines to get 
 Thank you, mates :) Proud to be a part of.
 
 Thanks to [Pedro Lamas](https://github.com/pedrolamas), for the ISSUE_TEMPLATES.
+
+Thanks to ayufan for keep going on camera-streamer, even I stressed him to get rid of some bugs ;)
 
 ---
 
