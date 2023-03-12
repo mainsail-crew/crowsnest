@@ -499,7 +499,7 @@ Please see [README.md](./custompios/README.md) in the module folder for further 
 
 -   camera-streamer
     -   This server provides mjpg, snapshots, webrtc and rtsp\
-        Currently limited to Raspberry SBC's and at least kernel 5.15.84!
+        Currently limited to Raspberry SBC's and at least kernel 5.15.84!\
         [camera-streamer](https://github.com/ayufan/camera-streamer) is written by [ayufan](https://github.com/ayufan)
 
 ---
