@@ -13,15 +13,17 @@
 
 # Exit on errors
 set -Ee
+set -x
+
 
 # Global Vars
 CN_CONFIG_USER=$(whoami)
 CN_CONFIG_CONFIGFILE="tools/.config"
 CN_CONFIG_ROOTPATH="/home/${CN_CONFIG_USER}/printer_data"
-CN_CONFIG_CONFIGPATH="${CN_CONFIG_ROOTPATH}/config"
-CN_CONFIG_LOGPATH="${CN_CONFIG_ROOTPATH}/logs"
-CN_CONFIG_ENVPATH="${CN_CONFIG_ROOTPATH}/systemd"
-CN_MOONRAKER_CONFIG_PATH="${CN_CONFIG_CONFIGPATH}/moonraker.conf"
+# CN_CONFIG_CONFIGPATH="${CN_CONFIG_ROOTPATH}/config"
+# CN_CONFIG_LOGPATH="${CN_CONFIG_ROOTPATH}/logs"
+# CN_CONFIG_ENVPATH="${CN_CONFIG_ROOTPATH}/systemd"
+# CN_MOONRAKER_CONFIG_PATH="${CN_CONFIG_CONFIGPATH}/moonraker.conf"
 CN_USTREAMER_REPO="https://github.com/pikvm/ustreamer.git"
 CN_USTREAMER_BRANCH="master"
 CN_CAMERA_STREAMER_REPO="https://github.com/ayufan-research/camera-streamer.git"
@@ -54,6 +56,14 @@ check_config_file_msg() {
 
 default_path_msg() {
     echo -e "Hit ENTER to use default."
+}
+
+root_path_msg() {
+    header_msg
+    echo -e "Please specify path to your 'printer_data' root path\n"
+    echo -e "For example: /home/pi/voron_data or /home/kwad/ender_data"
+    echo -e "\t\e[34mNOTE:\e[0m File names are hardcoded! Also skip trailing backslash!"
+    echo -e "\tDefault: \e[32m${CN_CONFIG_ROOTPATH}\e[0m\n"
 }
 
 config_path_msg() {
@@ -149,11 +159,31 @@ create_config_header() {
     } >> "${CN_CONFIG_CONFIGFILE}"
 }
 
+specify_root_path() {
+    local reply
+    root_path_msg
+    default_path_msg
+    read -erp "Please enter path: " reply
+    if [[ -z "${reply}" ]]; then
+        echo -e "CROWSNEST_CONFIG_PATH=\"${CN_CONFIG_CONFIGPATH}\"" >> \
+        "${CN_CONFIG_CONFIGFILE}"
+        return 0
+    fi
+    if [[ -n "${reply}" ]]; then
+        CN_CONFIG_ROOTPATH="${reply}"
+        CN_CONFIG_CONFIGPATH="${CN_CONFIG_ROOTPATH}/config"
+        CN_CONFIG_LOGPATH="${CN_CONFIG_ROOTPATH}/logs"
+        CN_CONFIG_ENVPATH="${CN_CONFIG_ROOTPATH}/systemd"
+        CN_MOONRAKER_CONFIG_PATH="${CN_CONFIG_CONFIGPATH}/moonraker.conf"
+        return 0
+    fi
+}
+
 specify_config_path() {
     local reply
     config_path_msg
     default_path_msg
-    read -erp "Please enter path: " reply
+    read -erp "Please enter path: " -i "${CN_CONFIG_CONFIGPATH}" reply
     if [[ -z "${reply}" ]]; then
         echo -e "CROWSNEST_CONFIG_PATH=\"${CN_CONFIG_CONFIGPATH}\"" >> \
         "${CN_CONFIG_CONFIGFILE}"
@@ -170,7 +200,7 @@ specify_log_path() {
     local reply
     log_path_msg
     default_path_msg
-    read -erp "Please enter path: " reply
+    read -erp "Please enter path: " -i "${CN_CONFIG_LOGPATH}" reply
     if [[ -z "${reply}" ]]; then
         echo -e "CROWSNEST_LOG_PATH=\"${CN_CONFIG_LOGPATH}\"" >> \
         "${CN_CONFIG_CONFIGFILE}"
@@ -186,7 +216,7 @@ specify_env_path() {
     local reply
     env_path_msg
     default_path_msg
-    read -erp "Please enter path: " reply
+    read -erp "Please enter path: " -i "${CN_CONFIG_ENVPATH}" reply
     if [[ -z "${reply}" ]]; then
         echo -e "CROWSNEST_ENV_PATH=\"${CN_CONFIG_ENVPATH}\"" >> \
         "${CN_CONFIG_CONFIGFILE}"
@@ -223,22 +253,15 @@ add_moonraker_entry() {
 
 ### Main func
 main() {
-    # Step 1: Welcome Message
     welcome_msg
     continue_config
-    # Step 2: Check for existing file
     check_config_file
-    # Step 3: Create config header
     create_config_header
-    # Step 4: Specify config file path.
+    specify_root_path
     specify_config_path
-    # Step 5: Specify log file path.
     specify_log_path
-    # Step 6: Specify env path.
     specify_env_path
-    # Step 7: Moonraker entry
     add_moonraker_entry
-    # Step 8: Display finished message
     goodbye_msg
 }
 

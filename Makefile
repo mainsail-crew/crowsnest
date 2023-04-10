@@ -1,64 +1,46 @@
-#### webcamd - A webcam Service for multiple Cams and Stream Services.
+#### crowsnest - A webcam Service for multiple Cams and Stream Services.
 ####
 #### Written by Stephan Wendel aka KwadFan <me@stephanwe.de>
-#### Copyright 2021 - 2022
+#### Copyright 2021 - till today
 #### https://github.com/mainsail-crew/crowsnest
 ####
 #### This File is distributed under GPLv3
 ####
 
-.PHONY: build buildclean config help install unsinstall update
+#### Self-Documenting Makefile
+#### This is based on https://gellardo.github.io/blog/posts/2021-06-10-self-documenting-makefile/
 
-# Setup
-USER = $(shell whoami)
-BIN_FOLDER = bin
+.DEFAULT_GOAL := help
+.PHONY: help
 
-all: help
-
-help:
-	@echo "This is intended to install crowsnest."
-	@echo ""
-	@echo "Some Parts need 'sudo' privileges."
-	@echo "You'll be asked for password, if needed."
-	@echo ""
-	@echo " Usage: make [action]"
-	@echo ""
-	@echo "  Available actions:"
-	@echo ""
-	@echo "   config       Configures Installer"
-	@echo "   install      Installs crowsnest (needs sudo)"
-	@echo "   uninstall    Uninstalls crowsnest (needs sudo)"
-	@echo "   build        builds binaries"
-	@echo "   buildclean   cleans binaries (for recompile)"
-	@echo "   clean        Removes Installer config"
-	@echo "   update       Pulls latest updates from repository"
-	@echo ""
-
-install:
+install: ## Install crowsnest (needs leading sudo)
 	@bash -c 'tools/install.sh'
 
-uninstall:
+uninstall: ## Uninstall crowsnest
 	@bash -c 'tools/uninstall.sh'
 
-build:
+build: ## Compile backends / streamer
 	bash -c 'bin/build.sh --build'
 
-buildclean:
+buildclean: ## Clean backends / streamer (for rebuilding)
 	bash -c 'bin/build.sh --clean'
 
-clean:
+clean: ## Clean .config
 	@if [ -f tools/.config ]; then rm -f tools/.config; fi
-	@echo "Removed installer config file ..."
+	@printf "Removed installer config file ...\n"
 
-config:
+config: ## Configure crowsnest installer
 	@bash -c 'tools/configure.sh'
 
-update:
+help: ## Shows this help
+	@printf "crowsnest - A webcam Service for multiple Cams and Stream Services.\n"
+	@printf "Usage:\n\n"
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
+
+update: ## Update crowsnest (fetches and pulls repository changes)
 	@git fetch && git pull
 
-report:
+report: ## Generate report.txt
 	@if [ -f ~/report.txt ]; then rm -f ~/report.txt; fi
 	@bash -c 'tools/dev-helper.sh -a >> ~/report.txt'
 	@sed -ri 's/\x1B\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]//g' ~/report.txt
-
-

@@ -13,9 +13,6 @@ ERRORS.txt
 # Ignore leftover
 leftover*
 
-#Ignore Test Files
-test*
-
 # tmp file workaround
 lost*
 
@@ -30,3 +27,6 @@ bin/rtsp-simple-server/*.yml
 # Ignore Config for Intsaller
 tools/config.local
 tools/.config
+
+# Ignore pkglist
+tools/pkglist.sh

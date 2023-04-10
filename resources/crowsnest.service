@@ -25,6 +25,6 @@ User=%USER%
 RemainAfterExit=Yes
 WorkingDirectory=/home/%USER%/crowsnest
 EnvironmentFile=%ENV%
-ExecStart= /usr/local/bin/crowsnest $CROWSNEST_ARGS
+ExecStart=/usr/local/bin/crowsnest $CROWSNEST_ARGS
 Restart=on-failure
 RestartSec=5

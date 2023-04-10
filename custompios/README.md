@@ -28,12 +28,6 @@ the folder you configured above.\
 Please feel free to Pull Request your config!
 I will add them.
 
-To ensure raspicam fix is applied during Image build set
-
-    CROWSNEST_RASPICAMFIX="1"
-
-This only works for Raspberry Pi OS! Will modify that in the future to support build images for other SBC's
-
 Last but not least:
 
     CROWSNEST_ADD_CROWSNEST_MOONRAKER="1"
