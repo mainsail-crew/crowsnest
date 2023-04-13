@@ -26,8 +26,8 @@ function construct_streamer {
         mode="$(get_param "cam ${cams}" mode)"
         check_section "${cams}"
         case ${mode} in
-            [mM]ulti)
-                if [[ "$(is_raspberry_pi)" = "1" ]]; then
+            [mM]ulti | camera-streamer)
+                if [[ "$(is_raspberry_pi)" = "1" ]] && [[ "$(is_ubuntu_arm)" = "0" ]]; then
                     MULTI_INSTANCES+=( "${cams}" )
                 else
                     log_msg "WARN: Mode 'multi' is not supported on your device!"
@@ -35,7 +35,7 @@ function construct_streamer {
                     MJPG_INSTANCES+=( "${cams}" )
                 fi
             ;;
-            mjpg | mjpeg)
+            mjpg | mjpeg | ustreamer)
                 MJPG_INSTANCES+=( "${cams}" )
             ;;
             ?|*)
