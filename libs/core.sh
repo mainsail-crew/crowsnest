@@ -87,7 +87,7 @@ function check_apps {
     fi
 
     ## Avoid dependency check if non rpi sbc
-    if [[ "$(is_raspberry_pi)" = "1" ]]; then
+    if [[ "$(is_raspberry_pi)" = "1" ]] && [[ "$(is_ubuntu_arm)" = "0" ]]; then
         if [[ -x "${BASE_CN_PATH}/${cstreamer}" ]]; then
             log_msg "Dependency: '${cstreamer##*/}' found in ${cstreamer}."
         else

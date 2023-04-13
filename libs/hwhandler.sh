@@ -103,3 +103,12 @@ is_raspberry_pi() {
         echo "0"
     fi
 }
+
+is_ubuntu_arm() {
+    if [[ "$(is_raspberry_pi)" = "1" ]] &&
+    grep -q "ubuntu" /etc/os-release; then
+        echo "1"
+    else
+        echo "0"
+    fi
+}
