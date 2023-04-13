@@ -165,7 +165,7 @@ By default it look like this:
     log_level: quiet
 
     [cam 1]
-    mode: mjpg
+    mode: ustreamer
     port: 8080
     device: /dev/video0
     resolution: 640x480
@@ -247,7 +247,7 @@ This forces ustreamer to listen on all available network interfaces.
 Now the more interessting part.
 
     [cam 1]
-    mode: mjpg
+    mode: ustreamer
     enable_rtsp: false
     rtsp_port: 8554
     port: 8080
@@ -262,12 +262,12 @@ _**Note:** You can name the cam, how you want! ex.: [cam raspicam]_
 
 This section should be pretty much self explantory.
 
-    mode: mjpg
+    mode: ustreamer
 
 means your choosen streamservice will be ustreamer with the well known mjpg-protocol. \
 You can choose:
 
-    mode: multi
+    mode: camera-streamer
 
 This let you use the newer stream service 'camera-streamer'
 
