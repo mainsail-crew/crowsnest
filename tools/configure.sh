@@ -13,7 +13,9 @@
 
 # Exit on errors
 set -Ee
-set -x
+
+## Debug
+# set -x
 
 
 # Global Vars
