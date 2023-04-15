@@ -56,18 +56,6 @@ versioncontrol() {
         fi
     }
 
-    get_ffmpeg_version() {
-        local cur_ver avail_ver
-            avail_ver="$(dpkg-query -W ffmpeg | awk -F':' '{print $2}')"
-            cur_ver="$(ffmpeg -version | awk 'NR==1 {print $3}')"
-            if [[ "${cur_ver}" == "${avail_ver}" ]]; then
-                vc_log_msg "ffmpeg is up to date. (${cur_ver})"
-            fi
-            if [[ "${cur_ver}" != "${avail_ver}" ]]; then
-                vc_log_msg "ffmpeg new version available: ${avail_ver} (${cur_ver})."
-            fi
-    }
-
     ### MAIN
     function main {
         if [[ "${CROWSNEST_LOG_LEVEL}" != "quiet" ]]; then
@@ -75,7 +63,6 @@ versioncontrol() {
             if [[ "$(is_raspberry_pi)" = "1" ]]; then
                 get_ayucamstream_version
             fi
-            get_ffmpeg_version
         fi
     }
 
