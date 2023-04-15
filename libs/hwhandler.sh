@@ -17,7 +17,7 @@
 set -Ee
 
 ### Detect Hardware
-function detect_avail_cams {
+detect_avail_cams() {
     local avail realpath
     avail="$(find /dev/v4l/by-id/ -iname "*index0" 2> /dev/null)"
     count="$(echo "${avail}" | wc -l)"
@@ -38,7 +38,7 @@ function detect_avail_cams {
 }
 
 ## Used for "verbose" and "debug" logging in logging.sh
-function list_cam_formats {
+list_cam_formats() {
     local device prefix
     device="${1}"
     prefix="$(date +'[%D %T]') crowsnest:"
@@ -48,7 +48,7 @@ function list_cam_formats {
     done < <(v4l2-ctl -d "${device}" --list-formats-ext | sed '1,3d')
 }
 
-function list_cam_v4l2ctrls {
+list_cam_v4l2ctrls() {
     local device prefix
     device="${1}"
     prefix="$(date +'[%D %T]') crowsnest:"
@@ -59,17 +59,16 @@ function list_cam_v4l2ctrls {
 }
 
 ## Determine connected libcamera (CSI) device
-function detect_libcamera {
+detect_libcamera() {
     local avail
-    if [[ -f /proc/device-tree/model ]] &&
-    grep -q "Raspberry" /proc/device-tree/model; then
+    if [[ "$(is_raspberry_pi)" = "1" ]]; then
         vcgencmd get_camera | grep -c "libcamera interfaces=1" || true
     fi
 }
 
 ## Spit /base/soc path for libcamera device
-function get_libcamera_path {
-    if [[ -f /proc/device-tree/model ]] &&
+get_libcamera_path() {
+    if [[ "$(is_raspberry_pi)" = "1" ]] &&
     [[ -x "$(command -v libcamera-hello)" ]]; then
         libcamera-hello --list-cameras | sed '1,2d' \
         | grep "\(/base/*\)" | cut -d"(" -f2 | tr -d '$)'
@@ -79,7 +78,7 @@ function get_libcamera_path {
 ## Determine if cam has H.264 Hardware encoder
 ## call detect_h264 <nameornumber> ex.: detect_h264 foobar
 ## returns 1 = true / 0 = false ( numbers are strings! not int!)
-function detect_h264 {
+detect_h264() {
     local dev
     dev="$(get_param "cam ${1}" device)"
     v4l2-ctl -d "${dev}" --list-formats-ext | grep -c "[hH]264"
@@ -88,7 +87,7 @@ function detect_h264 {
 ## Determine if cam has MJPEG Hardware encoder
 ## call detect_mjpeg <nameornumber> ex.: detect_mjpeg foobar
 ## returns 1 = true / 0 = false ( numbers are strings! not int!)
-function detect_mjpeg {
+detect_mjpeg() {
     local dev
     dev="$(get_param "cam ${1}" device)"
     v4l2-ctl -d "${dev}" --list-formats-ext | grep -c "Motion-JPEG, compressed"
