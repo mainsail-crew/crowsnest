@@ -29,7 +29,9 @@ main() {
     . "${SRC_DIR}/libs/core.sh"
     . "${SRC_DIR}/libs/interactive.sh"
     . "${SRC_DIR}/libs/messages.sh"
+    . "${SRC_DIR}/libs/set_gpumem.sh"
     . "${SRC_DIR}/libs/update_manager.sh"
+
 
     if [[ "${DEBIAN_FRONTEND}" != "noninteractive" ]]; then
         export DEBIAN_FRONTEND=noninteractive
@@ -127,6 +129,10 @@ main() {
     add_group_video
 
     build_apps
+
+    if [[ "${CROWSNEST_UNATTENDED}" = "0" ]]; then
+        set_gpu_mem
+    fi
 
     if [[ "${CROWSNEST_UNATTENDED}" = "0" ]]; then
         ask_update_entry
