@@ -60,9 +60,15 @@ list_cam_v4l2ctrls() {
 
 ## Determine connected libcamera (CSI) device
 detect_libcamera() {
+    local avail
     if [[ "$(is_raspberry_pi)" = "1" ]] &&
     [[ -x "$(command -v libcamera-hello)" ]]; then
-        libcamera-hello --list-cameras | awk 'NR==1 {print $1}' | grep -c "Available"
+        avail="$(libcamera-hello --list-cameras | awk 'NR==1 {print $1}')"
+        if [[ "${avail}" = "Available" ]]; then
+            echo "1"
+        else
+            echo "0"
+        fi
     fi
 }
 
