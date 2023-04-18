@@ -14,7 +14,7 @@
 # shellcheck enable=require-variable-braces
 
 # Exit upon Errors
-set -Ee
+set -Eeou
 
 ### Detect Hardware
 detect_avail_cams() {
