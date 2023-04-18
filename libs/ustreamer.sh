@@ -14,7 +14,7 @@
 # shellcheck enable=require-variable-braces
 
 # Exit upon Errors
-set -Eeou
+set -Ee
 
 run_mjpg() {
     local cams

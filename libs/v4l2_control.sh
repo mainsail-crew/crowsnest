@@ -16,7 +16,7 @@
 # shellcheck enable=require-variable-braces
 
 # Exit upon Errors
-set -Eeou
+set -Ee
 
 function v4l2_control {
     v4c_log_msg() {

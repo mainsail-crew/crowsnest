@@ -14,7 +14,7 @@
 # shellcheck enable=require-variable-braces
 
 # Exit upon Errors
-set -Eeou
+set -Ee
 
 ## Version of crowsnest
 function self_version {

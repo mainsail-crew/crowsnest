@@ -14,7 +14,7 @@
 # shellcheck enable=require-variable-braces
 
 # Exit upon Errors
-set -Eeou
+set -Ee
 
 #### Watchdog Functions and Variables
 ## Do not reuse functions from other libs/scripts!

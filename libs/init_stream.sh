@@ -14,7 +14,7 @@
 # shellcheck enable=require-variable-braces
 
 # Exit upon Errors
-set -Eeou
+set -Ee
 
 ## Start Stream Service
 # sleep to prevent cpu cycle spikes

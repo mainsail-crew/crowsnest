@@ -14,10 +14,8 @@
 # shellcheck enable=require-variable-braces
 
 # Exit upon Errors
-set -Eeou
+set -Ee
 
-CN_DEBUG_ERR_EXIT=""
-export CN_DEBUG_ERR_EXIT
 # Base Path
 BASE_CN_PATH="$(dirname "$(readlink -f "${0}")")"
 
