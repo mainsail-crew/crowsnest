@@ -16,6 +16,8 @@
 # Exit upon Errors
 set -Eeou
 
+CN_DEBUG_ERR_EXIT=""
+export CN_DEBUG_ERR_EXIT
 # Base Path
 BASE_CN_PATH="$(dirname "$(readlink -f "${0}")")"
 
