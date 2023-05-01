@@ -495,7 +495,7 @@ Please see [README.md](./custompios/README.md) in the module folder for further 
 
 ---
 
-## What 'Backends' uses crowsnest?
+## What 'Backends' does crowsnest use?
 
 - ustreamer - A streamserver from Pi-KVM project \
   active maintained by [Maxim Devaev](https://github.com/mdevaev) \
