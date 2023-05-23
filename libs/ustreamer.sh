@@ -45,6 +45,9 @@ run_ustreamer() {
         start_param=( --host 127.0.0.1 -p "${pt}" )
     fi
 
+    # Add device
+    start_param+=( -d "${dev}" --device-timeout=2 )
+
     # Use MJPEG Hardware encoder if possible
     if [ "$(detect_mjpeg "${cam_sec}")" = "1" ]; then
         start_param+=( -m MJPEG --encoder=HW )
