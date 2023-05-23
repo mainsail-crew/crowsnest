@@ -70,6 +70,9 @@ detect_libcamera() {
             echo "0"
         fi
     fi
+    if [[ "$(is_raspberry_pi)" = "0" ]]; then
+        echo "0"
+    fi
 }
 
 ## Spit /base/soc path for libcamera device
