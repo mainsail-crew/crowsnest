@@ -127,7 +127,7 @@ check_legacy_raspicam() {
     if [[ -f /boot/config.txt ]]; then
         is_startx="$(grep -q "start_x=1" /boot/config.txt && echo "1" || echo "0")"
         if [[ "${is_startx}" = "1" ]]; then
-            is_mmal="$(grep -q "mmal service" /boot/config.txt && echo "1" || echo "0")"
+            is_mmal="$(v4l2-ctl --list-devices | grep -q "mmal service" && echo "1" || echo "0")"
         fi
         if [[ "${is_mmal}" = "1" ]]; then
             mmal_error_msg
