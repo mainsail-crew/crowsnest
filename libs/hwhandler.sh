@@ -120,3 +120,17 @@ is_ubuntu_arm() {
         echo "0"
     fi
 }
+
+check_legacy_raspicam() {
+    local is_startx is_mmal
+    # checking for boot/config.txt ensure raspbian & !ubuntu
+    if [[ -f /boot/config.txt ]]; then
+        is_startx="$(grep -q "start_x=1" /boot/config.txt && echo "1" || echo "0")"
+        if [[ "${is_startx}" = "1" ]]; then
+            is_mmal="$(grep -q "mmal service" /boot/config.txt && echo "1" || echo "0")"
+        fi
+        if [[ "${is_mmal}" = "1" ]]; then
+            mmal_error_msg
+        fi
+    fi
+}

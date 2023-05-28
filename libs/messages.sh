@@ -64,3 +64,10 @@ function debug_focus_val_msg {
 function blockyfix_msg_1 {
     log_msg "INFO: Blockyfix: Setting video_bitrate_mode to constant."
 }
+
+function mmal_error_msg {
+    log_msg "ERROR: Legacy camera stack enabled!"
+    log_msg "INFO: Found mmal device ..."
+    log_msg "Please follow instructions linked below"
+    log_msg "-> https://crowsnest.mainsail.xyz/faq-trouble-shoot/how-to-setup-a-raspicam"
+}

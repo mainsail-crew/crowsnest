@@ -93,6 +93,7 @@ function print_cams {
     total="$((v4l+($(detect_libcamera))))"
     if [ "${total}" -eq 0 ]; then
         log_msg "ERROR: No usable Devices Found. Stopping $(basename "${0}")."
+        check_legacy_raspicam
         exit 1
     else
         log_msg "INFO: Found ${total} total available Device(s)"
