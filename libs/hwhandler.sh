@@ -122,7 +122,11 @@ is_ubuntu_arm() {
 }
 
 is_startx() {
-    grep -q "^start_x=1" /boot/config.txt && echo "1" || echo "0"
+    if [[ -f /boot/config.txt ]]; then
+        grep -q "^start_x=1" /boot/config.txt && echo "1" || echo "0"
+    else
+        echo "0"
+    fi
 }
 
 check_legacy_raspicam() {
