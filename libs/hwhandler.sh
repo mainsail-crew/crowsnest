@@ -137,7 +137,7 @@ check_legacy_raspicam() {
 }
 
 check_legacy_stack() {
-    if [[ "$(is_startx)" = "1" ]] && [[ "${is_mmal}" = "0" ]]; then
+    if [[ "$(is_startx)" = "1" ]]; then
         legacy_stack_msg
     fi
 }
