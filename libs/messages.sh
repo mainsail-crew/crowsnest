@@ -69,6 +69,8 @@ function mmal_error_msg {
     log_msg "ERROR: Legacy camera stack enabled!"
     log_msg "INFO: Found mmal device ..."
     log_msg "INFO: Please visit https://crowsnest.mainsail.xyz/faq/how-to-setup-a-raspicam"
+    log_msg "ERROR: Stopping $(basename "$0")."
+    log_msg "Goodbye..."
 }
 
 function legacy_stack_msg {
