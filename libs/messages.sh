@@ -80,7 +80,7 @@ function legacy_stack_msg {
 
 function no_usable_device_msg {
     log_msg "ERROR: No usable Devices Found. Stopping $(basename "${0}")."
-    log_msg "INFO: If there is a USB device connected, please check wiring and is supported by v4l2!"
+    log_msg "INFO: If there is a USB webcam connected, please check wiring and is supported by v4l2!"
     log_msg "INFO: See https://crowsnest.mainsail.xyz/faq/how-to-use-v4l2-ctl"
     log_msg "INFO: If a Raspicam is connected, please check wiring and take look"
     log_msg "INFO: at https://crowsnest.mainsail.xyz/faq/how-to-setup-a-raspicam"
