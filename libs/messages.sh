@@ -68,8 +68,7 @@ function blockyfix_msg_1 {
 function mmal_error_msg {
     log_msg "ERROR: Legacy camera stack enabled!"
     log_msg "INFO: Found mmal device ..."
-    log_msg "Please follow instructions linked below"
-    log_msg "-> https://crowsnest.mainsail.xyz/faq/how-to-setup-a-raspicam"
+    log_msg "INFO: Please visit https://crowsnest.mainsail.xyz/faq/how-to-setup-a-raspicam"
 }
 
 function legacy_stack_msg {
