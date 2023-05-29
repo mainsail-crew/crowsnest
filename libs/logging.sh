@@ -92,8 +92,8 @@ function print_cams {
     v4l="$(find /dev/v4l/by-id/ -iname "*index0" 2> /dev/null | wc -l)"
     total="$((v4l+($(detect_libcamera))))"
     if [ "${total}" -eq 0 ]; then
-        no_usable_device_msg
         check_legacy_raspicam
+        no_usable_device_msg
         exit 1
     else
         log_msg "INFO: Found ${total} total available Device(s)"
