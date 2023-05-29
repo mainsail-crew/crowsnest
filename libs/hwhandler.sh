@@ -129,7 +129,7 @@ check_legacy_raspicam() {
         if [[ "${is_startx}" = "1" ]]; then
             is_mmal="$(v4l2-ctl --list-devices | grep -q "mmal service" && echo "1" || echo "0")"
         fi
-        if [[ "${is_mmal}" = "1" ]]; then
+        if [[ "${is_mmal}" = "1" ]] && [[ "${is_mmal}" = "1" ]]; then
             mmal_error_msg
         fi
         if [[ "${is_startx}" = "1" ]] && [[ "${is_mmal}" = "0" ]]; then
