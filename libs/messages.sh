@@ -71,3 +71,9 @@ function mmal_error_msg {
     log_msg "Please follow instructions linked below"
     log_msg "-> https://crowsnest.mainsail.xyz/faq/how-to-setup-a-raspicam"
 }
+
+function legacy_stack_msg {
+    log_msg "WARN: Detected enabled legacy camera stack"
+    log_msg "INFO: If possible, disable it by removing all occurences of 'start_x=1' in '/boot/config.txt'"
+    log_msg "INFO: if needed for some reason, DSI screen for ex., ignore this message ..."
+}
