@@ -121,17 +121,23 @@ is_ubuntu_arm() {
     fi
 }
 
+is_startx() {
+    grep -q "^start_x=1" /boot/config.txt && echo "1" || echo "0"
+}
+
 check_legacy_raspicam() {
-    local is_startx is_mmal
+    local is_mmal
     # checking for boot/config.txt ensure raspbian & !ubuntu
     if [[ -f /boot/config.txt ]]; then
-        is_startx="$(grep -q "^start_x=1" /boot/config.txt && echo "1" || echo "0")"
         is_mmal="$(v4l2-ctl --list-devices | grep -q "mmal service" && echo "1" || echo "0")"
-        if [[ "${is_startx}" = "1" ]] && [[ "${is_mmal}" = "1" ]]; then
+        if [[ "$(is_startx)" = "1" ]] && [[ "${is_mmal}" = "1" ]]; then
             mmal_error_msg
         fi
-        if [[ "${is_startx}" = "1" ]] && [[ "${is_mmal}" = "0" ]]; then
-            legacy_stack_msg
-        fi
+    fi
+}
+
+check_legacy_stack() {
+    if [[ "$(is_startx)" = "1" ]] && [[ "${is_mmal}" = "0" ]]; then
+        legacy_stack_msg
     fi
 }

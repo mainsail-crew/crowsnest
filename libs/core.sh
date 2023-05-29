@@ -122,5 +122,6 @@ function initial_check {
     fi
     log_msg "INFO: Detect available Devices"
     print_cams
+    check_legacy_stack
     return
 }
