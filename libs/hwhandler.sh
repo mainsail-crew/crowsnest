@@ -132,7 +132,7 @@ check_legacy_raspicam() {
         if [[ "${is_mmal}" = "1" ]]; then
             mmal_error_msg
         fi
-        if [[ "${is_mmal}" = "0" ]]; then
+        if [[ "${is_startx}" = "1" ]] && [[ "${is_mmal}" = "0" ]]; then
             legacy_stack_msg
         fi
     fi
