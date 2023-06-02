@@ -144,7 +144,7 @@ clean_apps() {
 
 build_apps() {
     ## Determine Ramsize and export MAKEFLAG
-     if [[ "$(get_avail_mem)" -le 524288 ]]; then
+    if [[ "$(get_avail_mem)" -le 524288 ]]; then
         USE_PROCS=-j1
     elif [[ "$(get_avail_mem)" -le 1048576 ]]; then
         USE_PROCS=-j2
