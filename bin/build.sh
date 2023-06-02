@@ -146,13 +146,12 @@ build_apps() {
     ## Determine Ramsize and export MAKEFLAG
     if [[ "$(get_avail_mem)" -le 524288 ]]; then
         USE_PROCS=-j1
-    fi
-    if [[ "$(get_avail_mem)" -le 1048576 ]]; then
+    elif [[ "$(get_avail_mem)" -le 1048576 ]]; then
         USE_PROCS=-j2
-    fi
-    if [[ "$(get_avail_mem)" -gt 1048576 ]]; then
+    else
         USE_PROCS=-j4
     fi
+
     for path in "${ALL_PATHS[@]}"; do
         if [[ ! -d "${path}" ]]; then
             printf "'%s' does not exist! Build skipped ... [WARN]\n" "${path}"
