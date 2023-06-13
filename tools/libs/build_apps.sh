@@ -37,6 +37,9 @@ clone_cstreamer() {
     git clone "${CROWSNEST_CAMERA_STREAMER_REPO_SHIP}" --recursive \
     -b "${CROWSNEST_CAMERA_STREAMER_REPO_BRANCH}" \
     --depth=1 --single-branch bin/camera-streamer
+    pushd bin/camera-streamer
+    git checkout "${CROWSNEST_CAMERA_STREAMER_REPO_TAG}"
+    popd
 }
 
 build_apps() {

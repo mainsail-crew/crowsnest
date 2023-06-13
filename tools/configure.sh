@@ -30,6 +30,7 @@ CN_USTREAMER_REPO="https://github.com/pikvm/ustreamer.git"
 CN_USTREAMER_BRANCH="master"
 CN_CAMERA_STREAMER_REPO="https://github.com/ayufan-research/camera-streamer.git"
 CN_CAMERA_STREAMER_BRANCH="master"
+CN_CAMERA_STREAMER_TAG="v0.2.2"
 
 ### Messages
 header_msg() {
@@ -158,6 +159,7 @@ create_config_header() {
     echo -e "CROWSNEST_USTREAMER_REPO_BRANCH=\"${CN_USTREAMER_BRANCH}\""
     echo -e "CROWSNEST_CAMERA_STREAMER_REPO_SHIP=\"${CN_CAMERA_STREAMER_REPO}\"";
     echo -e "CROWSNEST_CAMERA_STREAMER_REPO_BRANCH=\"${CN_CAMERA_STREAMER_BRANCH}\""
+    echo -e "CROWSNEST_CAMERA_STREAMER_REPO_TAG=\"${CN_CAMERA_STREAMER_TAG}\""
     } >> "${CN_CONFIG_CONFIGFILE}"
 }
 

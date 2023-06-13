@@ -42,7 +42,10 @@ if [[ -z "${CROWSNEST_CAMERA_STREAMER_REPO_SHIP}" ]]; then
     CROWSNEST_CAMERA_STREAMER_REPO_SHIP="https://github.com/ayufan-research/camera-streamer.git"
 fi
 if [[ -z "${CROWSNEST_CAMERA_STREAMER_REPO_BRANCH}" ]]; then
-    CROWSNEST_CAMERA_STREAMER_REPO_BRANCH="master"
+    CROWSNEST_CAMERA_STREAMER_REPO_BRANCH="main"
+fi
+if [[ -z "${CROWSNEST_CAMERA_STREAMER_REPO_TAG}" ]]; then
+    CROWSNEST_CAMERA_STREAMER_REPO_TAG="v0.2.2"
 fi
 
 
@@ -113,13 +116,16 @@ clone_cstreamer() {
         return
     fi
     if [[ -d "${BASE_CN_BIN_PATH}"/"${CSTREAMER_PATH}" ]]; then
-        printf "%s already exist ... [SKIPPED]\n" "${CSTREAMER_PATH}"
-        return
+        printf "%s already exist ... [DELETING]\n" "${CSTREAMER_PATH}"
+        rm -rf "${BASE_CN_BIN_PATH}"/"${CSTREAMER_PATH}"
     fi
     git clone "${CROWSNEST_CAMERA_STREAMER_REPO_SHIP}" \
         -b "${CROWSNEST_CAMERA_STREAMER_REPO_BRANCH}" \
         "${BASE_CN_BIN_PATH}"/"${CSTREAMER_PATH}" \
         "${CLONE_FLAGS[@]}" --recursive
+    pushd "${BASE_CN_BIN_PATH}"/"${CSTREAMER_PATH}"
+    git checkout "${CROWSNEST_CAMERA_STREAMER_REPO_TAG}"
+    popd
 }
 
 ### Clone Apps
