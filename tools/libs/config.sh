@@ -39,7 +39,7 @@ import_config() {
         [[ -n "${CROWSNEST_USTREAMER_REPO_BRANCH}" ]] || CROWSNEST_USTREAMER_REPO_BRANCH="master"
         [[ -n "${CROWSNEST_CAMERA_STREAMER_REPO_SHIP}" ]] || CROWSNEST_CAMERA_STREAMER_REPO_SHIP="https://github.com/ayufan/camera-streamer.git"
         [[ -n "${CROWSNEST_CAMERA_STREAMER_REPO_BRANCH}" ]] || CROWSNEST_CAMERA_STREAMER_REPO_BRANCH="main"
-        [[ -n "${CROWSNEST_CAMERA_STREAMER_REPO_TAG}" ]] || CROWSNEST_CAMERA_STREAMER_REPO_TAG="v0.2.2"
+        [[ -n "${CROWSNEST_CAMERA_STREAMER_REPO_TAG}" ]] || CROWSNEST_CAMERA_STREAMER_REPO_TAG="v0.2.4"
         status_msg "Using default configuration ..." "0"
     fi
 }

@@ -30,7 +30,7 @@ CN_USTREAMER_REPO="https://github.com/pikvm/ustreamer.git"
 CN_USTREAMER_BRANCH="master"
 CN_CAMERA_STREAMER_REPO="https://github.com/ayufan-research/camera-streamer.git"
 CN_CAMERA_STREAMER_BRANCH="master"
-CN_CAMERA_STREAMER_TAG="v0.2.2"
+CN_CAMERA_STREAMER_TAG="v0.2.4"
 
 ### Messages
 header_msg() {
