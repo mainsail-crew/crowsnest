@@ -19,7 +19,7 @@ A wrapper script for webcam streaming on Raspberry Pi OS Lite images like [Mains
 -   [Contribute](#contribute)
 -   [How to support us?](#how-to-support-us)
 -   [CustomPiOS-module](#custompios-module)
--   [What 'Backends' uses crowsnest?](#what-backends-uses-crowsnest)
+-   [What 'Backends' does crowsnest use](#what-backends-does-crowsnest-use)
 -   [Credits](#credits)
 
 ---
