@@ -57,7 +57,8 @@ function run_ayucamstream() {
 
     # Use MJPEG Hardware encoder if possible
     if [ "$(detect_mjpeg "${cam_sec}")" = "1" ] &&
-    [[ ! "${dev}" =~ "/base/soc" ]]; then
+    [[ ! "${dev}" =~ "/base/soc" ]] &&
+    [[ ! "${cstm}" =~ "--camera-format=" ]]; then
         start_param+=( --camera-format=MJPG )
     fi
 
