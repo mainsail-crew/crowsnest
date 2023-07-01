@@ -21,7 +21,7 @@ set -Ee
 # set -x
 
 
-TITLE="\e[31mcrowsnest\e[0m - A webcam daemon for multiple Cams and stream services."
+TITLE="\e[31mcrowsnest\e[0m - A webcam daemon for multiple cams and stream services."
 
 ### Messages
 msg() {
@@ -48,37 +48,38 @@ status_msg() {
 
 not_as_root_msg() {
     msg "\n\tPlease do NOT run this script as root!\n"
-    msg "\tLogin in as regular user and run with '\e[32msudo make install\e[0m'\n\n"
+    msg "\tLogin in as a regular user and run with '\e[32msudo make install\e[0m'\n\n"
 }
 
 need_sudo_msg() {
-    msg "\n\tYou need to run this script with sudo priviledges!"
+    msg "\n\tYou need to run this script with sudo privileges!"
     msg "\tPlease try '\e[32msudo make install\e[0m'\n\nExiting..."
 }
 
 not_supported_msg() {
     msg "\nDebian 10 (buster) has reached end of life.\n"
-    msg "Therefor crowsnest has also end support for this.\n"
-    msg "We are sorry for inconvinience...\n"
+    msg "Therefore, crowsnest has also ended support for it.\n"
+    msg "Please upgrade to a supported OS release,"
+    msg "we are sorry for the inconvenience.\n"
 }
 
 welcome_msg() {
     msg "${TITLE}\n"
-    msg "\t\e[34mAhoi!\e[0m"
+    msg "\t\e[34mAhoy!\e[0m"
     msg "\tThank you for installing crowsnest ;)"
-    msg "\tThis will take a while ... "
-    msg "\tPlease reboot after installation has finished.\n"
+    msg "\tThis will take a while..."
+    msg "\tPlease reboot after the installation has finished.\n"
     sleep 1
 }
 
 config_msg() {
     msg "\nConfig file not found!\n\tUsing defaults ..."
-    msg "\tThis uses paths located in 'printer_data' of your Home Folder."
+    msg "\tThis uses paths located in 'printer_data' of your home folder."
 }
 
 goodbye_msg() {
     msg "\nInstallation \e[32msuccessful\e[0m.\n"
-    msg "\t\e[33mTo take changes effect, you need to reboot your machine!\e[0m\n"
+    msg "\t\e[33mReboot your machine for the changes to take effect!\e[0m\n"
 }
 
 unattended_success_msg() {
@@ -86,7 +87,7 @@ unattended_success_msg() {
 }
 
 error_msg() {
-    msg "Something went wrong!\nPlease copy the last output and head over to\n"
+    msg "Something went wrong!\nPlease copy the latest output, head over to\n"
     msg "\thttps://discord.gg/mainsail\n"
-    msg "open a ticket in #supportforum ..."
+    msg "and open a ticket in #supportforum..."
 }
