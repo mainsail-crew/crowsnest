@@ -16,6 +16,9 @@
 install: ## Install crowsnest (needs leading sudo)
 	@bash -c 'tools/install.sh'
 
+installdocker: ## Install crowsnest (needs leading sudo -u as a non-root user)
+	@bash -c 'tools/install_docker.sh'
+
 uninstall: ## Uninstall crowsnest
 	@bash -c 'tools/uninstall.sh'
 
