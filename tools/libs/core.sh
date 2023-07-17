@@ -51,7 +51,7 @@ link_pkglist_generic() {
 }
 
 run_apt_update() {
-    apt-get -q --allow-releaseinfo-change update
+    sudo -u "${BASE_USER}" apt-get -q --allow-releaseinfo-change update
 }
 
 source_pkglist_file() {
@@ -66,7 +66,7 @@ install_dependencies() {
     for dep in ${PKGLIST}; do
         pkg+=("${dep}")
     done
-    apt-get --yes --no-install-recommends install "${pkg[@]}" || return 1
+    sudo -u "${BASE_USER}" apt-get --yes --no-install-recommends install "${pkg[@]}" || return 1
 }
 
 create_filestructure() {
@@ -93,7 +93,7 @@ link_main_executable() {
         rm -f "${crowsnest_main_bin_path}/crowsnest"
     fi
     if [[ -f "${crowsnest_src_bin_path}" ]]; then
-        ln -sf "${crowsnest_src_bin_path}" "${crowsnest_main_bin_path}"
+        sudo -u "${BASE_USER}" ln -sf "${crowsnest_src_bin_path}" "${crowsnest_main_bin_path}"
     else
         msg "File ${crowsnest_src_bin_path} does not exist!"
         return 1
@@ -120,7 +120,7 @@ install_env_file() {
     env_file="${PWD}/resources/crowsnest.env"
     env_target="${CROWSNEST_ENV_PATH}/crowsnest.env"
     sudo -u "${BASE_USER}" cp -f "${env_file}" "${env_target}"
-    sed -i "s|%CONFPATH%|${CROWSNEST_CONFIG_PATH}|" "${env_target}"
+    sudo -u "${BASE_USER}" sed -i "s|%CONFPATH%|${CROWSNEST_CONFIG_PATH}|" "${env_target}"
     [[ -f "${env_target}" ]] &&
     grep -q "${BASE_USER}" "${env_target}" || return 1
 }
@@ -151,7 +151,7 @@ install_crowsnest_conf() {
     logpath="${CROWSNEST_LOG_PATH}/crowsnest.log"
     backup_crowsnest_conf
     sudo -u "${BASE_USER}" cp -rf "${conf_template}" "${CROWSNEST_CONFIG_PATH}"
-    sed -i "s|%LOGPATH%|${logpath}|g" "${CROWSNEST_CONFIG_PATH}/crowsnest.conf"
+    sudo -u "${BASE_USER}" sed -i "s|%LOGPATH%|${logpath}|g" "${CROWSNEST_CONFIG_PATH}/crowsnest.conf"
     [[ -f "${CROWSNEST_CONFIG_PATH}/crowsnest.conf" ]] &&
     grep -q "${logpath}" "${CROWSNEST_CONFIG_PATH}/crowsnest.conf" || return 1
 }

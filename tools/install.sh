@@ -37,7 +37,7 @@ main() {
         export DEBIAN_FRONTEND=noninteractive
     fi
 
-    if [[ "${SUDO_USER}" = "root" ]]; then
+    if [[ "${USER}" = "root" ]]; then
         not_as_root_msg
         exit 1
     fi
