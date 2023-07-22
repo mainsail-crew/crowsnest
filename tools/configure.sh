@@ -57,7 +57,7 @@ check_config_file_msg() {
 
 
 default_path_msg() {
-    echo -e "Hit ENTER to confirm input."
+    echo -e "Hit ENTER to use default."
 }
 
 root_path_msg() {
