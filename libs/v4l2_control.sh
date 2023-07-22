@@ -154,7 +154,7 @@ function blockyfix {
     for cam in $(configured_cams); do
         dev="$(get_param "cam ${cam}" device)"
         v4l2ctl="$(get_param "cam ${cam}" v4l2ctl)"
-        if [ "${dev}" = "$(dev_is_raspicam)" ]; then
+        if [ "${dev}" = "$(dev_is_legacy)" ]; then
             if [ -z "${v4l2ctl}" ] ||
             [ "$(grep -c "video_bitrate" <<< "${v4l2ctl}")" == "0" ]; then
                 set_bitrate "${dev}"

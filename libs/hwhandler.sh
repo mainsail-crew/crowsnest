@@ -75,6 +75,15 @@ detect_libcamera() {
     fi
 }
 
+## Spit /base/soc path for libcamera device
+get_libcamera_path() {
+    if [[ "$(is_raspberry_pi)" = "1" ]] &&
+    [[ -x "$(command -v libcamera-hello)" ]]; then
+        libcamera-hello --list-cameras | sed '1,2d' \
+        | grep "\(/base/*\)" | cut -d"(" -f2 | tr -d '$)'
+    fi
+}
+
 # Determine connected "legacy" device
 function detect_legacy {
     local avail
@@ -87,13 +96,9 @@ function detect_legacy {
     echo "${avail}"
 }
 
-## Spit /base/soc path for libcamera device
-get_libcamera_path() {
-    if [[ "$(is_raspberry_pi)" = "1" ]] &&
-    [[ -x "$(command -v libcamera-hello)" ]]; then
-        libcamera-hello --list-cameras | sed '1,2d' \
-        | grep "\(/base/*\)" | cut -d"(" -f2 | tr -d '$)'
-    fi
+function dev_is_legacy {
+    v4l2-ctl --list-devices |  grep -A1 -e 'mmal' | \
+    awk 'NR==2 {print $1}'
 }
 
 ## Determine if cam has H.264 Hardware encoder
