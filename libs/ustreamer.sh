@@ -23,6 +23,7 @@ run_mjpg() {
     for instance in ${cams} ; do
         run_ustreamer "${instance}" &
     done
+    blockyfix
     brokenfocus
     return
 }
