@@ -23,6 +23,7 @@ run_mjpg() {
     for instance in ${cams} ; do
         run_ustreamer "${instance}" &
     done
+    blockyfix
     brokenfocus
     return
 }
@@ -45,12 +46,17 @@ run_ustreamer() {
         start_param=( --host 127.0.0.1 -p "${pt}" )
     fi
 
-    # Add device
-    start_param+=( -d "${dev}" --device-timeout=2 )
+    #Raspicam Workaround
+    if [[ "${dev}" = "$(dev_is_legacy)" ]]; then
+        start_param+=( -m MJPEG --device-timeout=5 --buffers=3 )
+    else
+        # Add device
+        start_param+=( -d "${dev}" --device-timeout=2 )
 
-    # Use MJPEG Hardware encoder if possible
-    if [ "$(detect_mjpeg "${cam_sec}")" = "1" ]; then
-        start_param+=( -m MJPEG --encoder=HW )
+        # Use MJPEG Hardware encoder if possible
+        if [ "$(detect_mjpeg "${cam_sec}")" = "1" ]; then
+            start_param+=( -m MJPEG --encoder=HW )
+        fi
     fi
 
     # set max framerate

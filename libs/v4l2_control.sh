@@ -136,3 +136,30 @@ function brokenfocus {
 main
 
 }
+
+# This function is to set bitrate on raspicams.
+# If raspicams set to variable bitrate, they tend to show
+# a "block-like" view after reboots
+# To prevent that blockyfix should apply constant bitrate befor start of ustreamer
+# See https://github.com/mainsail-crew/crowsnest/issues/33
+function blockyfix {
+    local dev v4l2ctl
+
+    # call set_bitrate <device>
+    function set_bitrate {
+        v4l2-ctl -d "${1}" -c video_bitrate_mode=1 2> /dev/null
+        v4l2-ctl -d "${1}" -c video_bitrate=15000000 2> /dev/null
+    }
+
+    for cam in $(configured_cams); do
+        dev="$(get_param "cam ${cam}" device)"
+        v4l2ctl="$(get_param "cam ${cam}" v4l2ctl)"
+        if [ "${dev}" = "$(dev_is_legacy)" ]; then
+            if [ -z "${v4l2ctl}" ] ||
+            [ "$(grep -c "video_bitrate" <<< "${v4l2ctl}")" == "0" ]; then
+                set_bitrate "${dev}"
+                blockyfix_msg_1
+            fi
+        fi
+    done
+}
