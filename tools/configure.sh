@@ -56,8 +56,8 @@ check_config_file_msg() {
 }
 
 
-confirm_path_msg() {
-    echo -e "Hit ENTER to confirm input."
+default_path_msg() {
+    echo -e "Hit ENTER to use default."
 }
 
 root_path_msg() {
@@ -183,7 +183,7 @@ specify_root_path() {
 specify_config_path() {
     local reply
     config_path_msg
-    confirm_path_msg
+    default_path_msg
     read -erp "Please enter path: " -i "${CN_CONFIG_CONFIGPATH}" reply
     if [[ -z "${reply}" ]]; then
         echo -e "CROWSNEST_CONFIG_PATH=\"${CN_CONFIG_CONFIGPATH}\"" >> \
@@ -200,7 +200,7 @@ specify_config_path() {
 specify_log_path() {
     local reply
     log_path_msg
-    confirm_path_msg
+    default_path_msg
     read -erp "Please enter path: " -i "${CN_CONFIG_LOGPATH}" reply
     if [[ -z "${reply}" ]]; then
         echo -e "CROWSNEST_LOG_PATH=\"${CN_CONFIG_LOGPATH}\"" >> \
@@ -216,7 +216,7 @@ specify_log_path() {
 specify_env_path() {
     local reply
     env_path_msg
-    confirm_path_msg
+    default_path_msg
     read -erp "Please enter path: " -i "${CN_CONFIG_ENVPATH}" reply
     if [[ -z "${reply}" ]]; then
         echo -e "CROWSNEST_ENV_PATH=\"${CN_CONFIG_ENVPATH}\"" >> \
