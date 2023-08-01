@@ -167,7 +167,6 @@ specify_root_path() {
     default_path_msg
     read -erp "Please enter path: " -i "${CN_CONFIG_ROOTPATH}" reply
     if [[ -z "${reply}" ]]; then
-        CN_CONFIG_ROOTPATH="${CN_CONFIG_ROOTPATH}"
         return 0
     fi
     if [[ -n "${reply}" ]]; then
