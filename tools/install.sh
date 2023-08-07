@@ -42,7 +42,7 @@ main() {
         exit 1
     fi
 
-    if [[ -z "${SUDO_USER}" ]]; then
+    if [[ -z "${SUDO_USER}" ]] && [[ "${CROWSNEST_UNATTENDED}" != "1" ]]; then
         need_sudo_msg
         exit 1
     fi
