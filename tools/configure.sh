@@ -166,18 +166,14 @@ specify_root_path() {
     root_path_msg
     default_path_msg
     read -erp "Please enter path: " -i "${CN_CONFIG_ROOTPATH}" reply
-    if [[ -z "${reply}" ]]; then
-        CN_CONFIG_ROOTPATH="${CN_CONFIG_ROOTPATH}"
-        return 0
-    fi
     if [[ -n "${reply}" ]]; then
         CN_CONFIG_ROOTPATH="${reply}"
         CN_CONFIG_CONFIGPATH="${CN_CONFIG_ROOTPATH}/config"
         CN_CONFIG_LOGPATH="${CN_CONFIG_ROOTPATH}/logs"
         CN_CONFIG_ENVPATH="${CN_CONFIG_ROOTPATH}/systemd"
         CN_MOONRAKER_CONFIG_PATH="${CN_CONFIG_CONFIGPATH}/moonraker.conf"
-        return 0
     fi
+    return 0
 }
 
 specify_config_path() {
