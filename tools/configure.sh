@@ -22,10 +22,10 @@ set -Ee
 CN_CONFIG_USER=$(whoami)
 CN_CONFIG_CONFIGFILE="tools/.config"
 CN_CONFIG_ROOTPATH="/home/${CN_CONFIG_USER}/printer_data"
-# CN_CONFIG_CONFIGPATH="${CN_CONFIG_ROOTPATH}/config"
-# CN_CONFIG_LOGPATH="${CN_CONFIG_ROOTPATH}/logs"
-# CN_CONFIG_ENVPATH="${CN_CONFIG_ROOTPATH}/systemd"
-# CN_MOONRAKER_CONFIG_PATH="${CN_CONFIG_CONFIGPATH}/moonraker.conf"
+CN_CONFIG_CONFIGPATH="${CN_CONFIG_ROOTPATH}/config"
+CN_CONFIG_LOGPATH="${CN_CONFIG_ROOTPATH}/logs"
+CN_CONFIG_ENVPATH="${CN_CONFIG_ROOTPATH}/systemd"
+CN_MOONRAKER_CONFIG_PATH="${CN_CONFIG_CONFIGPATH}/moonraker.conf"
 CN_USTREAMER_REPO="https://github.com/pikvm/ustreamer.git"
 CN_USTREAMER_BRANCH="master"
 CN_CAMERA_STREAMER_REPO="https://github.com/ayufan-research/camera-streamer.git"
@@ -165,20 +165,15 @@ specify_root_path() {
     local reply
     root_path_msg
     default_path_msg
-    read -erp "Please enter path: " reply
-    if [[ -z "${reply}" ]]; then
-        echo -e "CROWSNEST_CONFIG_PATH=\"${CN_CONFIG_CONFIGPATH}\"" >> \
-        "${CN_CONFIG_CONFIGFILE}"
-        return 0
-    fi
+    read -erp "Please enter path: " -i "${CN_CONFIG_ROOTPATH}" reply
     if [[ -n "${reply}" ]]; then
         CN_CONFIG_ROOTPATH="${reply}"
         CN_CONFIG_CONFIGPATH="${CN_CONFIG_ROOTPATH}/config"
         CN_CONFIG_LOGPATH="${CN_CONFIG_ROOTPATH}/logs"
         CN_CONFIG_ENVPATH="${CN_CONFIG_ROOTPATH}/systemd"
         CN_MOONRAKER_CONFIG_PATH="${CN_CONFIG_CONFIGPATH}/moonraker.conf"
-        return 0
     fi
+    return 0
 }
 
 specify_config_path() {

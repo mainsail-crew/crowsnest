@@ -18,7 +18,7 @@ set -Ee
 # set -x
 
 # Global Vars
-TITLE="\e[31mcrowsnest\e[0m - A webcam daemon for multiple Cams and stream services."
+TITLE="\e[31mcrowsnest\e[0m - A webcam daemon for multiple cams and stream services."
 SRC_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd -P)"
 SERVICE_FILE="/etc/systemd/system/crowsnest.service"
 

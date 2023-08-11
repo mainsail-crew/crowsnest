@@ -22,5 +22,5 @@ PKGLIST="git crudini bsdutils findutils v4l-utils curl"
 ### Ustreamer Dependencies
 PKGLIST="${PKGLIST} build-essential libevent-dev libjpeg-dev libbsd-dev"
 ### Camera-Streamer Dependencies
-PKGLIST="${PKGLIST} cmake libavformat-dev libavutil-dev libavcodec-dev libcamera-dev"
+PKGLIST="${PKGLIST} cmake libavformat-dev libavutil-dev libavcodec-dev libcamera-dev libcamera-apps-lite"
 PKGLIST="${PKGLIST} liblivemedia-dev pkg-config xxd build-essential cmake libssl-dev"

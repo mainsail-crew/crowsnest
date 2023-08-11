@@ -108,7 +108,7 @@ function check_apps {
 # print_cfg, see libs/logging.sh L#75
 # pint_cams, see libs/logging.sh L#84
 function initial_check {
-    log_msg "INFO: Checking Dependencys"
+    log_msg "INFO: Checking Dependencies"
     check_dep "crudini"
     check_dep "find"
     check_dep "xargs"
