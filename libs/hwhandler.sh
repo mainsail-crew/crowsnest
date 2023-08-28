@@ -69,8 +69,7 @@ detect_libcamera() {
         else
             echo "0"
         fi
-    fi
-    if [[ "$(is_raspberry_pi)" = "0" ]]; then
+    else
         echo "0"
     fi
 }
