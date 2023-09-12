@@ -31,7 +31,7 @@ set_gpu_mem() {
         mem_split=128
     elif [[ "$(get_avail_mem)" -le 1048576 ]]; then
         mem_split=160
-    else [[ "$(get_avail_mem)" -gt 1048576 ]]; then
+    else
         mem_split=256
     fi
     if [[ "$(is_raspbian)" = "1" ]] && [[ -n "$(command -v raspi-config)" ]]; then
