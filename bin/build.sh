@@ -42,7 +42,7 @@ if [[ -z "${CROWSNEST_CAMERA_STREAMER_REPO_SHIP}" ]]; then
     CROWSNEST_CAMERA_STREAMER_REPO_SHIP="https://github.com/ayufan-research/camera-streamer.git"
 fi
 if [[ -z "${CROWSNEST_CAMERA_STREAMER_REPO_BRANCH}" ]]; then
-    CROWSNEST_CAMERA_STREAMER_REPO_BRANCH="master"
+    CROWSNEST_CAMERA_STREAMER_REPO_BRANCH="main"
 fi
 
 
