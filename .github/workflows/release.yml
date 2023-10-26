@@ -22,6 +22,8 @@ jobs:
   release:
     needs: [ 'update-master-branch' ]
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Fetch repo
         uses: actions/checkout@v3
