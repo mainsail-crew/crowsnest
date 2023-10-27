@@ -37,7 +37,7 @@ jobs:
         run: |
           echo "TAG_NAME=$(git describe --tags $(git rev-list --tags --max-count=1))" >> $GITHUB_OUTPUT
       - name: Generate a changelog
-        uses: orhun/git-cliff-action@v1
+        uses: orhun/git-cliff-action@v2
         id: generate-changelog
         with:
           config: ./cliff-release.toml
@@ -70,7 +70,7 @@ jobs:
         run: |
           echo "TAG_NAME=$(git describe --tags $(git rev-list --tags --max-count=1))" >> $GITHUB_OUTPUT
       - name: Generate a changelog
-        uses: orhun/git-cliff-action@v1
+        uses: orhun/git-cliff-action@v2
         id: git-cliff
         with:
           config: cliff.toml
