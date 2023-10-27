@@ -25,7 +25,6 @@ body = """
         {% raw %}\n{% endraw %}\
         - {{ commit.message | upper_first | trim }} | [{{ commit.id | truncate(length=7, end="") }}](<REPO>/commit/{{ commit.id }})\
         {%- if commit.breaking %}
-        {%- if commit.breaking %}
         {% raw %}  {% endraw %}- **BREAKING**: {{commit.breaking_description}}
         {%- endif -%}
 
