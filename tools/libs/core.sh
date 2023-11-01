@@ -34,6 +34,12 @@ is_buster() {
     fi
 }
 
+is_bookworm() {
+    if [[ -f /etc/os-release ]]; then
+        grep -cq "bookworm" /etc/os-release &> /dev/null && echo "1" || echo "0"
+    fi
+}
+
 is_raspbian() {
     if [[ -f /boot/config.txt ]] && [[ -f /etc/rpi-issue ]]; then
         echo "1"
