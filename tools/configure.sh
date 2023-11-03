@@ -28,7 +28,7 @@ CN_CONFIG_ENVPATH="${CN_CONFIG_ROOTPATH}/systemd"
 CN_MOONRAKER_CONFIG_PATH="${CN_CONFIG_CONFIGPATH}/moonraker.conf"
 CN_USTREAMER_REPO="https://github.com/pikvm/ustreamer.git"
 CN_USTREAMER_BRANCH="master"
-CN_CAMERA_STREAMER_REPO="https://github.com/ayufan-research/camera-streamer.git"
+CN_CAMERA_STREAMER_REPO="https://github.com/ayufan/camera-streamer.git"
 CN_CAMERA_STREAMER_BRANCH="master"
 
 ### Messages

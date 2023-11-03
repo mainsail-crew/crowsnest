@@ -128,6 +128,12 @@ main() {
 
     add_group_video
 
+    if [[ "$(is_bookworm)" = "1" ]]; then
+        msg "Bookworm detected!"
+        msg "Using main branch of camera-streamer for Bookworm..."
+        CROWSNEST_CAMERA_STREAMER_REPO_BRANCH="main"
+    fi
+
     build_apps
 
     if [[ "${CROWSNEST_UNATTENDED}" = "0" ]]; then
