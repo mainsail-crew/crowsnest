@@ -44,11 +44,10 @@ build_apps() {
     msg "Cloning ustreamer repository ..."
     clone_ustreamer
     ## Detect Image build for Raspberrys
-    if [[ "$(is_raspbian)" = "1" ]]; then
+    if [[ "${CN_INSTALL_CS}" = "1" ]]; then
         msg "Cloning camera-streamer repository ..."
         clone_cstreamer
-    fi
-    if [[ "$(is_raspbian)" = "0" ]]; then
+    else
         msg "Install of camera-streamer skipped, only supported on Raspberry SBC's! ... "
     fi
     sudo -u "${BASE_USER}" "${PWD}"/bin/build.sh --build
