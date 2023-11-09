@@ -49,18 +49,9 @@ main() {
 
     [[ -n "${BASE_USER}" ]] || BASE_USER="${SUDO_USER}"
 
-
     if [[ "$(is_buster)" = "1" ]]; then
         not_supported_msg
         exit 1
-    fi
-
-    if [[ "$(is_raspbian)" = "1" ]]; then
-        link_pkglist_rpi
-    fi
-
-    if [[ "$(is_raspbian)" = "0" ]]; then
-        link_pkglist_generic
     fi
 
     welcome_msg
@@ -70,6 +61,30 @@ main() {
         status_msg "Running apt-get update first ..." "0"
     else
         status_msg "Running apt-get update first ..." "1"
+    fi
+
+    if [[ "${CROWSNEST_UNATTENDED}" != "1" ]]; then
+        msg "Doing some tests ...\n"
+        if shallow_cs_dependencies_check; then
+            CN_INSTALL_CS="1"
+        else
+            CN_INSTALL_CS="0"
+        fi
+        status_msg "Doing some tests ..." "0"
+    else
+        if [[ "$(is_raspbian)" = "1" ]]; then
+            CN_INSTALL_CS="1"
+        else
+            CN_INSTALL_CS="0"
+        fi
+    fi
+
+    if [[ "${CN_INSTALL_CS}" = "1" ]]; then
+        msg "Installing with camera-streamer ...\n"
+        link_pkglist_rpi
+    else
+        msg "Installing without camera-streamer ...\n"
+        link_pkglist_generic
     fi
 
     source_pkglist_file
@@ -128,9 +143,9 @@ main() {
 
     add_group_video
 
-    if [[ "$(is_bookworm)" = "1" ]]; then
-        msg "Bookworm detected!"
-        msg "Using main branch of camera-streamer for Bookworm..."
+    if [[ "$(is_bookworm)" = "1" ]] && [[ "${CN_INSTALL_CS}" = "1" ]]; then
+        msg "\nBookworm detected!"
+        msg "Using main branch of camera-streamer for Bookworm ...\n"
         CROWSNEST_CAMERA_STREAMER_REPO_BRANCH="main"
     fi
 

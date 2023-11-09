@@ -44,6 +44,9 @@ status_msg() {
     if [[ "${status}" == "2" ]]; then
         echo -e "${msg} [\e[33mSKIPPED\e[0m]"
     fi
+    if [[ "${status}" == "3" ]]; then
+        echo -e "${msg} [\e[33mFAILED\e[0m]"
+    fi
 }
 
 not_as_root_msg() {
