@@ -155,6 +155,13 @@ main() {
         set_gpu_mem
     fi
 
+    if [[ "$(is_dietpi)" = "1" ]]; then
+        msg "\nDietPi detected!"
+        msg "Adjust settings for camera-streamer ...\n"
+        dietpi_cs_settings
+        status_msg "Adjust settings for camera-streamer ..." "0"
+    fi
+
     if [[ "${CROWSNEST_UNATTENDED}" = "0" ]]; then
         ask_update_entry
     fi
