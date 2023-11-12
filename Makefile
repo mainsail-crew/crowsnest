@@ -44,3 +44,6 @@ report: ## Generate report.txt
 	@if [ -f ~/report.txt ]; then rm -f ~/report.txt; fi
 	@bash -c 'tools/dev-helper.sh -a >> ~/report.txt'
 	@sed -ri 's/\x1B\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]//g' ~/report.txt
+
+fixworkingdirectory: ## Fix service file WorkingDirectory path
+	@sudo sed -i "s~\(WorkingDirectory=\).*~\1$$PWD~" /etc/systemd/system/crowsnest.service
