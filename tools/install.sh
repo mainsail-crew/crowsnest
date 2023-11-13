@@ -123,6 +123,12 @@ main() {
         status_msg "Install environment file ..." "1"
     fi
 
+    if [[ "$(is_speederpad)" = "1" ]]; then
+        msg "\nSpeederpad detected!"
+        msg "Add startup delay to environment file ...\n"
+        add_sleep_to_crowsnest_env
+    fi
+
     if install_logrotate_conf; then
         status_msg "Install logrotate configuration ..." "0"
     else

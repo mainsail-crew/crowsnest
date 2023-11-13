@@ -34,7 +34,8 @@ function help_msg {
     echo -e "\t crowsnest [Options]"
     echo -e "\n\t\t-h Prints this help."
     echo -e "\n\t\t-v Prints Version of crowsnest."
-    echo -e "\n\t\t-c </path/to/configfile>\n\t\t\tPath to your webcam.conf\n"
+    echo -e "\n\t\t-c </path/to/configfile>\n\t\t\tPath to your webcam.conf"
+    echo -e "\n\t\t-s <sleep_seconds>\n\t\t\tDelay start \(in seconds\) after boot\n"
 }
 
 function deprecated_msg_1 {

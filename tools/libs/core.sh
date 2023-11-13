@@ -66,6 +66,15 @@ is_ubuntu_arm() {
     fi
 }
 
+is_speederpad() {
+    if grep -q "Ubuntu 20.04." /etc/os-release &&
+    [[ "$(uname -rm)" = "4.9.191 aarch64" ]]; then
+        echo "1"
+    else
+        echo "0"
+    fi
+}
+
 test_load_module() {
     if modprobe -n "${1}" &> /dev/null; then
         echo 1
@@ -187,6 +196,15 @@ install_service_file() {
     "${target_dir}/crowsnest.service"
     [[ -f "${target_dir}/crowsnest.service" ]] &&
     grep -q "${BASE_USER}" "${target_dir}/crowsnest.service" || return 1
+}
+
+add_sleep_to_crowsnest_env() {
+    local service_file
+    env_file="${CROWSNEST_ENV_PATH}/crowsnest.env"
+
+    if [[ -f "${env_file}" ]]; then
+        sed -i 's/\(CROWSNEST_ARGS="[^"]*\)"/\1 -s"/' "${env_file}"
+    fi
 }
 
 install_env_file() {
