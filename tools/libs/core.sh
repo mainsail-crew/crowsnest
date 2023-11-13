@@ -48,6 +48,14 @@ is_raspbian() {
     fi
 }
 
+is_dietpi() {
+    if [[ -f /boot/config.txt ]] && [[ -d /boot/dietpi ]]; then
+        echo "1"
+    else
+        echo "0"
+    fi
+}
+
 is_raspberry_pi() {
     if [[ -f /proc/device-tree/model ]] &&
     grep -q "Raspberry" /proc/device-tree/model; then
@@ -260,5 +268,17 @@ add_group_video() {
     else
         status_msg "Add User ${BASE_USER} to group 'video' ..." "2"
         msg "\t==> User ${BASE_USER} is already in group 'video'"
+    fi
+}
+
+dietpi_cs_settings() {
+    sudo /boot/dietpi/func/dietpi-set_hardware rpi-codec enable
+    sudo /boot/dietpi/func/dietpi-set_hardware rpi-camera enable
+
+    if [[ "$(is_buster)" = "0" ]]; then
+        if ! grep -q "camera_auto_detect=1" /boot/config.txt; then
+            msg "\nAdd camera_auto_detect=1 to /boot/config.txt ...\n"
+            echo "camera_auto_detect=1" >> /boot/config.txt
+        fi
     fi
 }
