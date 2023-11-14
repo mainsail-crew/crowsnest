@@ -7,5 +7,3 @@ class CN_Streamer:
 
     def config_check():
         pass
-
-

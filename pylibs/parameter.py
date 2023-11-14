@@ -6,9 +6,3 @@ class CN_Parameter:
         
         # Parameter is required if no default value is specified
         self.required = self.default_value == None
-
-
-if __name__ == "__main__":
-	print("Do not execute this file directly!")
-else:
-    pass
