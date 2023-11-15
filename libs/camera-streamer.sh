@@ -87,9 +87,6 @@ function run_ayucamstream() {
     # Enable camera-auto_reconnect by default
     start_param+=( --camera-auto_reconnect=1 )
 
-    # Force camera to be always active by default
-    start_param+=( --camera-force_active=1 )
-
     # Custom Flag Handling (append to defaults)
     if [[ -n "${cstm}" ]]; then
         start_param+=( "${cstm}" )

@@ -48,6 +48,91 @@ is_raspbian() {
     fi
 }
 
+is_dietpi() {
+    if [[ -f /boot/config.txt ]] && [[ -d /boot/dietpi ]]; then
+        echo "1"
+    else
+        echo "0"
+    fi
+}
+
+is_raspberry_pi() {
+    if [[ -f /proc/device-tree/model ]] &&
+    grep -q "Raspberry" /proc/device-tree/model; then
+        echo "1"
+    else
+        echo "0"
+    fi
+}
+
+is_ubuntu_arm() {
+    if [[ "$(is_raspberry_pi)" = "1" ]] &&
+    grep -q "ubuntu" /etc/os-release; then
+        echo "1"
+    else
+        echo "0"
+    fi
+}
+
+is_speederpad() {
+    if grep -q "Ubuntu 20.04." /etc/os-release &&
+    [[ "$(uname -rm)" = "4.9.191 aarch64" ]]; then
+        echo "1"
+    else
+        echo "0"
+    fi
+}
+
+test_load_module() {
+    if modprobe -n "${1}" &> /dev/null; then
+        echo 1
+    else
+        echo 0
+    fi
+}
+
+shallow_cs_dependencies_check() {
+    msg "Checking for camera-streamer dependencies ...\n"
+
+    msg "Checking if device is a Raspberry Pi ...\n"
+    if [[ "$(is_raspberry_pi)" = "0" ]]; then
+        status_msg "Checking if device is a Raspberry Pi ..." "3"
+        msg "This device is not a Raspberry Pi therefore camera-streeamer cannot be installed ..."
+        return 1
+    fi
+    status_msg "Checking if device is a Raspberry Pi ..." "0"
+
+    msg "Checking if device is not running Ubuntu ...\n"
+    if [[ "$(is_ubuntu_arm)" = "1" ]]; then
+        status_msg "Checking if device is not running Ubuntu ..." "3"
+        msg "This device is running Ubuntu therefore camera-streeamer cannot be installed ..."
+        return 1
+    fi
+    status_msg "Checking if device is not running Ubuntu ..." "0"
+
+    msg "Checking for required kernel module ...\n"
+    SHALLOW_CHECK_MODULESLIST="bcm2835_codec"
+    if [[ "$(test_load_module ${SHALLOW_CHECK_MODULESLIST})" = "0" ]]; then
+        status_msg "Checking for required kernel module ..." "3"
+        msg "Not all required kernel modules for camera-streamer can be loaded ..."
+        return 1
+    fi
+    status_msg "Checking for required kernel module ..." "0"
+
+    msg "Checking for required packages ...\n"
+    # Update the number below if you update SHALLOW_CHECK_PKGLIST
+    SHALLOW_CHECK_PKGLIST="^(libavformat-dev|libavutil-dev|libavcodec-dev|liblivemedia-dev|libcamera-dev|libcamera-apps-lite)$"
+    if [[ $(apt-cache search --names-only "${SHALLOW_CHECK_PKGLIST}" | wc -l) -lt 6 ]]; then
+        status_msg "Checking for required packages ..." "3"
+        msg "Not all required packages for camera-streamer can be installed ..."
+        return 1
+    fi
+    status_msg "Checking for required packages ..." "0"
+
+    status_msg "Checking for camera-streamer dependencies ..." "0"
+    return 0
+}
+
 link_pkglist_rpi() {
     sudo -u "${BASE_USER}" ln -sf "${SRC_DIR}/libs/pkglist-rpi.sh" "${SRC_DIR}/pkglist.sh" &> /dev/null || return 1
 }
@@ -121,6 +206,15 @@ install_service_file() {
     grep -q "${BASE_USER}" "${target_dir}/crowsnest.service" || return 1
 }
 
+add_sleep_to_crowsnest_env() {
+    local service_file
+    env_file="${CROWSNEST_ENV_PATH}/crowsnest.env"
+
+    if [[ -f "${env_file}" ]]; then
+        sed -i 's/\(CROWSNEST_ARGS="[^"]*\)"/\1 -s"/' "${env_file}"
+    fi
+}
+
 install_env_file() {
     local env_file env_target
     env_file="${PWD}/resources/crowsnest.env"
@@ -174,5 +268,17 @@ add_group_video() {
     else
         status_msg "Add User ${BASE_USER} to group 'video' ..." "2"
         msg "\t==> User ${BASE_USER} is already in group 'video'"
+    fi
+}
+
+dietpi_cs_settings() {
+    sudo /boot/dietpi/func/dietpi-set_hardware rpi-codec enable
+    sudo /boot/dietpi/func/dietpi-set_hardware rpi-camera enable
+
+    if [[ "$(is_buster)" = "0" ]]; then
+        if ! grep -q "camera_auto_detect=1" /boot/config.txt; then
+            msg "\nAdd camera_auto_detect=1 to /boot/config.txt ...\n"
+            echo "camera_auto_detect=1" >> /boot/config.txt
+        fi
     fi
 }
