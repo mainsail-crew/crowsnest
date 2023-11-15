@@ -2,6 +2,18 @@
 # Changelog
 All notable changes to Crowsnest will be documented in this file.
 
+## [4.1.0](https://github.com/mainsail-crew/crowsnest/releases/tag/v4.1.0) - 2023-11-15
+### Bug Fixes and Improvements
+
+- Revert #197 ([#207](https://github.com/mainsail-crew/crowsnest/pull/207))
+
+### Other
+
+- Refactor camera-streamer build conditions ([#201](https://github.com/mainsail-crew/crowsnest/pull/201))
+- Add startup workaround for SpeederPad ([#203](https://github.com/mainsail-crew/crowsnest/pull/203))
+- Add better dietpi support to installer ([#204](https://github.com/mainsail-crew/crowsnest/pull/204))
+- Add make argument to fix WorkingDirectory ([#205](https://github.com/mainsail-crew/crowsnest/pull/205))
+
 ## [4.0.5](https://github.com/mainsail-crew/crowsnest/releases/tag/v4.0.5) - 2023-11-03
 ### Bug Fixes and Improvements
 
