@@ -1,4 +1,4 @@
-class CN_Parameter:
+class Parameter:
     def __init__(self, name, type, default_value=None) -> None:
         self.name = name
         self.default_value = default_value

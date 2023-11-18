@@ -1,7 +1,7 @@
-from .parameter import CN_Parameter
+from .parameter import Parameter
 
-class CN_Streamer():
-    def __init__(self, name, parameters: list[CN_Parameter]) -> None:
+class Streamer():
+    def __init__(self, name, parameters: list[Parameter]) -> None:
         self.name = name
         self.parameters = parameters
 

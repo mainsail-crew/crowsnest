@@ -1,6 +1,6 @@
 from configparser import SectionProxy
 
-class CN_Section:
+class Section:
     keyword = 'Section'
     available_sections = {}
     # Section looks like this:
@@ -10,11 +10,12 @@ class CN_Section:
     def __init__(self, name: str = '') -> None:
         self.name = name
         self.possible_parameters = []
+        self.parameters = {}
 
     # Parse config according to the needs of the section
     def parse_config(self, section: SectionProxy):
-        raise NotImplementedError("If you see this a module is implemented wrong!!!")
+        raise NotImplementedError("If you see this, a module is implemented wrong!!!")
 
     # Execute section specific stuff, e.g. starting cam
     def execute(self):
-        raise NotImplementedError("If you see this a module is implemented wrong!!!")
+        raise NotImplementedError("If you see this, a module is implemented wrong!!!")
