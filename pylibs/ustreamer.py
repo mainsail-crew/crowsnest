@@ -28,10 +28,14 @@ class Ustreamer(Cam):
             Parameter('no_proxy', bool, False)
         ]
 
-
     def parse_config(self, section: SectionProxy):
-        
-        pass
+        for parameter, value in section:
+            if parameter not in self.parameters:
+                print(f"Warning: Parameter [{parameter}] is not supported by [{self.keyword}]")
+                continue
+            value = value.split('#')[0].strip()
+            self.parameters[parameter] = value
+
         
     def execute(self):
         pass
