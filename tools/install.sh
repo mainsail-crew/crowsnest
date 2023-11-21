@@ -63,6 +63,8 @@ main() {
         status_msg "Running apt-get update first ..." "1"
     fi
 
+    detect_existing_webcamd
+
     if [[ "${CROWSNEST_UNATTENDED}" != "1" ]]; then
         msg "Doing some tests ...\n"
         if shallow_cs_dependencies_check; then
