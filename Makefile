@@ -39,6 +39,9 @@ help: ## Shows this help
 
 update: ## Update crowsnest (fetches and pulls repository changes)
 	@git fetch && git pull
+	@bash -c 'bin/build.sh --reclone'
+	${MAKE} buildclean
+	${MAKE} build
 
 report: ## Generate report.txt
 	@if [ -f ~/report.txt ]; then rm -f ~/report.txt; fi
