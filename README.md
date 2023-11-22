@@ -62,21 +62,21 @@ Tested and/or did not work: :x: \
 Should work but not tested: :question: \
 Not available: :heavy_minus_sign:
 
-|         Operating System          |  X86 Architecture  |     ARM Architecture                           |
-| :-------------------------------: | :----------------: | :----------------------:                       |
-|     Raspberry Pi OS (buster)      | :heavy_minus_sign: |   :x: ([Hint](#hint))                          |
-|    Raspberry Pi OS (bullseye)     | :heavy_minus_sign: |    :heavy_check_mark:                          |
-|    Raspberry Pi OS (bookworm)     | :heavy_minus_sign: |    :heavy_check_mark: ([Hint](#hint-bookworm)) |
-|        MainsailOS (<0.7.1)        | :heavy_minus_sign: |   :x: ([Hint](#hint))                          |
-|        MainsailOS (>1.0.0)        | :heavy_minus_sign: | :heavy_check_mark: (rpi)                       |
-|              Armbian              |     :question:     |    :heavy_check_mark:                          |
-|              DietPi               |     :question:     |    :heavy_check_mark: (rpi)                    |
-|        Ubuntu Server 20.04        | :heavy_check_mark: |        :question:                              |
-|      Ubuntu Server 22.04 LTS      | :heavy_check_mark: | :heavy_check_mark: (rpi)                       |
-|      Ubuntu Server 23.10          |     :question:     | :heavy_check_mark: (rpi)                       |
-| Linux Mint 21 (codename: vanessa) | :heavy_check_mark: |        :question:                              |
-|    Archlinux (and derivatives)    |        :x:         |           :x:                                  |
-|           Alpine Linux            |        :x:         |           :x:                                  |
+|         Operating System          |  X86 Architecture  |     ARM Architecture                        |
+| :-------------------------------: | :----------------: | :-----------------------------------------: |
+|     Raspberry Pi OS (buster)      | :heavy_minus_sign: |   :x: ([Hint](#hint))                       |
+|    Raspberry Pi OS (bullseye)     | :heavy_minus_sign: |    :heavy_check_mark:                       |
+|    Raspberry Pi OS (bookworm)     | :heavy_minus_sign: | :heavy_check_mark: ([Hint](#hint-bookworm)) |
+|        MainsailOS (<0.7.1)        | :heavy_minus_sign: |   :x: ([Hint](#hint))                       |
+|        MainsailOS (>1.0.0)        | :heavy_minus_sign: | :heavy_check_mark: (rpi)                    |
+|              Armbian              |     :question:     |    :heavy_check_mark:                       |
+|              DietPi               |     :question:     |    :heavy_check_mark: (rpi)                 |
+|        Ubuntu Server 20.04        | :heavy_check_mark: |        :question:                           |
+|      Ubuntu Server 22.04 LTS      | :heavy_check_mark: | :heavy_check_mark: (rpi)                    |
+|      Ubuntu Server 23.10          |     :question:     | :heavy_check_mark: (rpi)                    |
+| Linux Mint 21 (codename: vanessa) | :heavy_check_mark: |        :question:                           |
+|    Archlinux (and derivatives)    |        :x:         |           :x:                               |
+|           Alpine Linux            |        :x:         |           :x:                               |
 
 _If you test that on other distributions, feel free to open a Pull Request to enhance documentation._
 
