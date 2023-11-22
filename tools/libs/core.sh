@@ -286,9 +286,10 @@ dietpi_cs_settings() {
 ### Detect legacy webcamd.
 detect_existing_webcamd() {
     local disable
+    msg "Checking for mjpg-streamer ...\n"
     if  [[ -x "/usr/local/bin/webcamd" ]] && [[ -d "${HOME}/mjpg-streamer" ]]; then
-        msg "Found an existing mjpg-streamer"
-        msg "This should be stopped and disabled..."
+        msg "Found an existing mjpg-streamer installation!"
+        msg "This should be stopped and disabled!"
         while true; do
             read -erp "Do you want to stop and disable existing 'webcamd'? (y/N) " -i "N" disable
             case "${disable}" in
@@ -312,4 +313,5 @@ detect_existing_webcamd() {
             esac
         done
     fi
+    status_msg "Checking for mjpg-streamer ..." "0"
 }
