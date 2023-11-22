@@ -222,7 +222,7 @@ install_env_file() {
     sudo -u "${BASE_USER}" cp -f "${env_file}" "${env_target}"
     sed -i "s|%CONFPATH%|${CROWSNEST_CONFIG_PATH}|" "${env_target}"
     [[ -f "${env_target}" ]] &&
-    grep -q "${BASE_USER}" "${env_target}" || return 1
+    grep -q "${CROWSNEST_CONFIG_PATH}" "${env_target}" || return 1
 }
 
 install_logrotate_conf() {
