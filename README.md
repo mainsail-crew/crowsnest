@@ -62,27 +62,34 @@ Tested and/or did not work: :x: \
 Should work but not tested: :question: \
 Not available: :heavy_minus_sign:
 
-|         Operating System          |  X86 Architecture  |     ARM Architecture     |
-| :-------------------------------: | :----------------: | :----------------------: |
-|     Raspberry Pi OS (buster)      | :heavy_minus_sign: |   :x: ([Hint](#hint))    |
-|    Raspberry Pi OS (bullseye)     | :heavy_minus_sign: |    :heavy_check_mark:    |
-|        MainsailOS (<0.7.1)        | :heavy_minus_sign: |   :x: ([Hint](#hint))    |
-|        MainsailOS (>1.0.0)        | :heavy_minus_sign: | :heavy_check_mark: (rpi) |
-|              Armbian              |     :question:     |    :heavy_check_mark:    |
-|        Ubuntu Server 20.04        | :heavy_check_mark: |        :question:        |
-|      Ubuntu Server 22.04 LTS      | :heavy_check_mark: | :heavy_check_mark: (rpi) |
-| Linux Mint 21 (codename: vanessa) | :heavy_check_mark: |        :question:        |
-|    Archlinux (and derivatives)    |        :x:         |           :x:            |
-|           Alpine Linux            |        :x:         |           :x:            |
+|         Operating System          |  X86 Architecture  |     ARM Architecture                           |
+| :-------------------------------: | :----------------: | :----------------------:                       |
+|     Raspberry Pi OS (buster)      | :heavy_minus_sign: |   :x: ([Hint](#hint))                          |
+|    Raspberry Pi OS (bullseye)     | :heavy_minus_sign: |    :heavy_check_mark:                          |
+|    Raspberry Pi OS (bookworm)     | :heavy_minus_sign: |    :heavy_check_mark: ([Hint](#hint-bookworm)) |
+|        MainsailOS (<0.7.1)        | :heavy_minus_sign: |   :x: ([Hint](#hint))                          |
+|        MainsailOS (>1.0.0)        | :heavy_minus_sign: | :heavy_check_mark: (rpi)                       |
+|              Armbian              |     :question:     |    :heavy_check_mark:                          |
+|              DietPi               |     :question:     |    :heavy_check_mark: (rpi)                    |
+|        Ubuntu Server 20.04        | :heavy_check_mark: |        :question:                              |
+|      Ubuntu Server 22.04 LTS      | :heavy_check_mark: | :heavy_check_mark: (rpi)                       |
+|      Ubuntu Server 23.10          |     :question:     | :heavy_check_mark: (rpi)                       |
+| Linux Mint 21 (codename: vanessa) | :heavy_check_mark: |        :question:                              |
+|    Archlinux (and derivatives)    |        :x:         |           :x:                                  |
+|           Alpine Linux            |        :x:         |           :x:                                  |
 
 _If you test that on other distributions, feel free to open a Pull Request to enhance documentation._
 
-#### Hint
+#### Hint Buster
 
 OS images that are based on Debian 10 (codename 'buster') are no longer supported with Crowsnest version 4 (current `master` branch)!
 
 Please use the `legacy/v3` branch for these OS types.\
 See the [README.md](https://github.com/mainsail-crew/crowsnest/tree/legacy/v3) of this branch for usage instructions.
+
+#### Hint Bookworm
+
+OS images that are based on Debian 12 (codename 'bookworm') currently use a different branch of [camera-streamer](https://github.com/ayufan/camera-streamer)!
 
 ---
 
