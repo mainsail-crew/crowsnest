@@ -291,7 +291,7 @@ detect_existing_webcamd() {
         msg "Found an existing mjpg-streamer installation!"
         msg "This should be stopped and disabled!"
         while true; do
-            read -erp "Do you want to stop and disable existing 'webcamd'? (y/N) " -i "N" disable
+            read -erp "Do you want to stop and disable existing 'webcamd'? (Y/n) " -i "Y" disable
             case "${disable}" in
                 y|Y|yes|Yes|YES)
                     msg "Stopping webcamd.service ..."
