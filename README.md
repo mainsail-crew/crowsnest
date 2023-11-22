@@ -89,7 +89,7 @@ See the [README.md](https://github.com/mainsail-crew/crowsnest/tree/legacy/v3) o
 
 #### Hint Bookworm
 
-OS images that are based on Debian 12 (codename 'bookworm') currently use a different branch of [camera-streamer](https://github.com/ayufan/camera-streamer)!
+Raspberr Pi OS images that are based on Debian 12 (codename 'bookworm') currently use a different branch of [camera-streamer](https://github.com/ayufan/camera-streamer)!
 
 ---
 
