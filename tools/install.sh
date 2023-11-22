@@ -65,6 +65,7 @@ main() {
 
     if [[ "${CROWSNEST_UNATTENDED}" != "1" ]]; then
         msg "Doing some tests ...\n"
+        detect_existing_webcamd
         if shallow_cs_dependencies_check; then
             CN_INSTALL_CS="1"
         else

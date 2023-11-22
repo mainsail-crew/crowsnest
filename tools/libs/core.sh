@@ -282,3 +282,36 @@ dietpi_cs_settings() {
         fi
     fi
 }
+
+### Detect legacy webcamd.
+detect_existing_webcamd() {
+    local disable
+    msg "Checking for mjpg-streamer ...\n"
+    if  [[ -x "/usr/local/bin/webcamd" ]] && [[ -d "/home/${BASE_USER}/mjpg-streamer" ]]; then
+        msg "Found an existing mjpg-streamer installation!"
+        msg "This should be stopped and disabled!"
+        while true; do
+            read -erp "Do you want to stop and disable existing 'webcamd'? (Y/n) " -i "Y" disable
+            case "${disable}" in
+                y|Y|yes|Yes|YES)
+                    msg "Stopping webcamd.service ..."
+                    sudo systemctl stop webcamd.service &> /dev/null
+                    status_msg "Stopping webcamd.service ..." "0"
+                    
+                    msg "\nDisabling webcamd.service ...\r"
+                    sudo systemctl disable webcamd.service &> /dev/null
+                    status_msg "Disabling webcamd.service ..." "0"
+                    return
+                ;;
+
+                n|N|no|No|NO)
+                    msg "\nYou should disable and stop webcamd to use crowsnest without problems!\n"
+                    return
+                ;;
+                *)
+                    msg "You answered '${disable}'! Invalid input ..."                ;;
+            esac
+        done
+    fi
+    status_msg "Checking for mjpg-streamer ..." "0"
+}
