@@ -1,7 +1,9 @@
 #### crowsnest - A webcam Service for multiple Cams and Stream Services.
 ####
 #### Written by Stephan Wendel aka KwadFan <me@stephanwe.de>
-#### Copyright 2021 - till today
+#### Copyright 2021 - 2023
+#### Co-authored by Patrick Gehrsitz aka mryel00 <mryel00.github@gmail.com>
+#### Copyright 2023 - till today
 #### https://github.com/mainsail-crew/crowsnest
 ####
 #### This File is distributed under GPLv3
@@ -39,6 +41,9 @@ help: ## Shows this help
 
 update: ## Update crowsnest (fetches and pulls repository changes)
 	@git fetch && git pull
+	@bash -c 'bin/build.sh --reclone'
+	${MAKE} buildclean
+	${MAKE} build
 
 report: ## Generate report.txt
 	@if [ -f ~/report.txt ]; then rm -f ~/report.txt; fi

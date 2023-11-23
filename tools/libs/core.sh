@@ -3,7 +3,9 @@
 #### crowsnest - A webcam Service for multiple Cams and Stream Services.
 ####
 #### Written by Stephan Wendel aka KwadFan <me@stephanwe.de>
-#### Copyright 2021 - till today
+#### Copyright 2021 - 2023
+#### Co-authored by Patrick Gehrsitz aka mryel00 <mryel00.github@gmail.com>
+#### Copyright 2023 - till today
 #### https://github.com/mainsail-crew/crowsnest
 ####
 #### This File is distributed under GPLv3
@@ -222,7 +224,7 @@ install_env_file() {
     sudo -u "${BASE_USER}" cp -f "${env_file}" "${env_target}"
     sed -i "s|%CONFPATH%|${CROWSNEST_CONFIG_PATH}|" "${env_target}"
     [[ -f "${env_target}" ]] &&
-    grep -q "${BASE_USER}" "${env_target}" || return 1
+    grep -q "${CROWSNEST_CONFIG_PATH}" "${env_target}" || return 1
 }
 
 install_logrotate_conf() {
@@ -281,4 +283,37 @@ dietpi_cs_settings() {
             echo "camera_auto_detect=1" >> /boot/config.txt
         fi
     fi
+}
+
+### Detect legacy webcamd.
+detect_existing_webcamd() {
+    local disable
+    msg "Checking for mjpg-streamer ...\n"
+    if  [[ -x "/usr/local/bin/webcamd" ]] && [[ -d "/home/${BASE_USER}/mjpg-streamer" ]]; then
+        msg "Found an existing mjpg-streamer installation!"
+        msg "This should be stopped and disabled!"
+        while true; do
+            read -erp "Do you want to stop and disable existing 'webcamd'? (Y/n) " -i "Y" disable
+            case "${disable}" in
+                y|Y|yes|Yes|YES)
+                    msg "Stopping webcamd.service ..."
+                    sudo systemctl stop webcamd.service &> /dev/null
+                    status_msg "Stopping webcamd.service ..." "0"
+                    
+                    msg "\nDisabling webcamd.service ...\r"
+                    sudo systemctl disable webcamd.service &> /dev/null
+                    status_msg "Disabling webcamd.service ..." "0"
+                    return
+                ;;
+
+                n|N|no|No|NO)
+                    msg "\nYou should disable and stop webcamd to use crowsnest without problems!\n"
+                    return
+                ;;
+                *)
+                    msg "You answered '${disable}'! Invalid input ..."                ;;
+            esac
+        done
+    fi
+    status_msg "Checking for mjpg-streamer ..." "0"
 }
