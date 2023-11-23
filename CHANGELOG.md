@@ -2,6 +2,18 @@
 # Changelog
 All notable changes to Crowsnest will be documented in this file.
 
+## [4.1.1](https://github.com/mainsail-crew/crowsnest/releases/tag/v4.1.1) - 2023-11-23
+### Documentation
+
+- Update supported devices ([#213](https://github.com/mainsail-crew/crowsnest/pull/213))
+
+### Other
+
+- Fix env file check ([#212](https://github.com/mainsail-crew/crowsnest/pull/212))
+- Add streamer repos update to make update ([#210](https://github.com/mainsail-crew/crowsnest/pull/210))
+- Add check to disable webcamd ([#211](https://github.com/mainsail-crew/crowsnest/pull/211))
+- Update copyright ([#214](https://github.com/mainsail-crew/crowsnest/pull/214))
+
 ## [4.1.0](https://github.com/mainsail-crew/crowsnest/releases/tag/v4.1.0) - 2023-11-15
 ### Bug Fixes and Improvements
 
