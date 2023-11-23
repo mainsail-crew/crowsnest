@@ -1,18 +1,24 @@
+import argparse
 import configparser
 import importlib
-from pylibs.cam import Cam
+from pylibs.crowsnest import Crowsnest
 from pylibs.section import Section
-from pylibs import *
+from pylibs.core import load_module
 
-config_path = "resources/crowsnest.conf"
+parser = argparse.ArgumentParser(
+    prog='Crowsnest',
+    description='Crowsnest - A webcam daemon for Raspberry Pi OS distributions like MainsailOS'
+)
+
+parser.add_argument('-c', '--config', help='Path to config file', required=True)
+
+args = parser.parse_args()
+
+
+config_path = args.config
 
 config = configparser.ConfigParser()
 config.read(config_path)
-
-# Crowsnest config settings
-log_path = '/home/pi/printer_data/logs/crowsnest.log'
-log_level = 'debug'
-delete_log = False
 
 # Example of printing section and values
 for section in config.sections():
@@ -22,29 +28,25 @@ for section in config.sections():
 print(config)
 
 sections = []
-# Use if else or dict as match case isn't available before v3.10
+
+crowsnest = Crowsnest(config['crowsnest'])
+
+print(crowsnest)
+
 for section in config.sections():
     section_header = section.split(' ')
     section_object = None
     section_keyword = section_header[0]
 
-    try:
-        module = importlib.import_module(f'pylibs.{section_keyword}')
-        module_class = getattr(module, 'load_module')()
-        Section.available_sections[section_keyword] = module_class
-        module_class().parse_config(config[section])
-    except (ModuleNotFoundError, AttributeError) as e:
-        print(str(e))
+    if section_keyword == 'crowsnest':
         continue
 
-    if section_header[0] == 'crowsnest':
-        section_object = 1
-    elif section_header[0] == 'cam':
-        section_object = Cam(' '.join(section_header[1:]))
-        section_object.parse_config(config[section])
-        
+    section_object = load_module('pylibs', section_keyword)
+    section_object.parse_config(config[section])
+
+
     if section_object == None:
-        raise Exception(f"Section [{section}] couldn't get parsed")
+        print(f"Section [{section}] couldn't get parsed")
     sections.append(section_object)
 
 k = Section('k')

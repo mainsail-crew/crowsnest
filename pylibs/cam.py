@@ -1,5 +1,4 @@
 from .section import Section
-from .parameter import Parameter
 from configparser import SectionProxy
 
 import importlib
@@ -15,20 +14,12 @@ class Cam(Section):
             'mode': None
         })
 
-        self.possible_parameters += [       
-            Parameter('mode', str)
-        ]
-
     def parse_config(self, section: SectionProxy):
         # Dynamically import module
         mode = section["mode"].split()[0]
         try:
-            module = importlib.import_module(f'pylibs.{mode}')
+            module = importlib.import_module(f'pylibs.streamer.{mode}')
             module_class = getattr(module, 'load_module')()
-            Cam.loaded_modes[mode] = module_class
-            print(Cam.loaded_modes)
-            t = Cam.loaded_modes[mode]('test')
-            print(t, t.keyword, t.name)
             return module_class(self.name).parse_config(section)
         except (ModuleNotFoundError, AttributeError) as e:
             print(str(e))
