@@ -1,4 +1,7 @@
+import re
 from configparser import SectionProxy
+
+from .parameter import Parameter
 
 class Section:
     keyword = 'Section'
@@ -9,7 +12,7 @@ class Section:
     # param2
     def __init__(self, name: str = '') -> None:
         self.name = name
-        self.parameters = {}
+        self.parameters: dict[str, Parameter] = {}
 
     # Parse config according to the needs of the section
     def parse_config(self, section: SectionProxy):
@@ -19,7 +22,7 @@ class Section:
                 print(f"Warning: Parameter {parameter} is not supported by {self.keyword}")
                 continue
             value = value.split('#')[0].strip()
-            self.parameters[parameter] = value
+            self.parameters[parameter].set_value(value)
 
     # Execute section specific stuff, e.g. starting cam
     def execute(self):

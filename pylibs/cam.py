@@ -1,5 +1,6 @@
 from .section import Section
 from configparser import SectionProxy
+from .parameter import Parameter
 
 import importlib
 
@@ -11,12 +12,13 @@ class Cam(Section):
         super().__init__(name)
 
         self.parameters.update({
-            'mode': None
+            'mode': Parameter()
         })
 
     def parse_config(self, section: SectionProxy):
         # Dynamically import module
         mode = section["mode"].split()[0]
+        module_class
         try:
             module = importlib.import_module(f'pylibs.streamer.{mode}')
             module_class = getattr(module, 'load_module')()
