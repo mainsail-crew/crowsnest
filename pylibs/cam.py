@@ -1,12 +1,12 @@
-from .section import Section
 from configparser import SectionProxy
+from .section import Section
 from .parameter import Parameter
+from .core import get_module_class
 
-import importlib
+import copy
 
 class Cam(Section):
     keyword = 'cam'
-    loaded_modes = {}
 
     def __init__(self, name: str = '') -> None:
         super().__init__(name)
@@ -15,20 +15,20 @@ class Cam(Section):
             'mode': Parameter()
         })
 
-    def parse_config(self, section: SectionProxy):
-        # Dynamically import module
-        mode = section["mode"].split()[0]
-        module_class
-        try:
-            module = importlib.import_module(f'pylibs.streamer.{mode}')
-            module_class = getattr(module, 'load_module')()
-            return module_class(self.name).parse_config(section)
-        except (ModuleNotFoundError, AttributeError) as e:
-            print(str(e))
-            return
+        self.streamer = None
 
-    def execute():
-        pass
+    def parse_config(self, config_section: SectionProxy, *args, **kwargs):
+        # Dynamically import module
+        mode = config_section["mode"].split()[0]
+        mode_class = get_module_class('pylibs.streamer', mode)
+        self.streamer = mode_class(self.name)
+        self.streamer.parse_config(config_section)
+
+    def execute(self):
+        if self.streamer is None:
+            print("No streamer loaded")
+            return
+        self.streamer.execute()
 
 def load_module():
     return Cam

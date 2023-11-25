@@ -1,9 +1,10 @@
 import argparse
 import configparser
-import importlib
 from pylibs.crowsnest import Crowsnest
 from pylibs.section import Section
-from pylibs.core import load_module
+from pylibs.core import get_module_class
+
+import logging
 
 parser = argparse.ArgumentParser(
     prog='Crowsnest',
@@ -29,9 +30,23 @@ print(config)
 
 sections = []
 
-crowsnest = Crowsnest(config['crowsnest'])
+crowsnest = Crowsnest('crowsnest')
+crowsnest.parse_config(config['crowsnest'])
 
-print(crowsnest)
+logging.basicConfig(
+    filename=crowsnest.parameters['log_path'].value,
+    encoding='utf-8',
+    level=crowsnest.parameters['log_level'].value,
+    format='[%(asctime)s] %(levelname)s: %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
+)
+
+logging.debug('This message should go to the log file')
+logging.info('So should this')
+logging.warning('And this, too')
+logging.error('And non-ASCII stuff, too, like Øresund and Malmö')
+
+print(crowsnest.name)
 
 for section in config.sections():
     section_header = section.split(' ')
@@ -41,9 +56,11 @@ for section in config.sections():
     if section_keyword == 'crowsnest':
         continue
 
-    section_object = load_module('pylibs', section_keyword)
+    section_class = get_module_class('pylibs', section_keyword)
+    section_name = ' '.join(section_header[1:])
+    section_object = section_class(section_name)
     section_object.parse_config(config[section])
-
+    section_object.execute()
 
     if section_object == None:
         print(f"Section [{section}] couldn't get parsed")

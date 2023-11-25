@@ -15,9 +15,9 @@ class Section:
         self.parameters: dict[str, Parameter] = {}
 
     # Parse config according to the needs of the section
-    def parse_config(self, section: SectionProxy):
-        for parameter in section:
-            value = section[parameter]
+    def parse_config(self, config_section: SectionProxy, *args, **kwargs):
+        for parameter in config_section:
+            value = config_section[parameter]
             if parameter not in self.parameters:
                 print(f"Warning: Parameter {parameter} is not supported by {self.keyword}")
                 continue
