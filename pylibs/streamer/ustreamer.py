@@ -1,6 +1,7 @@
 from .streamer import Streamer
 from ..parameter import Parameter
 import subprocess
+import time
 
 class Ustreamer(Streamer):
     keyword = 'ustreamer'
@@ -12,19 +13,17 @@ class Ustreamer(Streamer):
             'no_proxy': Parameter(bool, False)
         })
         
-    def execute(self):
+    async def execute(self):
         host = '0.0.0.0' if self.parameters['no_proxy'].value else '127.0.0.1'
         port = self.parameters['port'].value
         res = self.parameters['resolution'].value
         fps = self.parameters['max_fps'].value
 
-
-
         streamer_args = [
             '--host', host,
-            '--port', port,
+            '--port', str(port),
             '--resolution', res,
-            '--desired-fps', fps,
+            '--desired-fps', str(fps),
             # webroot & allow crossdomain requests
             '--allow-origin=\*',
             '--static', '"ustreamer-www"',
@@ -36,7 +35,8 @@ class Ustreamer(Streamer):
         # custom flags
         streamer_args += self.parameters['custom_flags'].value.split()
 
-        ustreamer = subprocess.Popen(['bin/ustreamer/ustreamer'] + streamer_args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        ustreamer = subprocess.Popen(['bin/ustreamer/ustreamer'] + streamer_args, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
 
 def load_module():
     return Ustreamer

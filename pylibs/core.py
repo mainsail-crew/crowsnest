@@ -1,4 +1,6 @@
 import importlib
+import asyncio
+import logging
 
 # Dynamically import module
 # Requires module to have a load_module() function,
@@ -11,3 +13,29 @@ def get_module_class(path = '', module_name = ''):
     except (ModuleNotFoundError, AttributeError) as e:
         print('ERROR: '+str(e))
     return module_class
+
+async def log_subprocess_output(stream, log_func):
+    while True:
+        line = await stream.readline()
+        if not line:
+            break
+        #line = line.decode('utf-8').strip()
+        log_func(line.decode().strip())
+
+async def execute_command(command: str, logger: logging.Logger):
+    process = await asyncio.create_subprocess_exec(
+        command,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE
+    )
+
+    stdout_task = asyncio.create_task(log_subprocess_output(process.stdout, logger.info))
+    stderr_task = asyncio.create_task(log_subprocess_output(process.stderr, logger.error))
+
+    return process, stdout_task, stderr_task
+    # Wait for the subprocess to finish
+    #await process.wait()
+
+    # Wait for the output handling tasks to finish
+    #await stdout_task
+    #await stderr_task

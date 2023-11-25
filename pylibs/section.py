@@ -25,5 +25,5 @@ class Section:
             self.parameters[parameter].set_value(value)
 
     # Execute section specific stuff, e.g. starting cam
-    def execute(self):
+    async def execute(self):
         raise NotImplementedError("If you see this, a module is implemented wrong!!!")

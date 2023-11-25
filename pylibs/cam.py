@@ -24,7 +24,7 @@ class Cam(Section):
         self.streamer = mode_class(self.name)
         self.streamer.parse_config(config_section)
 
-    def execute(self):
+    async def execute(self):
         if self.streamer is None:
             print("No streamer loaded")
             return
