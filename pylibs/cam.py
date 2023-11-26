@@ -28,7 +28,19 @@ class Cam(Section):
         if self.streamer is None:
             print("No streamer loaded")
             return
-        await self.streamer.execute()
+        process = stdout_task = stderr_task = None
+        try:
+            process, stdout_task, stderr_task = await self.streamer.execute()
+            await process.wait()
+            await stdout_task.wait()
+            await stderr_task.wait()
+        except:
+            if process != None:
+                await process.terminate()
+            if stdout_task != None:
+                await stdout_task.terminate()
+            if stderr_task != None:
+                await stderr_task.terminate()
 
 def load_module():
     return Cam

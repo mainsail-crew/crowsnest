@@ -35,7 +35,7 @@ class Ustreamer(Streamer):
         streamer_args += self.parameters['custom_flags'].value.split()
 
         cmd = ['bin/ustreamer/ustreamer'] + streamer_args
-        await execute_command(' '.join(cmd))
+        return await execute_command(' '.join(cmd))
         #ustreamer = subprocess.Popen(['bin/ustreamer/ustreamer'] + streamer_args, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 
