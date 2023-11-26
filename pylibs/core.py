@@ -22,15 +22,15 @@ async def log_subprocess_output(stream, log_func):
         #line = line.decode('utf-8').strip()
         log_func(line.decode().strip())
 
-async def execute_command(command: str, logger: logging.Logger):
+async def execute_command(command: str):
     process = await asyncio.create_subprocess_exec(
         command,
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.PIPE
     )
 
-    stdout_task = asyncio.create_task(log_subprocess_output(process.stdout, logger.info))
-    stderr_task = asyncio.create_task(log_subprocess_output(process.stderr, logger.error))
+    stdout_task = asyncio.create_task(log_subprocess_output(process.stdout, logging.info))
+    stderr_task = asyncio.create_task(log_subprocess_output(process.stderr, logging.error))
 
     return process, stdout_task, stderr_task
     # Wait for the subprocess to finish
