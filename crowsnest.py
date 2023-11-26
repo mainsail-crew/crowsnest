@@ -61,7 +61,8 @@ for section in config.sections():
     section_name = ' '.join(section_header[1:])
     section_object = section_class(section_name)
     section_object.parse_config(config[section])
-    asyncio.run(section_object.execute())
+    t = asyncio.run(section_object.execute())
+    t.wait()
 
     if section_object == None:
         print(f"Section [{section}] couldn't get parsed")

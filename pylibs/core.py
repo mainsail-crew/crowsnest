@@ -1,6 +1,7 @@
 import importlib
 import asyncio
 import logging
+import time
 
 # Dynamically import module
 # Requires module to have a load_module() function,
@@ -18,7 +19,8 @@ async def log_subprocess_output(stream, log_func):
     while True:
         line = await stream.readline()
         if not line:
-            break
+            time.sleep(0.05)
+            continue
         #line = line.decode('utf-8').strip()
         log_func(line.decode().strip())
 
