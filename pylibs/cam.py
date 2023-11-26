@@ -28,7 +28,7 @@ class Cam(Section):
         if self.streamer is None:
             print("No streamer loaded")
             return
-        self.streamer.execute()
+        await self.streamer.execute()
 
 def load_module():
     return Cam

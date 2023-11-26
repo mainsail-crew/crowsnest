@@ -1,7 +1,6 @@
 from .streamer import Streamer
 from ..parameter import Parameter
-import subprocess
-import time
+from ..core import execute_command
 
 class Ustreamer(Streamer):
     keyword = 'ustreamer'
@@ -35,7 +34,9 @@ class Ustreamer(Streamer):
         # custom flags
         streamer_args += self.parameters['custom_flags'].value.split()
 
-        ustreamer = subprocess.Popen(['bin/ustreamer/ustreamer'] + streamer_args, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        cmd = ['bin/ustreamer/ustreamer'] + streamer_args
+        await execute_command(cmd, self.logger)
+        #ustreamer = subprocess.Popen(['bin/ustreamer/ustreamer'] + streamer_args, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 
 def load_module():
