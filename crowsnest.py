@@ -5,6 +5,7 @@ from pylibs.section import Section
 from pylibs.core import get_module_class
 
 import logging
+import asyncio
 
 parser = argparse.ArgumentParser(
     prog='Crowsnest',
@@ -60,7 +61,7 @@ for section in config.sections():
     section_name = ' '.join(section_header[1:])
     section_object = section_class(section_name)
     section_object.parse_config(config[section])
-    section_object.execute()
+    asyncio.run(section_object.execute())
 
     if section_object == None:
         print(f"Section [{section}] couldn't get parsed")
