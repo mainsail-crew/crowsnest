@@ -23,7 +23,7 @@ async def log_subprocess_output(stream, log_func):
         log_func(line.decode().strip())
 
 async def execute_command(command: str):
-    process = await asyncio.create_subprocess_exec(
+    process = await asyncio.create_subprocess_shell(
         command,
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.PIPE
