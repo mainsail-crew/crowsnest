@@ -48,25 +48,29 @@ logging.basicConfig(
 #logging.error('And non-ASCII stuff, too, like Øresund and Malmö')
 
 print(crowsnest.name)
+processes = []
+try:
+    for section in config.sections():
+        section_header = section.split(' ')
+        section_object = None
+        section_keyword = section_header[0]
 
-for section in config.sections():
-    section_header = section.split(' ')
-    section_object = None
-    section_keyword = section_header[0]
+        if section_keyword == 'crowsnest':
+            continue
 
-    if section_keyword == 'crowsnest':
-        continue
+        section_class = get_module_class('pylibs', section_keyword)
+        section_name = ' '.join(section_header[1:])
+        section_object = section_class(section_name)
+        section_object.parse_config(config[section])
+        t = asyncio.run(section_object.execute())
+        t.wait()
 
-    section_class = get_module_class('pylibs', section_keyword)
-    section_name = ' '.join(section_header[1:])
-    section_object = section_class(section_name)
-    section_object.parse_config(config[section])
-    t = asyncio.run(section_object.execute())
-    t.wait()
-
-    if section_object == None:
-        print(f"Section [{section}] couldn't get parsed")
-    sections.append(section_object)
+        if section_object == None:
+            print(f"Section [{section}] couldn't get parsed")
+        sections.append(section_object)
+finally:
+    for process in processes:
+        process.terminate()
 
 k = Section('k')
 k1 = Section('k1')
