@@ -73,6 +73,12 @@ is_raspberry_pi() {
     fi
 }
 
+is_bookworm() {
+    if [[ -f /etc/os-release ]]; then
+        grep -cq "bookworm" /etc/os-release &> /dev/null && echo "1" || echo "0"
+    fi
+}
+
 ### Get avail mem
 get_avail_mem() {
     grep "MemTotal" /proc/meminfo | awk '{print $2}'
@@ -115,6 +121,11 @@ clone_cstreamer() {
     if [[ -d "${BASE_CN_BIN_PATH}"/"${CSTREAMER_PATH}" ]]; then
         printf "%s already exist ... [SKIPPED]\n" "${CSTREAMER_PATH}"
         return
+    fi
+    if [[ "$(is_bookworm)" = "1" ]]; then
+        printf "\nBookworm detected!\n"
+        printf "Using main branch of camera-streamer for Bookworm ...\n\n"
+        CROWSNEST_CAMERA_STREAMER_REPO_BRANCH="main"
     fi
     git clone "${CROWSNEST_CAMERA_STREAMER_REPO_SHIP}" \
         -b "${CROWSNEST_CAMERA_STREAMER_REPO_BRANCH}" \
