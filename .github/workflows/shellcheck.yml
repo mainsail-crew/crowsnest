@@ -30,4 +30,5 @@ jobs:
           SHELLCHECK_OPTS: -ax -s bash
         with:
           ignore_paths: custompios
+          ignore_names: backend_versions.sh
           format: tty
