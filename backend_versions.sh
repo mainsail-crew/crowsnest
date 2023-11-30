@@ -2,9 +2,7 @@
 
 #### crowsnest - A webcam Service for multiple Cams and Stream Services.
 ####
-#### Written by Stephan Wendel aka KwadFan <me@stephanwe.de>
-#### Copyright 2021 - 2023
-#### Co-authored by Patrick Gehrsitz aka mryel00 <mryel00.github@gmail.com>
+#### Written by Patrick Gehrsitz aka mryel00 <mryel00.github@gmail.com>
 #### Copyright 2023 - till today
 #### https://github.com/mainsail-crew/crowsnest
 ####
@@ -19,7 +17,6 @@ set -Ee
 # Debug
 # set -x
 
-build_apps() {
-    sudo -u "${BASE_USER}" "${PWD}"/bin/build.sh --reclone
-    sudo -u "${BASE_USER}" "${PWD}"/bin/build.sh --build
-}
+CROWSNEST_USTREAMER_REPO_COMMIT="81756811f3c925174f05300a9301bb722b9cbfb5"
+CROWSNEST_CAMERA_STREAMER_REPO_COMMIT_MASTER="fe701b83da35598af4fc1d77c717c8a67cac9edd"
+CROWSNEST_CAMERA_STREAMER_REPO_COMMIT_MAIN="bc231917d811e4a6661fc0b01b3e3750c6babd59"

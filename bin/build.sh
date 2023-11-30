@@ -3,7 +3,9 @@
 #### crowsnest - A webcam Service for multiple Cams and Stream Services.
 ####
 #### Written by Stephan Wendel aka KwadFan <me@stephanwe.de>
-#### Copyright 2021 - till today
+#### Copyright 2021 - 2023
+#### Co-authored by Patrick Gehrsitz aka mryel00 <mryel00.github@gmail.com>
+#### Copyright 2023 - till today
 #### https://github.com/mainsail-crew/crowsnest
 ####
 #### This File is distributed under GPLv3
@@ -24,8 +26,10 @@ set -Ee
 # Base Path
 BASE_CN_BIN_PATH="$(dirname "$(readlink -f "${0}")")"
 
+. "${BASE_CN_BIN_PATH}/../backend_versions.sh"
+
 # Clone Flags
-CLONE_FLAGS=(--depth=1 --single-branch)
+CLONE_FLAGS=(--single-branch)
 
 # Ustreamer repo
 USTREAMER_PATH="ustreamer"
@@ -52,6 +56,38 @@ ALL_PATHS=(
     "${BASE_CN_BIN_PATH}"/"${CSTREAMER_PATH}"
 )
 
+### Messages
+msg_build() {
+    printf "%s" "${1}"
+}
+
+error_msg_build() {
+    msg_build "Something went wrong!\nPlease copy the latest output, head over to\n"
+    msg_build "\thttps://discord.gg/mainsail\n"
+    msg_build "and open a ticket in #supportforum..."
+}
+
+status_msg_build() {
+    local msg status
+    msg="${1}"
+    status="${2}"
+    printf "%s\r" "${msg}"
+    if [[ "${status}" == "0" ]]; then
+        printf "%s [\e[32mOK\e[0m]\n" "${msg}"
+    fi
+    if [[ "${status}" == "1" ]]; then
+        printf "%s [\e[31mFAILED\e[0m]\n" "${msg}"
+        error_msg_build
+        exit 1
+    fi
+    if [[ "${status}" == "2" ]]; then
+        printf "%s [\e[33mSKIPPED\e[0m]\n" "${msg}"
+    fi
+    if [[ "${status}" == "3" ]]; then
+        printf "%s [\e[33mFAILED\e[0m]\n" "${msg}"
+    fi
+}
+
 # Helper messages
 show_help() {
     printf "Usage %s [options]\n" "$(basename "${0}")"
@@ -77,6 +113,65 @@ is_bookworm() {
     if [[ -f /etc/os-release ]]; then
         grep -cq "bookworm" /etc/os-release &> /dev/null && echo "1" || echo "0"
     fi
+}
+
+is_ubuntu_arm() {
+    if [[ "$(is_raspberry_pi)" = "1" ]] &&
+    grep -q "ubuntu" /etc/os-release; then
+        echo "1"
+    else
+        echo "0"
+    fi
+}
+
+test_load_module() {
+    if modprobe -n "${1}" &> /dev/null; then
+        echo 1
+    else
+        echo 0
+    fi
+}
+
+shallow_cs_dependencies_check() {
+    msg_build "Checking for camera-streamer dependencies ...\n"
+
+    msg_build "Checking if device is a Raspberry Pi ...\n"
+    if [[ "$(is_raspberry_pi)" = "0" ]]; then
+        status_msg_build "Checking if device is a Raspberry Pi ..." "3"
+        msg_build "This device is not a Raspberry Pi therefore camera-streeamer cannot be installed ..."
+        return 1
+    fi
+    status_msg_build "Checking if device is a Raspberry Pi ..." "0"
+
+    msg_build "Checking if device is not running Ubuntu ...\n"
+    if [[ "$(is_ubuntu_arm)" = "1" ]]; then
+        status_msg_build "Checking if device is not running Ubuntu ..." "3"
+        msg_build "This device is running Ubuntu therefore camera-streeamer cannot be installed ..."
+        return 1
+    fi
+    status_msg_build "Checking if device is not running Ubuntu ..." "0"
+
+    msg_build "Checking for required kernel module ...\n"
+    SHALLOW_CHECK_MODULESLIST="bcm2835_codec"
+    if [[ "$(test_load_module "${SHALLOW_CHECK_MODULESLIST}")" = "0" ]]; then
+        status_msg_build "Checking for required kernel module ..." "3"
+        msg_build "Not all required kernel modules for camera-streamer can be loaded ..."
+        return 1
+    fi
+    status_msg_build "Checking for required kernel module ..." "0"
+
+    msg_build "Checking for required packages ...\n"
+    # Update the number below if you update SHALLOW_CHECK_PKGLIST
+    SHALLOW_CHECK_PKGLIST="^(libavformat-dev|libavutil-dev|libavcodec-dev|liblivemedia-dev|libcamera-dev|libcamera-apps-lite)$"
+    if [[ $(apt-cache search --names-only "${SHALLOW_CHECK_PKGLIST}" | wc -l) -lt 6 ]]; then
+        status_msg_build "Checking for required packages ..." "3"
+        msg_build "Not all required packages for camera-streamer can be installed ..."
+        return 1
+    fi
+    status_msg_build "Checking for required packages ..." "0"
+
+    status_msg_build "Checking for camera-streamer dependencies ..." "0"
+    return 0
 }
 
 ### Get avail mem
@@ -108,29 +203,49 @@ clone_ustreamer() {
         -b "${CROWSNEST_USTREAMER_REPO_BRANCH}" \
         "${BASE_CN_BIN_PATH}"/"${USTREAMER_PATH}" \
         "${CLONE_FLAGS[@]}"
+
+    git -C "${BASE_CN_BIN_PATH}"/"${USTREAMER_PATH}" \
+    reset --hard "${CROWSNEST_USTREAMER_REPO_COMMIT}"
 }
 
 ### Clone camera-streamer
 clone_cstreamer() {
     ## Special handling because only supported on Raspberry Pi
     [[ -n "${CROWSNEST_UNATTENDED}" ]] || CROWSNEST_UNATTENDED="0"
-    if [[ "$(is_raspberry_pi)" = "0" ]] && [[ "${CROWSNEST_UNATTENDED}" = "0" ]]; then
+
+    ## If CROWSNEST_UNATTENDED is 1, CN_INSTALL_CS should be already set
+    if [[ "${CROWSNEST_UNATTENDED}" = "0" ]] && [[ -n "${CN_INSTALL_CS}" ]]; then
+        if shallow_cs_dependencies_check; then
+            CN_INSTALL_CS="1"
+        else
+            CN_INSTALL_CS="0"
+        fi
+    fi
+
+    if [[ "${CN_INSTALL_CS}" = "0" ]]; then
         printf "WARN: Cloning camera-streamer skipped! Device is not supported!"
         return
     fi
+
     if [[ -d "${BASE_CN_BIN_PATH}"/"${CSTREAMER_PATH}" ]]; then
         printf "%s already exist ... [SKIPPED]\n" "${CSTREAMER_PATH}"
         return
     fi
+
+    CROWSNEST_CAMERA_STREAMER_REPO_COMMIT="${CROWSNEST_CAMERA_STREAMER_REPO_COMMIT_MASTER}"
     if [[ "$(is_bookworm)" = "1" ]]; then
         printf "\nBookworm detected!\n"
         printf "Using main branch of camera-streamer for Bookworm ...\n\n"
         CROWSNEST_CAMERA_STREAMER_REPO_BRANCH="main"
+        CROWSNEST_CAMERA_STREAMER_REPO_COMMIT="${CROWSNEST_CAMERA_STREAMER_REPO_COMMIT_MAIN}"
     fi
     git clone "${CROWSNEST_CAMERA_STREAMER_REPO_SHIP}" \
         -b "${CROWSNEST_CAMERA_STREAMER_REPO_BRANCH}" \
         "${BASE_CN_BIN_PATH}"/"${CSTREAMER_PATH}" \
         "${CLONE_FLAGS[@]}" --recursive
+
+    git -C "${BASE_CN_BIN_PATH}"/"${CSTREAMER_PATH}" \
+    reset --hard "${CROWSNEST_CAMERA_STREAMER_REPO_COMMIT}"
 }
 
 ### Clone Apps
