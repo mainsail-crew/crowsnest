@@ -57,14 +57,10 @@ ALL_PATHS=(
 )
 
 ### Messages
-msg_build() {
-    printf "%s" "${1}"
-}
-
 error_msg_build() {
-    msg_build "Something went wrong!\nPlease copy the latest output, head over to\n"
-    msg_build "\thttps://discord.gg/mainsail\n"
-    msg_build "and open a ticket in #supportforum..."
+    printf "Something went wrong!\nPlease copy the latest output, head over to\n"
+    printf "\thttps://discord.gg/mainsail\n"
+    printf "and open a ticket in #supportforum..."
 }
 
 status_msg_build() {
@@ -133,39 +129,39 @@ test_load_module() {
 }
 
 shallow_cs_dependencies_check() {
-    msg_build "Checking for camera-streamer dependencies ...\n"
+    printf "Checking for camera-streamer dependencies ...\n"
 
-    msg_build "Checking if device is a Raspberry Pi ...\n"
+    printf "Checking if device is a Raspberry Pi ...\n"
     if [[ "$(is_raspberry_pi)" = "0" ]]; then
         status_msg_build "Checking if device is a Raspberry Pi ..." "3"
-        msg_build "This device is not a Raspberry Pi therefore camera-streeamer cannot be installed ..."
+        printf "This device is not a Raspberry Pi therefore camera-streeamer cannot be installed ..."
         return 1
     fi
     status_msg_build "Checking if device is a Raspberry Pi ..." "0"
 
-    msg_build "Checking if device is not running Ubuntu ...\n"
+    printf "Checking if device is not running Ubuntu ...\n"
     if [[ "$(is_ubuntu_arm)" = "1" ]]; then
         status_msg_build "Checking if device is not running Ubuntu ..." "3"
-        msg_build "This device is running Ubuntu therefore camera-streeamer cannot be installed ..."
+        printf "This device is running Ubuntu therefore camera-streeamer cannot be installed ..."
         return 1
     fi
     status_msg_build "Checking if device is not running Ubuntu ..." "0"
 
-    msg_build "Checking for required kernel module ...\n"
+    printf "Checking for required kernel module ...\n"
     SHALLOW_CHECK_MODULESLIST="bcm2835_codec"
     if [[ "$(test_load_module "${SHALLOW_CHECK_MODULESLIST}")" = "0" ]]; then
         status_msg_build "Checking for required kernel module ..." "3"
-        msg_build "Not all required kernel modules for camera-streamer can be loaded ..."
+        printf "Not all required kernel modules for camera-streamer can be loaded ..."
         return 1
     fi
     status_msg_build "Checking for required kernel module ..." "0"
 
-    msg_build "Checking for required packages ...\n"
+    printf "Checking for required packages ...\n"
     # Update the number below if you update SHALLOW_CHECK_PKGLIST
     SHALLOW_CHECK_PKGLIST="^(libavformat-dev|libavutil-dev|libavcodec-dev|liblivemedia-dev|libcamera-dev|libcamera-apps-lite)$"
     if [[ $(apt-cache search --names-only "${SHALLOW_CHECK_PKGLIST}" | wc -l) -lt 6 ]]; then
         status_msg_build "Checking for required packages ..." "3"
-        msg_build "Not all required packages for camera-streamer can be installed ..."
+        printf "Not all required packages for camera-streamer can be installed ..."
         return 1
     fi
     status_msg_build "Checking for required packages ..." "0"
@@ -200,13 +196,13 @@ clone_ustreamer() {
         return
     fi
 
-    msg_build "Cloning ustreamer ...\n"
+    printf "Cloning ustreamer ...\n"
     git clone "${CROWSNEST_USTREAMER_REPO_SHIP}" \
         -b "${CROWSNEST_USTREAMER_REPO_BRANCH}" \
         "${BASE_CN_BIN_PATH}"/"${USTREAMER_PATH}" \
         "${CLONE_FLAGS[@]}"
 
-    msg_build "Reset to specified ustreamer commit ...\n"
+    printf "Reset to specified ustreamer commit ...\n"
     git -C "${BASE_CN_BIN_PATH}"/"${USTREAMER_PATH}" \
     reset --hard "${CROWSNEST_USTREAMER_REPO_COMMIT}"
 }
@@ -243,13 +239,13 @@ clone_cstreamer() {
         CROWSNEST_CAMERA_STREAMER_REPO_COMMIT="${CROWSNEST_CAMERA_STREAMER_REPO_COMMIT_MAIN}"
     fi
 
-    msg_build "Cloning camera-streamer ...\n"
+    printf "Cloning camera-streamer ...\n"
     git clone "${CROWSNEST_CAMERA_STREAMER_REPO_SHIP}" \
         -b "${CROWSNEST_CAMERA_STREAMER_REPO_BRANCH}" \
         "${BASE_CN_BIN_PATH}"/"${CSTREAMER_PATH}" \
         "${CLONE_FLAGS[@]}" --recursive
 
-    msg_build "Reset to specified camera-streamer commit ...\n"
+    printf "Reset to specified camera-streamer commit ...\n"
     git -C "${BASE_CN_BIN_PATH}"/"${CSTREAMER_PATH}" \
     reset --hard "${CROWSNEST_CAMERA_STREAMER_REPO_COMMIT}"
 }
