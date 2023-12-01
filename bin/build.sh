@@ -199,11 +199,14 @@ clone_ustreamer() {
         printf "%s already exist ... [SKIPPED]\n" "${USTREAMER_PATH}"
         return
     fi
+
+    msg_build "Cloning ustreamer ...\n"
     git clone "${CROWSNEST_USTREAMER_REPO_SHIP}" \
         -b "${CROWSNEST_USTREAMER_REPO_BRANCH}" \
         "${BASE_CN_BIN_PATH}"/"${USTREAMER_PATH}" \
         "${CLONE_FLAGS[@]}"
 
+    msg_build "Reset to specified ustreamer commit ...\n"
     git -C "${BASE_CN_BIN_PATH}"/"${USTREAMER_PATH}" \
     reset --hard "${CROWSNEST_USTREAMER_REPO_COMMIT}"
 }
@@ -239,11 +242,14 @@ clone_cstreamer() {
         CROWSNEST_CAMERA_STREAMER_REPO_BRANCH="main"
         CROWSNEST_CAMERA_STREAMER_REPO_COMMIT="${CROWSNEST_CAMERA_STREAMER_REPO_COMMIT_MAIN}"
     fi
+
+    msg_build "Cloning camera-streamer ...\n"
     git clone "${CROWSNEST_CAMERA_STREAMER_REPO_SHIP}" \
         -b "${CROWSNEST_CAMERA_STREAMER_REPO_BRANCH}" \
         "${BASE_CN_BIN_PATH}"/"${CSTREAMER_PATH}" \
         "${CLONE_FLAGS[@]}" --recursive
 
+    msg_build "Reset to specified camera-streamer commit ...\n"
     git -C "${BASE_CN_BIN_PATH}"/"${CSTREAMER_PATH}" \
     reset --hard "${CROWSNEST_CAMERA_STREAMER_REPO_COMMIT}"
 }
