@@ -196,13 +196,13 @@ clone_ustreamer() {
         return
     fi
 
-    printf "Cloning ustreamer ...\n"
+    printf "\nCloning ustreamer ...\n"
     git clone "${CROWSNEST_USTREAMER_REPO_SHIP}" \
         -b "${CROWSNEST_USTREAMER_REPO_BRANCH}" \
         "${BASE_CN_BIN_PATH}"/"${USTREAMER_PATH}" \
         "${CLONE_FLAGS[@]}"
 
-    printf "Reset to specified ustreamer commit ...\n"
+    printf "\nReset to specified ustreamer commit ...\n"
     git -C "${BASE_CN_BIN_PATH}"/"${USTREAMER_PATH}" \
     reset --hard "${CROWSNEST_USTREAMER_REPO_COMMIT}"
 }
@@ -239,13 +239,13 @@ clone_cstreamer() {
         CROWSNEST_CAMERA_STREAMER_REPO_COMMIT="${CROWSNEST_CAMERA_STREAMER_REPO_COMMIT_MAIN}"
     fi
 
-    printf "Cloning camera-streamer ...\n"
+    printf "\nCloning camera-streamer ...\n"
     git clone "${CROWSNEST_CAMERA_STREAMER_REPO_SHIP}" \
         -b "${CROWSNEST_CAMERA_STREAMER_REPO_BRANCH}" \
         "${BASE_CN_BIN_PATH}"/"${CSTREAMER_PATH}" \
         "${CLONE_FLAGS[@]}" --recurse-submodules --shallow-submodules
 
-    printf "Reset to specified camera-streamer commit ...\n"
+    printf "\nReset to specified camera-streamer commit ...\n"
     git -C "${BASE_CN_BIN_PATH}"/"${CSTREAMER_PATH}" \
     reset --hard "${CROWSNEST_CAMERA_STREAMER_REPO_COMMIT}"
 }
