@@ -213,7 +213,7 @@ clone_cstreamer() {
     [[ -n "${CROWSNEST_UNATTENDED}" ]] || CROWSNEST_UNATTENDED="0"
 
     ## If CROWSNEST_UNATTENDED is 1, CN_INSTALL_CS should be already set
-    if [[ "${CROWSNEST_UNATTENDED}" = "0" ]] && [[ -n "${CN_INSTALL_CS}" ]]; then
+    if [[ "${CROWSNEST_UNATTENDED}" = "0" ]] && [[ -z "${CN_INSTALL_CS}" ]]; then
         if shallow_cs_dependencies_check; then
             CN_INSTALL_CS="1"
         else
