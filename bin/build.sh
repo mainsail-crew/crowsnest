@@ -129,7 +129,7 @@ test_load_module() {
 }
 
 shallow_cs_dependencies_check() {
-    printf "Checking for camera-streamer dependencies ...\n"
+    printf "\nChecking for camera-streamer dependencies ...\n"
 
     printf "Checking if device is a Raspberry Pi ...\n"
     if [[ "$(is_raspberry_pi)" = "0" ]]; then
