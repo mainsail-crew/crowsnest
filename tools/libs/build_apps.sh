@@ -21,6 +21,6 @@ set -Ee
 
 build_apps() {
     export CN_INSTALL_CS
-    sudo -u "${BASE_USER}" "${PWD}"/bin/build.sh --reclone
+    sudo -E -u "${BASE_USER}" "${PWD}"/bin/build.sh --reclone
     sudo -u "${BASE_USER}" "${PWD}"/bin/build.sh --build
 }
