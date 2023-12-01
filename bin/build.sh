@@ -234,7 +234,7 @@ clone_cstreamer() {
     CROWSNEST_CAMERA_STREAMER_REPO_COMMIT="${CROWSNEST_CAMERA_STREAMER_REPO_COMMIT_MASTER}"
     if [[ "$(is_bookworm)" = "1" ]]; then
         printf "\nBookworm detected!\n"
-        printf "Using main branch of camera-streamer for Bookworm ...\n\n"
+        printf "Using main branch of camera-streamer for Bookworm ...\n"
         CROWSNEST_CAMERA_STREAMER_REPO_BRANCH="main"
         CROWSNEST_CAMERA_STREAMER_REPO_COMMIT="${CROWSNEST_CAMERA_STREAMER_REPO_COMMIT_MAIN}"
     fi
