@@ -26,7 +26,7 @@ set -Ee
 # Base Path
 BASE_CN_BIN_PATH="$(dirname "$(readlink -f "${0}")")"
 
-. "${BASE_CN_BIN_PATH}/../backend_versions.sh"
+. "${BASE_BIN_PATH%%/bin/}/resources/backend_versions.txt"
 
 # Clone Flags
 CLONE_FLAGS=(--single-branch)
