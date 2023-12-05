@@ -1,3 +1,4 @@
+from configparser import SectionProxy
 from .streamer import Streamer
 from ..parameter import Parameter
 from ..core import execute_command
@@ -11,6 +12,8 @@ class Ustreamer(Streamer):
         self.parameters.update({
             'no_proxy': Parameter(bool, False)
         })
+
+        self.binary_path = '../../bin/ustreamer/ustreamer'
         
     async def execute(self):
         host = '0.0.0.0' if self.parameters['no_proxy'].value else '127.0.0.1'
