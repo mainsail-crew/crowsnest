@@ -67,6 +67,15 @@ is_raspberry_pi() {
     fi
 }
 
+is_pi5() {
+    if [[ -f /proc/device-tree/model ]] &&
+    grep -q "Raspberry Pi 5" /proc/device-tree/model; then
+        echo "1"
+    else
+        echo "0"
+    fi
+}
+
 is_ubuntu_arm() {
     if [[ "$(is_raspberry_pi)" = "1" ]] &&
     grep -q "ubuntu" /etc/os-release; then
@@ -104,6 +113,14 @@ shallow_cs_dependencies_check() {
     fi
     status_msg "Checking if device is a Raspberry Pi ..." "0"
 
+    msg "Checking if device is not a Raspberry Pi 5 ...\n"
+    if [[ "$(is_pi5)" = "1" ]]; then
+        status_msg "Checking if device is not a Raspberry Pi 5 ..." "3"
+        msg "This device is a Raspberry Pi 5 therefore camera-streeamer cannot be installed ..."
+        return 1
+    fi
+    status_msg "Checking if device is not a Raspberry Pi 5 ..." "0"
+
     msg "Checking if device is not running Ubuntu ...\n"
     if [[ "$(is_ubuntu_arm)" = "1" ]]; then
         status_msg "Checking if device is not running Ubuntu ..." "3"
@@ -113,7 +130,7 @@ shallow_cs_dependencies_check() {
     status_msg "Checking if device is not running Ubuntu ..." "0"
 
     msg "Checking for required kernel module ...\n"
-    SHALLOW_CHECK_MODULESLIST="bcm2835_codec_decode"
+    SHALLOW_CHECK_MODULESLIST="bcm2835_codec"
     if [[ "$(test_load_module ${SHALLOW_CHECK_MODULESLIST})" = "0" ]]; then
         status_msg "Checking for required kernel module ..." "3"
         msg "Not all required kernel modules for camera-streamer can be loaded ..."
