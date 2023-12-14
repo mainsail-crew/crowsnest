@@ -86,13 +86,16 @@ get_libcamera_path() {
 # Determine connected "legacy" device
 function detect_legacy {
     local avail
-    if [[ -f /proc/device-tree/model ]] &&
-    grep -q "Raspberry" /proc/device-tree/model; then
-        avail="$(vcgencmd get_camera | awk -F '=' '{ print $3 }' | cut -d',' -f1)"
-    else
-        avail="0"
+    if [[ "$(is_raspberry_pi)" = "1" ]] &&
+    command -v vcgencmd &> /dev/null; then
+        if vcgencmd get_camera &> /dev/null ; then
+            avail="$(vcgencmd get_camera \
+                    | awk -F '=' '{ print $3 }' \
+                    | cut -d',' -f1 \
+                    )"
+        fi
     fi
-    echo "${avail}"
+    echo "${avail:-0}"
 }
 
 function dev_is_legacy {
