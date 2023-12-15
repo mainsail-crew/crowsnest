@@ -34,7 +34,9 @@ set_gpu_mem() {
     else
         mem_split=256
     fi
-    if [[ "$(is_raspbian)" = "1" ]] && [[ -n "$(command -v raspi-config)" ]]; then
+    if [[ "$(is_raspbian)" = "1" ]] &&
+    [[ "$(is_bookworm)" = "0" ]] &&
+    [[ -n "$(command -v raspi-config)" ]]; then
         if sudo raspi-config nonint do_memory_split "${mem_split}" ;then
             status_msg "Trying to set minimum GPU Memory to ${mem_split} MB ..." "0"
         else
