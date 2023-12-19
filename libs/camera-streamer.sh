@@ -36,10 +36,14 @@ function run_ayucamstream() {
     rtsp=$(get_param "cam ${cam_sec}" enable_rtsp)
     rtsp_pt=$(get_param "cam ${cam_sec}" rtsp_port)
     cstm="$(get_param "cam ${cam_sec}" custom_flags 2> /dev/null)"
+    noprx="$(get_param "crowsnest" no_proxy 2> /dev/null)"
     ## construct start parameter
-    # set http port
-    #
-    start_param=( --http-port="${pt}" )
+    if [[ -n "${noprx}" ]] && [[ "${noprx}" = "true" ]]; then
+        start_param=( --http-listen=0.0.0.0 --http-port="${pt}" )
+        log_msg "INFO: Set to 'no_proxy' mode! Using 0.0.0.0 !"
+    else
+        start_param=( --http-listen=127.0.0.1 --http-port="${pt}" )
+    fi
 
     # Set device
     start_param+=( --camera-path="${dev}" )
