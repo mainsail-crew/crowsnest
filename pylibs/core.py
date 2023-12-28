@@ -15,24 +15,43 @@ def get_module_class(path = '', module_name = ''):
         print('ERROR: '+str(e))
     return module_class
 
-async def log_subprocess_output(stream, log_func):
+async def log_subprocess_output(stream, log_func, line_prefix = ''):
     while True:
         line = await stream.readline()
         if not line:
             time.sleep(0.05)
             continue
-        #line = line.decode('utf-8').strip()
+        line = line_prefix
+        line += line.decode('utf-8').strip()
         log_func(line.decode().strip())
 
-async def execute_command(command: str):
+async def execute_command(
+        command: str,
+        info_log_func = logging.info,
+        error_log_func = logging.error,
+        info_log_pre = '',
+        error_log_pre = ''):
+
     process = await asyncio.create_subprocess_shell(
         command,
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.PIPE
     )
 
-    stdout_task = asyncio.create_task(log_subprocess_output(process.stdout, logging.info))
-    stderr_task = asyncio.create_task(log_subprocess_output(process.stderr, logging.error))
+    stdout_task = asyncio.create_task(
+        log_subprocess_output(
+            process.stdout,
+            info_log_func,
+            info_log_pre
+        )
+    )
+    stderr_task = asyncio.create_task(
+        log_subprocess_output(
+            process.stderr,
+            error_log_func,
+            error_log_pre
+        )
+    )
 
     return process, stdout_task, stderr_task
     # Wait for the subprocess to finish

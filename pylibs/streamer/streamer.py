@@ -16,6 +16,7 @@ class Streamer(Section):
             'device': Parameter(),
             'resolution': Parameter(),
             'max_fps': Parameter(int),
+            'no_proxy': Parameter(bool, False),
             'custom_flags': Parameter(str, ''),
             'v4l2ctl': Parameter(str, '')
         })

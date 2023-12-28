@@ -3,11 +3,16 @@ from .streamer import Streamer
 from ..parameter import Parameter
 from ..core import execute_command
 
-class Ustreamer(Streamer):
+class Camera_Streamer(Streamer):
     keyword = 'ustreamer'
 
     def __init__(self, name: str = '') -> None:
         super().__init__(name)
+
+        self.parameters.update({
+            'enable_rtsp': Parameter(bool, False),
+            'rtsp_port': Parameter(int, 8554)
+        })
 
         self.binary_path = 'bin/ustreamer/ustreamer'
         
@@ -41,4 +46,4 @@ class Ustreamer(Streamer):
 
 
 def load_module():
-    return Ustreamer
+    return Camera_Streamer
