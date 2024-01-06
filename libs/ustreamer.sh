@@ -24,7 +24,7 @@ run_mjpg() {
         run_ustreamer "${instance}" &
     done
     blockyfix
-    brokenfocus
+    brokenfocus "${cams}"
     return
 }
 

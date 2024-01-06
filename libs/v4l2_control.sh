@@ -116,7 +116,7 @@ function brokenfocus {
 
     function main {
         local cur_val conf_val device
-        for cam in $(configured_cams); do
+        for cam in ${1}; do
             device="$(get_param "cam ${cam}" device)"
             cur_val="$(get_current_value "${device}")"
             conf_val="$(get_conf_value "${cam}")"
@@ -133,7 +133,7 @@ function brokenfocus {
     }
 
 ### MAIN
-main
+main "${1}"
 
 }
 
