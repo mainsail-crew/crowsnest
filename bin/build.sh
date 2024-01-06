@@ -130,7 +130,7 @@ clone_cstreamer() {
     git clone "${CROWSNEST_CAMERA_STREAMER_REPO_SHIP}" \
         -b "${CROWSNEST_CAMERA_STREAMER_REPO_BRANCH}" \
         "${BASE_CN_BIN_PATH}"/"${CSTREAMER_PATH}" \
-        "${CLONE_FLAGS[@]}" --recursive
+        "${CLONE_FLAGS[@]}" --recurse-submodules --shallow-submodules
 }
 
 ### Clone Apps
