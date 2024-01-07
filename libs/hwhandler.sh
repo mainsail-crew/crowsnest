@@ -131,6 +131,15 @@ is_raspberry_pi() {
     fi
 }
 
+is_pi5() {
+    if [[ -f /proc/device-tree/model ]] &&
+    grep -q "Raspberry Pi 5" /proc/device-tree/model; then
+        echo "1"
+    else
+        echo "0"
+    fi
+}
+
 is_ubuntu_arm() {
     if [[ "$(is_raspberry_pi)" = "1" ]] &&
     grep -q "ubuntu" /etc/os-release; then

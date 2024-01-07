@@ -42,7 +42,9 @@ versioncontrol() {
     # Camera Streamer has no version Output yet
     get_ayucamstream_version() {
         local cur_ver avail_ver
-        if [[ "$(is_raspberry_pi)" = "1" ]] && [[ "$(is_ubuntu_arm)" = "0" ]]; then
+        if [[ "$(is_raspberry_pi)" = "1" ]] &&
+        [[ "$(is_ubuntu_arm)" = "0" ]] &&
+        [[ "$(is_pi5)" = "0" ]]; then
             pushd "${BASE_CN_PATH}"/bin/camera-streamer &> /dev/null || exit 1
                 avail_ver="($(git describe --tags --always))"
                 cur_ver="$("${PWD}"/camera-streamer --version | tr -d " ")"

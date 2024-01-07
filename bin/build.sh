@@ -79,6 +79,24 @@ is_bookworm() {
     fi
 }
 
+is_pi5() {
+    if [[ -f /proc/device-tree/model ]] &&
+    grep -q "Raspberry Pi 5" /proc/device-tree/model; then
+        echo "1"
+    else
+        echo "0"
+    fi
+}
+
+is_ubuntu_arm() {
+    if [[ "$(is_raspberry_pi)" = "1" ]] &&
+    grep -q "ubuntu" /etc/os-release; then
+        echo "1"
+    else
+        echo "0"
+    fi
+}
+
 ### Get avail mem
 get_avail_mem() {
     grep "MemTotal" /proc/meminfo | awk '{print $2}'
@@ -114,7 +132,10 @@ clone_ustreamer() {
 clone_cstreamer() {
     ## Special handling because only supported on Raspberry Pi
     [[ -n "${CROWSNEST_UNATTENDED}" ]] || CROWSNEST_UNATTENDED="0"
-    if [[ "$(is_raspberry_pi)" = "0" ]] && [[ "${CROWSNEST_UNATTENDED}" = "0" ]]; then
+    if { [[ "$(is_raspberry_pi)" = "0" ]] ||
+    [[ "$(is_pi5)" = "1" ]] ||
+    [[ "$(is_ubuntu_arm)" = "1" ]]; } &&
+    [[ "${CROWSNEST_UNATTENDED}" = "0" ]]; then
         printf "WARN: Cloning camera-streamer skipped! Device is not supported!"
         return
     fi
