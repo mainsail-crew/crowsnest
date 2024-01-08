@@ -2,6 +2,20 @@
 # Changelog
 All notable changes to Crowsnest will be documented in this file.
 
+## [4.1.2](https://github.com/mainsail-crew/crowsnest/releases/tag/v4.1.2) - 2024-01-08
+### Bug Fixes and Improvements
+
+- **build.sh**: Fix wrong cs branch for cloning ([#215](https://github.com/mainsail-crew/crowsnest/pull/215))
+- Fixes error in detect_legacy ([#217](https://github.com/mainsail-crew/crowsnest/pull/217))
+- Skip do_memory_split on bookworm ([#223](https://github.com/mainsail-crew/crowsnest/pull/223))
+- Fix crash with brokenfocus and camera-streamer ([#224](https://github.com/mainsail-crew/crowsnest/pull/224))
+- Add pi5 support ([#225](https://github.com/mainsail-crew/crowsnest/pull/225))
+
+### Other
+
+- Shallow clone camera-streamer submodules ([#226](https://github.com/mainsail-crew/crowsnest/pull/226))
+- Add note about proxies to crowsnest.conf ([#227](https://github.com/mainsail-crew/crowsnest/pull/227))
+
 ## [4.1.1](https://github.com/mainsail-crew/crowsnest/releases/tag/v4.1.1) - 2023-11-23
 ### Documentation
 
