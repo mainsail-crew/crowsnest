@@ -73,6 +73,30 @@ is_raspberry_pi() {
     fi
 }
 
+is_bookworm() {
+    if [[ -f /etc/os-release ]]; then
+        grep -cq "bookworm" /etc/os-release &> /dev/null && echo "1" || echo "0"
+    fi
+}
+
+is_pi5() {
+    if [[ -f /proc/device-tree/model ]] &&
+    grep -q "Raspberry Pi 5" /proc/device-tree/model; then
+        echo "1"
+    else
+        echo "0"
+    fi
+}
+
+is_ubuntu_arm() {
+    if [[ "$(is_raspberry_pi)" = "1" ]] &&
+    grep -q "ubuntu" /etc/os-release; then
+        echo "1"
+    else
+        echo "0"
+    fi
+}
+
 ### Get avail mem
 get_avail_mem() {
     grep "MemTotal" /proc/meminfo | awk '{print $2}'
@@ -108,7 +132,10 @@ clone_ustreamer() {
 clone_cstreamer() {
     ## Special handling because only supported on Raspberry Pi
     [[ -n "${CROWSNEST_UNATTENDED}" ]] || CROWSNEST_UNATTENDED="0"
-    if [[ "$(is_raspberry_pi)" = "0" ]] && [[ "${CROWSNEST_UNATTENDED}" = "0" ]]; then
+    if { [[ "$(is_raspberry_pi)" = "0" ]] ||
+    [[ "$(is_pi5)" = "1" ]] ||
+    [[ "$(is_ubuntu_arm)" = "1" ]]; } &&
+    [[ "${CROWSNEST_UNATTENDED}" = "0" ]]; then
         printf "WARN: Cloning camera-streamer skipped! Device is not supported!"
         return
     fi
@@ -116,10 +143,15 @@ clone_cstreamer() {
         printf "%s already exist ... [SKIPPED]\n" "${CSTREAMER_PATH}"
         return
     fi
+    if [[ "$(is_bookworm)" = "1" ]]; then
+        printf "\nBookworm detected!\n"
+        printf "Using main branch of camera-streamer for Bookworm ...\n\n"
+        CROWSNEST_CAMERA_STREAMER_REPO_BRANCH="main"
+    fi
     git clone "${CROWSNEST_CAMERA_STREAMER_REPO_SHIP}" \
         -b "${CROWSNEST_CAMERA_STREAMER_REPO_BRANCH}" \
         "${BASE_CN_BIN_PATH}"/"${CSTREAMER_PATH}" \
-        "${CLONE_FLAGS[@]}" --recursive
+        "${CLONE_FLAGS[@]}" --recurse-submodules --shallow-submodules
 }
 
 ### Clone Apps

@@ -36,7 +36,8 @@ clone_cstreamer() {
         rm -rf bin/camera-streamer
     fi
     sudo -u "${BASE_USER}" \
-    git clone "${CROWSNEST_CAMERA_STREAMER_REPO_SHIP}" --recursive \
+    git clone "${CROWSNEST_CAMERA_STREAMER_REPO_SHIP}" \
+    --recurse-submodules --shallow-submodules \
     -b "${CROWSNEST_CAMERA_STREAMER_REPO_BRANCH}" \
     --depth=1 --single-branch bin/camera-streamer
 }

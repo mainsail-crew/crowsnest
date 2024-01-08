@@ -90,6 +90,7 @@ See the [README.md](https://github.com/mainsail-crew/crowsnest/tree/legacy/v3) o
 #### Hint Bookworm
 
 Raspberry Pi OS images that are based on Debian 12 (codename 'bookworm') currently use a different branch of [camera-streamer](https://github.com/ayufan/camera-streamer)!
+The Raspberry Pi 5 has only [ustreamer](https://github.com/pikvm/ustreamer) support! This is due to the missing JPEG and H264 Hardware encoders.
 
 ---
 
