@@ -168,11 +168,12 @@ clean_apps() {
     for app in "${ALL_PATHS[@]}"; do
         if [[ ! -d "${path}" ]]; then
             printf "'%s' does not exist! Clean skipped ...\n" "${path}"
+        else 
+            printf "\nRunning 'make clean' in %s ... \n" "${app}"
+            pushd "${app}" &> /dev/null || exit 1
+            make clean
+            popd &> /dev/null || exit 1
         fi
-        printf "\nRunning 'make clean' in %s ... \n" "${app}"
-        pushd "${app}" &> /dev/null || exit 1
-        make clean
-        popd &> /dev/null || exit 1
     done
     printf "\nRunning 'make clean' ... [DONE]\n"
 }
