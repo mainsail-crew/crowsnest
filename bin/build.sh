@@ -166,6 +166,9 @@ clone_apps() {
 ### Run 'make clean' in cloned folders
 clean_apps() {
     for app in "${ALL_PATHS[@]}"; do
+        if [[ ! -d "${path}" ]]; then
+            printf "'%s' does not exist! Clean skipped ...\n" "${path}"
+        fi
         printf "\nRunning 'make clean' in %s ... \n" "${app}"
         pushd "${app}" &> /dev/null || exit 1
         make clean
