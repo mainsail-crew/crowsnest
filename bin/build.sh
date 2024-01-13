@@ -109,10 +109,10 @@ get_avail_mem() {
 delete_apps() {
     for path in "${ALL_PATHS[@]}"; do
         if [[ ! -d "${path}" ]]; then
-            printf "'%s' does not exist! Delete skipped ...\n" "${path}"
+            printf "'%s' does not exist! Delete ... [SKIPPED]\n" "${path}"
         fi
         if [[ -d "${path}" ]]; then
-            printf "Deleting '%s' ... \n" "${path}"
+            printf "Deleting '%s' ... [DONE]\n" "${path}"
             rm -rf "${path}"
         fi
     done
@@ -138,7 +138,7 @@ clone_cstreamer() {
     [[ "$(is_pi5)" = "1" ]] ||
     [[ "$(is_ubuntu_arm)" = "1" ]]; } &&
     [[ "${CROWSNEST_UNATTENDED}" = "0" ]]; then
-        printf "WARN: Cloning camera-streamer skipped! Device is not supported!"
+        printf "Device is not supported! Cloning camera-streamer ... [SKIPPED]\n"
         return
     fi
     if [[ -d "${BASE_CN_BIN_PATH}"/"${CSTREAMER_PATH}" ]]; then
@@ -169,7 +169,7 @@ clone_apps() {
 clean_apps() {
     for app in "${ALL_PATHS[@]}"; do
         if [[ ! -d "${app}" ]]; then
-            printf "'%s' does not exist! Clean skipped ...\n" "${app}"
+            printf "'%s' does not exist! Clean ... [SKIPPED]\n" "${app}"
         else 
             printf "\nRunning 'make clean' in %s ... \n" "${app}"
             pushd "${app}" &> /dev/null || exit 1
