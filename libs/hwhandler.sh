@@ -65,7 +65,7 @@ detect_libcamera() {
     [[ -x "$(command -v libcamera-hello)" ]]; then
         avail="$(libcamera-hello --list-cameras | sed '/^\[.*\].*/d' | awk 'NR==1 {print $1}')"
         if [[ "${avail}" = "Available" ]]; then
-            echo "1"
+            get_libcamera_path | wc -l
         else
             echo "0"
         fi
