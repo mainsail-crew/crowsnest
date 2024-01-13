@@ -3,7 +3,9 @@
 #### crowsnest - A webcam Service for multiple Cams and Stream Services.
 ####
 #### Written by Stephan Wendel aka KwadFan <me@stephanwe.de>
-#### Copyright 2021 - till today
+#### Copyright 2021 - 2024
+#### Co-authored by Patrick Gehrsitz aka mryel00 <mryel00.github@gmail.com>
+#### Copyright 2024 - till today
 #### https://github.com/mainsail-crew/crowsnest
 ####
 #### This File is distributed under GPLv3
@@ -107,10 +109,10 @@ get_avail_mem() {
 delete_apps() {
     for path in "${ALL_PATHS[@]}"; do
         if [[ ! -d "${path}" ]]; then
-            printf "'%s' does not exist! Delete skipped ...\n" "${path}"
+            printf "'%s' does not exist! Delete ... [SKIPPED]\n" "${path}"
         fi
         if [[ -d "${path}" ]]; then
-            printf "Deleting '%s' ... \n" "${path}"
+            printf "Deleting '%s' ... [DONE]\n" "${path}"
             rm -rf "${path}"
         fi
     done
@@ -136,7 +138,7 @@ clone_cstreamer() {
     [[ "$(is_pi5)" = "1" ]] ||
     [[ "$(is_ubuntu_arm)" = "1" ]]; } &&
     [[ "${CROWSNEST_UNATTENDED}" = "0" ]]; then
-        printf "WARN: Cloning camera-streamer skipped! Device is not supported!"
+        printf "Device is not supported! Cloning camera-streamer ... [SKIPPED]\n"
         return
     fi
     if [[ -d "${BASE_CN_BIN_PATH}"/"${CSTREAMER_PATH}" ]]; then
@@ -166,10 +168,14 @@ clone_apps() {
 ### Run 'make clean' in cloned folders
 clean_apps() {
     for app in "${ALL_PATHS[@]}"; do
-        printf "\nRunning 'make clean' in %s ... \n" "${app}"
-        pushd "${app}" &> /dev/null || exit 1
-        make clean
-        popd &> /dev/null || exit 1
+        if [[ ! -d "${app}" ]]; then
+            printf "'%s' does not exist! Clean ... [SKIPPED]\n" "${app}"
+        else 
+            printf "\nRunning 'make clean' in %s ... \n" "${app}"
+            pushd "${app}" &> /dev/null || exit 1
+            make clean
+            popd &> /dev/null || exit 1
+        fi
     done
     printf "\nRunning 'make clean' ... [DONE]\n"
 }
