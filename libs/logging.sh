@@ -88,7 +88,7 @@ function print_cfg {
 }
 
 function print_cams {
-    local total v4l
+    local device total v4l
     v4l="$(find /dev/v4l/by-id/ -iname "*index0" 2> /dev/null | wc -l)"
     libcamera="$(detect_libcamera)"
     legacy="$(detect_legacy)"
@@ -100,7 +100,14 @@ function print_cams {
         log_msg "INFO: Found ${total} total available Device(s)"
     fi
     if [[ "${libcamera}" -ne 0 ]]; then
-        log_msg "Detected 'libcamera' device -> $(get_libcamera_path)"
+        if [[ "$(is_pi5)" = "1" ]]; then
+            log_msg "================================================================"
+            log_msg " WARN: 'libcamera' devices are currently not supported on Pi 5! "
+            log_msg "================================================================"
+        fi
+        for device in $(get_libcamera_path); do
+            log_msg "Detected 'libcamera' device -> ${device}"
+        done
     fi
     if [[ "${legacy}" -ne 0 ]]; then
         raspicam="$(v4l2-ctl --list-devices |  grep -A1 -e 'mmal' | \
