@@ -46,7 +46,7 @@ function run_ayucamstream() {
         # See https://github.com/mainsail-crew/crowsnest/pull/221#issuecomment-1863555700 for why
         # we cannot assume the binary has support for `--http-listen`.
         if $ust_bin --help | grep -q "http-listen"; then
-            start_param+=( --http-listen "0.0.0.0" )
+            start_param+=( --http-listen=0.0.0.0 )
             log_msg "INFO: Set to 'no_proxy' mode! Using 0.0.0.0!"
         fi
     fi
