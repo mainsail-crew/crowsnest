@@ -19,10 +19,10 @@ set -Ee
 ### Detect Hardware
 detect_avail_cams() {
     local avail realpath
-    avail="$(find /dev/v4l/by-id/ -iname "*index0" 2> /dev/null)"
+    avail="$(find /dev/v4l/by-id/ -iname "*index0" 2>/dev/null)"
     count="$(echo "${avail}" | wc -l)"
     if [[ -d "/dev/v4l/by-id/" ]] &&
-    [[ -n "${avail}" ]]; then
+        [[ -n "${avail}" ]]; then
         log_msg "INFO: Found ${count} available v4l2 (UVC) camera(s)"
         echo "${avail}" | while read -r v4l; do
             realpath=$(readlink -e "${v4l}")
@@ -44,7 +44,7 @@ list_cam_formats() {
     prefix="$(date +'[%D %T]') crowsnest:"
     log_msg "Supported Formats:"
     while read -r i; do
-        printf "%s\t\t%s\n" "${prefix}" "${i}" >> "${CROWSNEST_LOG_PATH}"
+        printf "%s\t\t%s\n" "${prefix}" "${i}" >>"${CROWSNEST_LOG_PATH}"
     done < <(v4l2-ctl -d "${device}" --list-formats-ext | sed '1,3d')
 }
 
@@ -54,7 +54,7 @@ list_cam_v4l2ctrls() {
     prefix="$(date +'[%D %T]') crowsnest:"
     log_msg "Supported Controls:"
     while read -r i; do
-        printf "%s\t\t%s\n" "${prefix}" "${i}" >> "${CROWSNEST_LOG_PATH}"
+        printf "%s\t\t%s\n" "${prefix}" "${i}" >>"${CROWSNEST_LOG_PATH}"
     done < <(v4l2-ctl -d "${device}" --list-ctrls-menus)
 }
 
@@ -62,7 +62,7 @@ list_cam_v4l2ctrls() {
 detect_libcamera() {
     local avail
     if [[ "$(is_raspberry_pi)" = "1" ]] &&
-    [[ -x "$(command -v libcamera-hello)" ]]; then
+        [[ -x "$(command -v libcamera-hello)" ]]; then
         avail="$(libcamera-hello --list-cameras | grep -c "Available")"
         if [[ "${avail}" = "1" ]]; then
             get_libcamera_path | wc -l
@@ -77,30 +77,42 @@ detect_libcamera() {
 ## Spit /base/soc path for libcamera device
 get_libcamera_path() {
     if [[ "$(is_raspberry_pi)" = "1" ]] &&
-    [[ -x "$(command -v libcamera-hello)" ]]; then
-        libcamera-hello --list-cameras | sed '1,2d' \
-        | grep "\(/base/*\)" | cut -d"(" -f2 | tr -d '$)'
+        [[ -x "$(command -v libcamera-hello)" ]]; then
+        libcamera-hello --list-cameras | sed '1,2d' |
+            grep "\(/base/*\)" | cut -d"(" -f2 | tr -d '$)'
     fi
+}
+
+# print libcamera resolutions
+list_picam_resolution() {
+    local device prefix
+    device="${1}"
+    prefix="$(date +'[%D %T]') crowsnest:"
+    log_msg "'libcamera' device(s) resolution(s) :"
+    while read -r i; do
+        printf "%s\t\t%s\n" "${prefix}" "${i}" >>"${CROWSNEST_LOG_PATH}"
+    done < <(libcamera-hello --list-cameras | sed '1,2d')
 }
 
 # Determine connected "legacy" device
 function detect_legacy {
     local avail
     if [[ "$(is_raspberry_pi)" = "1" ]] &&
-    command -v vcgencmd &> /dev/null; then
-        if vcgencmd get_camera &> /dev/null ; then
-            avail="$(vcgencmd get_camera \
-                    | awk -F '=' '{ print $3 }' \
-                    | cut -d',' -f1 \
-                    )"
+        command -v vcgencmd &>/dev/null; then
+        if vcgencmd get_camera &>/dev/null; then
+            avail="$(
+                vcgencmd get_camera |
+                    awk -F '=' '{ print $3 }' |
+                    cut -d',' -f1
+            )"
         fi
     fi
     echo "${avail:-0}"
 }
 
 function dev_is_legacy {
-    v4l2-ctl --list-devices |  grep -A1 -e 'mmal' | \
-    awk 'NR==2 {print $1}'
+    v4l2-ctl --list-devices | grep -A1 -e 'mmal' |
+        awk 'NR==2 {print $1}'
 }
 
 ## Determine if cam has H.264 Hardware encoder
@@ -124,7 +136,7 @@ detect_mjpeg() {
 ## Check if device is raspberry sbc
 is_raspberry_pi() {
     if [[ -f /proc/device-tree/model ]] &&
-    grep -q "Raspberry" /proc/device-tree/model; then
+        grep -q "Raspberry" /proc/device-tree/model; then
         echo "1"
     else
         echo "0"
@@ -133,7 +145,7 @@ is_raspberry_pi() {
 
 is_pi5() {
     if [[ -f /proc/device-tree/model ]] &&
-    grep -q "Raspberry Pi 5" /proc/device-tree/model; then
+        grep -q "Raspberry Pi 5" /proc/device-tree/model; then
         echo "1"
     else
         echo "0"
@@ -142,7 +154,7 @@ is_pi5() {
 
 is_ubuntu_arm() {
     if [[ "$(is_raspberry_pi)" = "1" ]] &&
-    grep -q "ubuntu" /etc/os-release; then
+        grep -q "ubuntu" /etc/os-release; then
         echo "1"
     else
         echo "0"

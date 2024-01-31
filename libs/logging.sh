@@ -39,7 +39,7 @@ function init_logging {
 
 function set_log_level {
     local loglevel
-    loglevel="$(get_param crowsnest log_level 2> /dev/null)"
+    loglevel="$(get_param crowsnest log_level 2>/dev/null)"
     # Set default log_level to quiet
     if [ -z "${loglevel}" ] || [[ "${loglevel}" != @(quiet|verbose|debug) ]]; then
         CROWSNEST_LOG_LEVEL="quiet"
@@ -51,7 +51,7 @@ function set_log_level {
 
 function delete_log {
     local del_log
-    del_log="$(get_param "crowsnest" delete_log 2> /dev/null)"
+    del_log="$(get_param "crowsnest" delete_log 2>/dev/null)"
     if [ "${del_log}" = "true" ]; then
         rm -rf "${CROWSNEST_LOG_PATH}"
     fi
@@ -61,7 +61,7 @@ function log_msg {
     local msg prefix
     msg="${1}"
     prefix="$(date +'[%D %T]') crowsnest:"
-    printf "%s %s\n" "${prefix}" "${msg}" >> "${CROWSNEST_LOG_PATH}"
+    printf "%s %s\n" "${prefix}" "${msg}" >>"${CROWSNEST_LOG_PATH}"
     printf "%s\n" "${msg}"
 }
 
@@ -80,19 +80,19 @@ function print_cfg {
     local prefix
     prefix="$(date +'[%D %T]') crowsnest:"
     log_msg "INFO: Print Configfile: '${CROWSNEST_CFG}'"
-    (sed '/^#.*/d;/./,$!d' | cut -d'#' -f1) < "${CROWSNEST_CFG}" | \
-    while read -r line; do
-        printf "%s\t\t%s\n" "${prefix}" "${line}" >> "${CROWSNEST_LOG_PATH}"
-        printf "\t\t%s\n" "${line}"
-    done
+    (sed '/^#.*/d;/./,$!d' | cut -d'#' -f1) <"${CROWSNEST_CFG}" |
+        while read -r line; do
+            printf "%s\t\t%s\n" "${prefix}" "${line}" >>"${CROWSNEST_LOG_PATH}"
+            printf "\t\t%s\n" "${line}"
+        done
 }
 
 function print_cams {
     local device total v4l
-    v4l="$(find /dev/v4l/by-id/ -iname "*index0" 2> /dev/null | wc -l)"
+    v4l="$(find /dev/v4l/by-id/ -iname "*index0" 2>/dev/null | wc -l)"
     libcamera="$(detect_libcamera)"
     legacy="$(detect_legacy)"
-    total="$((v4l+libcamera+legacy))"
+    total="$((v4l + libcamera + legacy))"
     if [ "${total}" -eq 0 ]; then
         log_msg "ERROR: No usable Devices Found. Stopping $(basename "${0}")."
         exit 1
@@ -108,10 +108,11 @@ function print_cams {
         for device in $(get_libcamera_path); do
             log_msg "Detected 'libcamera' device -> ${device}"
         done
+        list_picam_resolution
     fi
     if [[ "${legacy}" -ne 0 ]]; then
-        raspicam="$(v4l2-ctl --list-devices |  grep -A1 -e 'mmal' | \
-        awk 'NR==2 {print $1}')"
+        raspicam="$(v4l2-ctl --list-devices | grep -A1 -e 'mmal' |
+            awk 'NR==2 {print $1}')"
         log_msg "Detected 'Raspicam' Device -> ${raspicam}"
         if [[ ! "${CROWSNEST_LOG_LEVEL}" = "quiet" ]]; then
             list_cam_formats "${raspicam}"
@@ -135,8 +136,8 @@ function print_host {
         ## OS Infos
         ## OS Version
         if [[ -f /etc/os-release ]]; then
-            log_msg "Host Info: Distribution: $(grep "PRETTY" /etc/os-release | \
-            cut -d '=' -f2 | sed 's/^"//;s/"$//')"
+            log_msg "Host Info: Distribution: $(grep "PRETTY" /etc/os-release |
+                cut -d '=' -f2 | sed 's/^"//;s/"$//')"
         fi
         ## Release Version of MainsailOS (if file present)
         if [[ -f /etc/mainsailos-release ]]; then
@@ -150,7 +151,7 @@ function print_host {
             log_msg "Host Info: Model: ${sbc_model}"
         fi
         if [[ -n "${generic_model}" ]] &&
-        [[ -z "${sbc_model}" ]]; then
+            [[ -z "${sbc_model}" ]]; then
             log_msg "Host Info: Model: ${generic_model}"
         fi
         ## CPU count
