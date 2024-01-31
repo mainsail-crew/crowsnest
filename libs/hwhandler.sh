@@ -90,7 +90,7 @@ list_picam_resolution() {
     log_msg "'libcamera' device(s) resolution(s) :"
     while read -r i; do
         printf "%s\t\t%s\n" "${prefix}" "${i}" >>"${CROWSNEST_LOG_PATH}"
-    done < <(libcamera-hello --list-cameras | sed '1,2d')
+    done < <(libcamera-hello --list-cameras | sed '1,2d;s/Modes://')
 }
 
 # Determine connected "legacy" device
