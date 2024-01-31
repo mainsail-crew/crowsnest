@@ -109,7 +109,9 @@ function print_cams {
             log_msg "Detected 'libcamera' device -> ${device}"
         done
         list_picam_resolution
-        list_picam_controls
+        if [[ "$(is_pi5)" = "0" ]]; then
+            list_picam_controls
+        fi
     fi
     if [[ "${legacy}" -ne 0 ]]; then
         raspicam="$(v4l2-ctl --list-devices | grep -A1 -e 'mmal' |
