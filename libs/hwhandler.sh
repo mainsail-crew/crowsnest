@@ -112,7 +112,7 @@ for key, value in ctrls.items():
         else:
             ctrl_type=type(min)
 
-        print(f"{key} ({ctrl_type}) :\t\tmin={min} max={max} default={default}\n")
+        print(f"{key} ({ctrl_type}) :\t\tmin={min} max={max} default={default}")
 
 EOL
 }
