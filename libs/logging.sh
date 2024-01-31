@@ -108,8 +108,8 @@ function print_cams {
         for device in $(get_libcamera_path); do
             log_msg "Detected 'libcamera' device -> ${device}"
         done
-        list_picam_resolution
         if [[ "$(is_pi5)" = "0" ]]; then
+            list_picam_resolution
             list_picam_controls
         fi
     fi
