@@ -93,6 +93,41 @@ list_picam_resolution() {
     done < <(libcamera-hello --list-cameras | sed '1,2d;s/Modes:/Colorspace:/')
 }
 
+get_libcamera_controls() {
+    python - <<EOL
+from picamera2 import Picamera2
+picam = Picamera2()
+ctrls = picam.camera_controls
+
+for key, value in ctrls.items():
+        min, max, default = value
+        if type(min) is int:
+            ctrl_type = "int"
+        elif type(min) is float:
+            ctrl_type = "float"
+        elif type(min) is bool:
+            ctrl_type = "bool"
+        elif type(min) is tuple:
+            ctrl_type = "tuple"
+        else:
+            ctrl_type=type(min)
+
+        print(f"{key} ({ctrl_type}) :\t\tmin={min} max={max} default={default}\n")
+
+EOL
+}
+
+list_picam_controls() {
+    local prefix
+    prefix="$(date +'[%D %T]') crowsnest:"
+    log_msg "'libcamera' device controls :"
+    while read -r i; do
+        if [[ ! "${i}" =~ "INFO" ]]; then
+            printf "%s\t\t%s\n" "${prefix}" "${i}" >>"${CROWSNEST_LOG_PATH}"
+        fi
+    done < <(get_libcamera_controls)
+}
+
 # Determine connected "legacy" device
 function detect_legacy {
     local avail
