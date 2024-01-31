@@ -85,15 +85,12 @@ get_libcamera_path() {
 
 # print libcamera resolutions
 list_picam_resolution() {
-
-    log_msg "HEYYY"
-    # local device prefix
-    # device="${1}"
-    # prefix="$(date +'[%D %T]') crowsnest:"
-    # log_msg "'libcamera' device(s) resolution(s) :"
-    # while read -r i; do
-    #     printf "%s\t\t%s\n" "${prefix}" "${i}" >>"${CROWSNEST_LOG_PATH}"
-    # done < <(libcamera-hello --list-cameras | sed '1,2d')
+    local prefix
+    prefix="$(date +'[%D %T]') crowsnest:"
+    log_msg "'libcamera' device(s) resolution(s) :"
+    while read -r i; do
+        printf "%s\t\t%s\n" "${prefix}" "${i}" >>"${CROWSNEST_LOG_PATH}"
+    done < <(libcamera-hello --list-cameras | sed '1,2d')
 }
 
 # Determine connected "legacy" device
