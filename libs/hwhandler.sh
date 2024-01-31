@@ -126,6 +126,8 @@ list_picam_controls() {
             printf "%s\t\t%s\n" "${prefix}" "${i}" >>"${CROWSNEST_LOG_PATH}"
         fi
     done < <(get_libcamera_controls)
+    # blank line workaround
+    log_msg ""
 }
 
 # Determine connected "legacy" device
