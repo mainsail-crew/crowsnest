@@ -1,17 +1,22 @@
 from configparser import SectionProxy
 from .streamer import Streamer
 from ..parameter import Parameter
-from ..core import execute_command
+from ..core import execute_command, log_debug
 
 class Ustreamer(Streamer):
     keyword = 'ustreamer'
+    binary_path = None
 
     def __init__(self, name: str = '') -> None:
         super().__init__(name)
 
-        self.binary_path = 'bin/ustreamer/ustreamer'
+        if Ustreamer.binary_path is None:
+            Ustreamer.binary_path = 'bin/ustreamer/ustreamer'
+        self.binary_path = Ustreamer.binary_path
         
     async def execute(self):
+        if not super().execute():
+            return None
         host = '0.0.0.0' if self.parameters['no_proxy'].value else '127.0.0.1'
         port = self.parameters['port'].value
         res = self.parameters['resolution'].value
@@ -35,9 +40,11 @@ class Ustreamer(Streamer):
         streamer_args += self.parameters['custom_flags'].value.split()
 
         cmd = streamer_args
-        info_log_pre = f'DEBUG: ustreamer [{self.name}]: '
-        return await execute_command(' '.join(cmd), info_log_pre=info_log_pre)
-        #ustreamer = subprocess.Popen(['bin/ustreamer/ustreamer'] + streamer_args, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        log_pre = f'ustreamer [cam {self.name}]: '
+
+        process,_,_ = await execute_command(' '.join(cmd), error_log_pre=log_pre, error_log_func=log_debug)
+
+        return process
 
 
 def load_module():

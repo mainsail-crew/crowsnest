@@ -26,8 +26,12 @@ class Streamer(Section):
         super().parse_config(config_section, *args, **kwargs)
         if self.binary_path is None:
             raise Exception("""This shouldn't happen. Please join our discord and open a post inside the support forum!\nhttps://discord.gg/mainsail""")
+    
+    def execute(self):
         if not os.path.exists(self.binary_path):
             logging.info(f"'{self.binary_path}' not found! Please make sure that everything is installed correctly!")
+            return False
+        return True
 
 def load_module():
     raise NotImplementedError("If you see this, a module is implemented wrong!!!")

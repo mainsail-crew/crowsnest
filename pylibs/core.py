@@ -2,6 +2,7 @@ import importlib
 import asyncio
 import logging
 import time
+import os
 
 # Dynamically import module
 # Requires module to have a load_module() function,
@@ -16,14 +17,12 @@ def get_module_class(path = '', module_name = ''):
     return module_class
 
 async def log_subprocess_output(stream, log_func, line_prefix = ''):
-    while True:
+    line = await stream.readline()
+    while line:
+        l = line_prefix
+        l += line.decode('utf-8').strip()
+        log_func(l)
         line = await stream.readline()
-        if not line:
-            time.sleep(0.05)
-            continue
-        line = line_prefix
-        line += line.decode('utf-8').strip()
-        log_func(line.decode().strip())
 
 async def execute_command(
         command: str,
@@ -60,3 +59,6 @@ async def execute_command(
     # Wait for the output handling tasks to finish
     #await stdout_task
     #await stderr_task
+
+def log_debug(msg):
+    logging.log(15, msg)

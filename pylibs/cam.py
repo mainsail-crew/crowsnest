@@ -4,6 +4,7 @@ from .parameter import Parameter
 from .core import get_module_class
 
 import copy
+import logging
 
 class Cam(Section):
     keyword = 'cam'
@@ -28,19 +29,12 @@ class Cam(Section):
         if self.streamer is None:
             print("No streamer loaded")
             return
-        process = stdout_task = stderr_task = None
         try:
-            process, stdout_task, stderr_task = await self.streamer.execute()
+            process = await self.streamer.execute()
             await process.wait()
-            await stdout_task.wait()
-            await stderr_task.wait()
-        except:
-            if process != None:
-                await process.terminate()
-            if stdout_task != None:
-                await stdout_task.terminate()
-            if stderr_task != None:
-                await stderr_task.terminate()
+            logging.error(f'Start of {self.parameters["mode"].value} [cam {self.name}] failed!')
+        except Exception as e:
+            pass
 
 def load_module():
     return Cam

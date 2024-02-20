@@ -21,5 +21,7 @@ class Crowsnest(Section):
             self.parameters['log_level'].value = 'WARNING'
         elif log_level == 'debug':
             self.parameters['log_level'].value = 'DEBUG'
+        elif log_level == 'dev':
+            self.parameters['log_level'].value = 'DEV'
         else:
             self.parameters['log_level'].value = 'INFO'
