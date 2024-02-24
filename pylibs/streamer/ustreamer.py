@@ -51,8 +51,11 @@ class Ustreamer(Streamer):
 
         return process
     
-    def custom_log(self, msg):
-        msg = re.sub(r'-- (.*?.*?) \[.*?\] --', r'\1', msg)
+    def custom_log(self, msg: str):
+        if msg.endswith('==='):
+            msg = msg[:-28]
+        else:
+            msg = re.sub(r'-- (.*?) \[.*?\] --', r'\1', msg)
         log_debug(msg)
 
 
