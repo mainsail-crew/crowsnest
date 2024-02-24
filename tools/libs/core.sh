@@ -3,7 +3,9 @@
 #### crowsnest - A webcam Service for multiple Cams and Stream Services.
 ####
 #### Written by Stephan Wendel aka KwadFan <me@stephanwe.de>
-#### Copyright 2021 - till today
+#### Copyright 2021 - 2023
+#### Co-authored by Patrick Gehrsitz aka mryel00 <mryel00.github@gmail.com>
+#### Copyright 2023 - till today
 #### https://github.com/mainsail-crew/crowsnest
 ####
 #### This File is distributed under GPLv3
@@ -34,12 +36,120 @@ is_buster() {
     fi
 }
 
+is_bookworm() {
+    if [[ -f /etc/os-release ]]; then
+        grep -cq "bookworm" /etc/os-release &> /dev/null && echo "1" || echo "0"
+    fi
+}
+
 is_raspbian() {
     if [[ -f /boot/config.txt ]] && [[ -f /etc/rpi-issue ]]; then
         echo "1"
     else
         echo "0"
     fi
+}
+
+is_dietpi() {
+    if [[ -f /boot/config.txt ]] && [[ -d /boot/dietpi ]]; then
+        echo "1"
+    else
+        echo "0"
+    fi
+}
+
+is_raspberry_pi() {
+    if [[ -f /proc/device-tree/model ]] &&
+    grep -q "Raspberry" /proc/device-tree/model; then
+        echo "1"
+    else
+        echo "0"
+    fi
+}
+
+is_pi5() {
+    if [[ -f /proc/device-tree/model ]] &&
+    grep -q "Raspberry Pi 5" /proc/device-tree/model; then
+        echo "1"
+    else
+        echo "0"
+    fi
+}
+
+is_ubuntu_arm() {
+    if [[ "$(is_raspberry_pi)" = "1" ]] &&
+    grep -q "ubuntu" /etc/os-release; then
+        echo "1"
+    else
+        echo "0"
+    fi
+}
+
+is_speederpad() {
+    if grep -q "Ubuntu 20.04." /etc/os-release &&
+    [[ "$(uname -rm)" = "4.9.191 aarch64" ]]; then
+        echo "1"
+    else
+        echo "0"
+    fi
+}
+
+test_load_module() {
+    if modprobe -n "${1}" &> /dev/null; then
+        echo 1
+    else
+        echo 0
+    fi
+}
+
+shallow_cs_dependencies_check() {
+    msg "Checking for camera-streamer dependencies ...\n"
+
+    msg "Checking if device is a Raspberry Pi ...\n"
+    if [[ "$(is_raspberry_pi)" = "0" ]]; then
+        status_msg "Checking if device is a Raspberry Pi ..." "3"
+        msg "This device is not a Raspberry Pi therefore camera-streeamer cannot be installed ..."
+        return 1
+    fi
+    status_msg "Checking if device is a Raspberry Pi ..." "0"
+
+    msg "Checking if device is not a Raspberry Pi 5 ...\n"
+    if [[ "$(is_pi5)" = "1" ]]; then
+        status_msg "Checking if device is not a Raspberry Pi 5 ..." "3"
+        msg "This device is a Raspberry Pi 5 therefore camera-streeamer cannot be installed ..."
+        return 1
+    fi
+    status_msg "Checking if device is not a Raspberry Pi 5 ..." "0"
+
+    msg "Checking if device is not running Ubuntu ...\n"
+    if [[ "$(is_ubuntu_arm)" = "1" ]]; then
+        status_msg "Checking if device is not running Ubuntu ..." "3"
+        msg "This device is running Ubuntu therefore camera-streeamer cannot be installed ..."
+        return 1
+    fi
+    status_msg "Checking if device is not running Ubuntu ..." "0"
+
+    msg "Checking for required kernel module ...\n"
+    SHALLOW_CHECK_MODULESLIST="bcm2835_codec"
+    if [[ "$(test_load_module ${SHALLOW_CHECK_MODULESLIST})" = "0" ]]; then
+        status_msg "Checking for required kernel module ..." "3"
+        msg "Not all required kernel modules for camera-streamer can be loaded ..."
+        return 1
+    fi
+    status_msg "Checking for required kernel module ..." "0"
+
+    msg "Checking for required packages ...\n"
+    # Update the number below if you update SHALLOW_CHECK_PKGLIST
+    SHALLOW_CHECK_PKGLIST="^(libavformat-dev|libavutil-dev|libavcodec-dev|liblivemedia-dev|libcamera-dev|libcamera-apps-lite)$"
+    if [[ $(apt-cache search --names-only "${SHALLOW_CHECK_PKGLIST}" | wc -l) -lt 6 ]]; then
+        status_msg "Checking for required packages ..." "3"
+        msg "Not all required packages for camera-streamer can be installed ..."
+        return 1
+    fi
+    status_msg "Checking for required packages ..." "0"
+
+    status_msg "Checking for camera-streamer dependencies ..." "0"
+    return 0
 }
 
 link_pkglist_rpi() {
@@ -115,6 +225,15 @@ install_service_file() {
     grep -q "${BASE_USER}" "${target_dir}/crowsnest.service" || return 1
 }
 
+add_sleep_to_crowsnest_env() {
+    local service_file
+    env_file="${CROWSNEST_ENV_PATH}/crowsnest.env"
+
+    if [[ -f "${env_file}" ]]; then
+        sed -i 's/\(CROWSNEST_ARGS="[^"]*\)"/\1 -s"/' "${env_file}"
+    fi
+}
+
 install_env_file() {
     local env_file env_target
     env_file="${PWD}/resources/crowsnest.env"
@@ -122,7 +241,7 @@ install_env_file() {
     sudo -u "${BASE_USER}" cp -f "${env_file}" "${env_target}"
     sed -i "s|%CONFPATH%|${CROWSNEST_CONFIG_PATH}|" "${env_target}"
     [[ -f "${env_target}" ]] &&
-    grep -q "${BASE_USER}" "${env_target}" || return 1
+    grep -q "${CROWSNEST_CONFIG_PATH}" "${env_target}" || return 1
 }
 
 install_logrotate_conf() {
@@ -169,4 +288,49 @@ add_group_video() {
         status_msg "Add User ${BASE_USER} to group 'video' ..." "2"
         msg "\t==> User ${BASE_USER} is already in group 'video'"
     fi
+}
+
+dietpi_cs_settings() {
+    sudo /boot/dietpi/func/dietpi-set_hardware rpi-codec enable
+    sudo /boot/dietpi/func/dietpi-set_hardware rpi-camera enable
+
+    if [[ "$(is_buster)" = "0" ]]; then
+        if ! grep -q "camera_auto_detect=1" /boot/config.txt; then
+            msg "\nAdd camera_auto_detect=1 to /boot/config.txt ...\n"
+            echo "camera_auto_detect=1" >> /boot/config.txt
+        fi
+    fi
+}
+
+### Detect legacy webcamd.
+detect_existing_webcamd() {
+    local disable
+    msg "Checking for mjpg-streamer ...\n"
+    if  [[ -x "/usr/local/bin/webcamd" ]] && [[ -d "/home/${BASE_USER}/mjpg-streamer" ]]; then
+        msg "Found an existing mjpg-streamer installation!"
+        msg "This should be stopped and disabled!"
+        while true; do
+            read -erp "Do you want to stop and disable existing 'webcamd'? (Y/n) " -i "Y" disable
+            case "${disable}" in
+                y|Y|yes|Yes|YES)
+                    msg "Stopping webcamd.service ..."
+                    sudo systemctl stop webcamd.service &> /dev/null
+                    status_msg "Stopping webcamd.service ..." "0"
+                    
+                    msg "\nDisabling webcamd.service ...\r"
+                    sudo systemctl disable webcamd.service &> /dev/null
+                    status_msg "Disabling webcamd.service ..." "0"
+                    return
+                ;;
+
+                n|N|no|No|NO)
+                    msg "\nYou should disable and stop webcamd to use crowsnest without problems!\n"
+                    return
+                ;;
+                *)
+                    msg "You answered '${disable}'! Invalid input ..."                ;;
+            esac
+        done
+    fi
+    status_msg "Checking for mjpg-streamer ..." "0"
 }

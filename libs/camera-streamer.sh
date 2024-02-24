@@ -25,7 +25,7 @@ function run_multi() {
 }
 
 function run_ayucamstream() {
-    local cam_sec ust_bin dev pt res rtsp rtsp_pt fps cstm start_param
+    local cam_sec ust_bin dev pt res rtsp rtsp_pt fps cstm noprx start_param
     local v4l2ctl
     cam_sec="${1}"
     ust_bin="${BASE_CN_PATH}/bin/camera-streamer/camera-streamer"
@@ -36,10 +36,20 @@ function run_ayucamstream() {
     rtsp=$(get_param "cam ${cam_sec}" enable_rtsp)
     rtsp_pt=$(get_param "cam ${cam_sec}" rtsp_port)
     cstm="$(get_param "cam ${cam_sec}" custom_flags 2> /dev/null)"
+    noprx="$(get_param "crowsnest" no_proxy 2> /dev/null)"
     ## construct start parameter
     # set http port
     #
     start_param=( --http-port="${pt}" )
+
+    if [[ -n "${noprx}" ]] && [[ "${noprx}" = "true" ]]; then
+        # See https://github.com/mainsail-crew/crowsnest/pull/221#issuecomment-1863555700 for why
+        # we cannot assume the binary has support for `--http-listen`.
+        if ${ust_bin} --help | grep -q "http-listen"; then
+            start_param+=( --http-listen=0.0.0.0 )
+            log_msg "INFO: Set to 'no_proxy' mode! Using 0.0.0.0!"
+        fi
+    fi
 
     # Set device
     start_param+=( --camera-path="${dev}" )

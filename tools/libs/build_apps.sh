@@ -3,7 +3,9 @@
 #### crowsnest - A webcam Service for multiple Cams and Stream Services.
 ####
 #### Written by Stephan Wendel aka KwadFan <me@stephanwe.de>
-#### Copyright 2021 - till today
+#### Copyright 2021 - 2023
+#### Co-authored by Patrick Gehrsitz aka mryel00 <mryel00.github@gmail.com>
+#### Copyright 2023 - till today
 #### https://github.com/mainsail-crew/crowsnest
 ####
 #### This File is distributed under GPLv3
@@ -34,7 +36,8 @@ clone_cstreamer() {
         rm -rf bin/camera-streamer
     fi
     sudo -u "${BASE_USER}" \
-    git clone "${CROWSNEST_CAMERA_STREAMER_REPO_SHIP}" --recursive \
+    git clone "${CROWSNEST_CAMERA_STREAMER_REPO_SHIP}" \
+    --recurse-submodules --shallow-submodules \
     -b "${CROWSNEST_CAMERA_STREAMER_REPO_BRANCH}" \
     --depth=1 --single-branch bin/camera-streamer
 }
@@ -44,11 +47,10 @@ build_apps() {
     msg "Cloning ustreamer repository ..."
     clone_ustreamer
     ## Detect Image build for Raspberrys
-    if [[ "$(is_raspbian)" = "1" ]]; then
+    if [[ "${CN_INSTALL_CS}" = "1" ]]; then
         msg "Cloning camera-streamer repository ..."
         clone_cstreamer
-    fi
-    if [[ "$(is_raspbian)" = "0" ]]; then
+    else
         msg "Install of camera-streamer skipped, only supported on Raspberry SBC's! ... "
     fi
     sudo -u "${BASE_USER}" "${PWD}"/bin/build.sh --build

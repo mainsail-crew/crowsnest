@@ -3,7 +3,9 @@
 #### crowsnest - A webcam Service for multiple Cams and Stream Services.
 ####
 #### Written by Stephan Wendel aka KwadFan <me@stephanwe.de>
-#### Copyright 2021 - till today
+#### Copyright 2021 - 2024
+#### Co-authored by Patrick Gehrsitz aka mryel00 <mryel00.github@gmail.com>
+#### Copyright 2024 - till today
 #### https://github.com/mainsail-crew/crowsnest
 ####
 #### This File is distributed under GPLv3
@@ -39,7 +41,7 @@ fi
 # Camera-streamer repo
 CSTREAMER_PATH="camera-streamer"
 if [[ -z "${CROWSNEST_CAMERA_STREAMER_REPO_SHIP}" ]]; then
-    CROWSNEST_CAMERA_STREAMER_REPO_SHIP="https://github.com/ayufan-research/camera-streamer.git"
+    CROWSNEST_CAMERA_STREAMER_REPO_SHIP="https://github.com/ayufan/camera-streamer.git"
 fi
 if [[ -z "${CROWSNEST_CAMERA_STREAMER_REPO_BRANCH}" ]]; then
     CROWSNEST_CAMERA_STREAMER_REPO_BRANCH="master"
@@ -73,6 +75,30 @@ is_raspberry_pi() {
     fi
 }
 
+is_bookworm() {
+    if [[ -f /etc/os-release ]]; then
+        grep -cq "bookworm" /etc/os-release &> /dev/null && echo "1" || echo "0"
+    fi
+}
+
+is_pi5() {
+    if [[ -f /proc/device-tree/model ]] &&
+    grep -q "Raspberry Pi 5" /proc/device-tree/model; then
+        echo "1"
+    else
+        echo "0"
+    fi
+}
+
+is_ubuntu_arm() {
+    if [[ "$(is_raspberry_pi)" = "1" ]] &&
+    grep -q "ubuntu" /etc/os-release; then
+        echo "1"
+    else
+        echo "0"
+    fi
+}
+
 ### Get avail mem
 get_avail_mem() {
     grep "MemTotal" /proc/meminfo | awk '{print $2}'
@@ -83,10 +109,10 @@ get_avail_mem() {
 delete_apps() {
     for path in "${ALL_PATHS[@]}"; do
         if [[ ! -d "${path}" ]]; then
-            printf "'%s' does not exist! Delete skipped ...\n" "${path}"
+            printf "'%s' does not exist! Delete ... [SKIPPED]\n" "${path}"
         fi
         if [[ -d "${path}" ]]; then
-            printf "Deleting '%s' ... \n" "${path}"
+            printf "Deleting '%s' ... [DONE]\n" "${path}"
             rm -rf "${path}"
         fi
     done
@@ -108,18 +134,26 @@ clone_ustreamer() {
 clone_cstreamer() {
     ## Special handling because only supported on Raspberry Pi
     [[ -n "${CROWSNEST_UNATTENDED}" ]] || CROWSNEST_UNATTENDED="0"
-    if [[ "$(is_raspberry_pi)" = "0" ]] && [[ "${CROWSNEST_UNATTENDED}" = "0" ]]; then
-        printf "WARN: Cloning camera-streamer skipped! Device is not supported!"
+    if { [[ "$(is_raspberry_pi)" = "0" ]] ||
+    [[ "$(is_pi5)" = "1" ]] ||
+    [[ "$(is_ubuntu_arm)" = "1" ]]; } &&
+    [[ "${CROWSNEST_UNATTENDED}" = "0" ]]; then
+        printf "Device is not supported! Cloning camera-streamer ... [SKIPPED]\n"
         return
     fi
     if [[ -d "${BASE_CN_BIN_PATH}"/"${CSTREAMER_PATH}" ]]; then
         printf "%s already exist ... [SKIPPED]\n" "${CSTREAMER_PATH}"
         return
     fi
+    if [[ "$(is_bookworm)" = "1" ]]; then
+        printf "\nBookworm detected!\n"
+        printf "Using main branch of camera-streamer for Bookworm ...\n\n"
+        CROWSNEST_CAMERA_STREAMER_REPO_BRANCH="main"
+    fi
     git clone "${CROWSNEST_CAMERA_STREAMER_REPO_SHIP}" \
         -b "${CROWSNEST_CAMERA_STREAMER_REPO_BRANCH}" \
         "${BASE_CN_BIN_PATH}"/"${CSTREAMER_PATH}" \
-        "${CLONE_FLAGS[@]}" --recursive
+        "${CLONE_FLAGS[@]}" --recurse-submodules --shallow-submodules
 }
 
 ### Clone Apps
@@ -134,10 +168,14 @@ clone_apps() {
 ### Run 'make clean' in cloned folders
 clean_apps() {
     for app in "${ALL_PATHS[@]}"; do
-        printf "\nRunning 'make clean' in %s ... \n" "${app}"
-        pushd "${app}" &> /dev/null || exit 1
-        make clean
-        popd &> /dev/null || exit 1
+        if [[ ! -d "${app}" ]]; then
+            printf "'%s' does not exist! Clean ... [SKIPPED]\n" "${app}"
+        else 
+            printf "\nRunning 'make clean' in %s ... \n" "${app}"
+            pushd "${app}" &> /dev/null || exit 1
+            make clean
+            popd &> /dev/null || exit 1
+        fi
     done
     printf "\nRunning 'make clean' ... [DONE]\n"
 }

@@ -3,7 +3,9 @@
 #### crowsnest - A webcam Service for multiple Cams and Stream Services.
 ####
 #### Written by Stephan Wendel aka KwadFan <me@stephanwe.de>
-#### Copyright 2021 - till today
+#### Copyright 2021 - 2023
+#### Co-authored by Patrick Gehrsitz aka mryel00 <mryel00.github@gmail.com>
+#### Copyright 2023 - till today
 #### https://github.com/mainsail-crew/crowsnest
 ####
 #### This File is distributed under GPLv3
@@ -49,18 +51,9 @@ main() {
 
     [[ -n "${BASE_USER}" ]] || BASE_USER="${SUDO_USER}"
 
-
     if [[ "$(is_buster)" = "1" ]]; then
         not_supported_msg
         exit 1
-    fi
-
-    if [[ "$(is_raspbian)" = "1" ]]; then
-        link_pkglist_rpi
-    fi
-
-    if [[ "$(is_raspbian)" = "0" ]]; then
-        link_pkglist_generic
     fi
 
     welcome_msg
@@ -70,6 +63,31 @@ main() {
         status_msg "Running apt-get update first ..." "0"
     else
         status_msg "Running apt-get update first ..." "1"
+    fi
+
+    if [[ "${CROWSNEST_UNATTENDED}" != "1" ]]; then
+        msg "Doing some tests ...\n"
+        detect_existing_webcamd
+        if shallow_cs_dependencies_check; then
+            CN_INSTALL_CS="1"
+        else
+            CN_INSTALL_CS="0"
+        fi
+        status_msg "Doing some tests ..." "0"
+    else
+        if [[ "$(is_raspbian)" = "1" ]]; then
+            CN_INSTALL_CS="1"
+        else
+            CN_INSTALL_CS="0"
+        fi
+    fi
+
+    if [[ "${CN_INSTALL_CS}" = "1" ]]; then
+        msg "Installing with camera-streamer ...\n"
+        link_pkglist_rpi
+    else
+        msg "Installing without camera-streamer ...\n"
+        link_pkglist_generic
     fi
 
     source_pkglist_file
@@ -108,6 +126,12 @@ main() {
         status_msg "Install environment file ..." "1"
     fi
 
+    if [[ "$(is_speederpad)" = "1" ]]; then
+        msg "\nSpeederpad detected!"
+        msg "Add startup delay to environment file ...\n"
+        add_sleep_to_crowsnest_env
+    fi
+
     if install_logrotate_conf; then
         status_msg "Install logrotate configuration ..." "0"
     else
@@ -128,10 +152,23 @@ main() {
 
     add_group_video
 
+    if [[ "$(is_bookworm)" = "1" ]] && [[ "${CN_INSTALL_CS}" = "1" ]]; then
+        msg "\nBookworm detected!"
+        msg "Using main branch of camera-streamer for Bookworm ...\n"
+        CROWSNEST_CAMERA_STREAMER_REPO_BRANCH="main"
+    fi
+
     build_apps
 
     if [[ "${CROWSNEST_UNATTENDED}" = "0" ]]; then
         set_gpu_mem
+    fi
+
+    if [[ "$(is_dietpi)" = "1" ]]; then
+        msg "\nDietPi detected!"
+        msg "Adjust settings for camera-streamer ...\n"
+        dietpi_cs_settings
+        status_msg "Adjust settings for camera-streamer ..." "0"
     fi
 
     if [[ "${CROWSNEST_UNATTENDED}" = "0" ]]; then

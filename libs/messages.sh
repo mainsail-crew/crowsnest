@@ -34,18 +34,19 @@ function help_msg {
     echo -e "\t crowsnest [Options]"
     echo -e "\n\t\t-h Prints this help."
     echo -e "\n\t\t-v Prints Version of crowsnest."
-    echo -e "\n\t\t-c </path/to/configfile>\n\t\t\tPath to your webcam.conf\n"
+    echo -e "\n\t\t-c </path/to/configfile>\n\t\t\tPath to your webcam.conf"
+    echo -e "\n\t\t-s <sleep_seconds>\n\t\t\tDelay start \(in seconds\) after boot\n"
 }
 
 function deprecated_msg_1 {
     log_msg "Parameter 'streamer' is deprecated!"
-    log_msg "Please use mode: [ mjpg | multi ]"
+    log_msg "Please use mode: [ ustreamer | camera-streamer ]"
     log_msg "ERROR: Please update your crowsnest.conf! Stopped."
 }
 
 function unknown_mode_msg {
     log_msg "WARN: Unknown Mode configured!"
-    log_msg "WARN: Using 'mode: mjpg' as fallback!"
+    log_msg "WARN: Using 'mode: ustreamer' as fallback!"
 }
 
 ## v4l2_control lib

@@ -41,7 +41,7 @@ if [ "$#" -eq 0 ]; then
 fi
 
 ## Parse Args
-while getopts ":vhc:d" arg; do
+while getopts ":vhc:s:d" arg; do
     case "${arg}" in
         v )
             echo -e "\ncrowsnest Version: $(self_version)\n"
@@ -54,6 +54,15 @@ while getopts ":vhc:d" arg; do
         c )
             check_cfg "${OPTARG}"
             export CROWSNEST_CFG="${OPTARG}"
+        ;;
+        s )
+            if [[ "$(awk '{print $1}' /proc/uptime | cut -d '.' -f 1)" -lt "120" ]]; then
+                if [[ "${OPTARG}" ]]; then
+                    sleep "${OPTARG}"
+                else
+                    sleep 5
+                fi
+            fi
         ;;
         d )
             set -x
