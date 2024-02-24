@@ -46,13 +46,13 @@ class Ustreamer(Streamer):
         process,_,_ = await execute_command(
             ' '.join(cmd),
             error_log_pre=log_pre,
-            error_log_func=log_debug
+            error_log_func=self.custom_log
         )
 
         return process
     
     def custom_log(self, msg):
-        msg = re.sub(r'\[.*?\]', '', msg, count=1)
+        msg = re.sub(r'-- (.*?.*?) \[.*?\] --', r'\1', msg)
         log_debug(msg)
 
 
