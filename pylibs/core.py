@@ -1,9 +1,8 @@
 import importlib
 import asyncio
-import time
-import os
+import subprocess
 
-from .logger import log_debug, log_error
+from . import logger
 # import logging
 
 # Dynamically import module
@@ -28,8 +27,8 @@ async def log_subprocess_output(stream, log_func, line_prefix = ''):
 
 async def execute_command(
         command: str,
-        info_log_func = log_debug,
-        error_log_func = log_error,
+        info_log_func = logger.log_debug,
+        error_log_func = logger.log_error,
         info_log_pre = '',
         error_log_pre = ''):
 
@@ -61,3 +60,9 @@ async def execute_command(
     # Wait for the output handling tasks to finish
     #await stdout_task
     #await stderr_task
+
+def execute_shell_command(command: str):
+    try:
+        return subprocess.check_output(command, shell=True).decode('utf-8').strip()
+    except subprocess.CalledProcessError as e:
+        return ''

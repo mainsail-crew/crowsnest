@@ -1,7 +1,12 @@
 import logging
-import re # log_config
-import os, subprocess # log_host_info
-import sys # log_cams
+# log_config
+import re
+# log_host_info
+import os
+from . import core
+# log_cams
+import sys
+from .hwhandler import get_avail_usb_cams
 
 DEV = 10
 DEBUG = 15
@@ -36,11 +41,16 @@ def log_debug(msg, prefix='DEBUG: '):
 def log_error(msg, prefix='ERROR: '):
     logging.error(prefix + msg)
 
+def log_multiline(msg, log_func, *args):
+    lines = msg.split('\n')
+    for line in lines:
+        log_func(line, *args)
+
 
 def log_initial():
     log_quiet('crowsnest - A webcam Service for multiple Cams and Stream Services.')
     command = 'git describe --always --tags'
-    version = subprocess.check_output(command, shell=True).decode('utf-8').strip()
+    version = core.execute_shell_command(command)
     log_quiet(f'Version: {version}')
     log_quiet('Prepare Startup ...')
 
@@ -52,9 +62,7 @@ def log_config(config_path):
         config_txt = re.sub(r'#.*$', "", config_txt, flags=re.MULTILINE)
         config_txt = config_txt.strip()
         # Split the config file into lines
-        lines = config_txt.split('\n')
-        for line in lines:
-            log_info(5*' ' + line.strip(), '')
+        log_multiline(config_txt, log_info, '\t\t')
 
 def log_host_info():
     log_info("Host Information:")
@@ -85,10 +93,10 @@ def log_host_info():
     ### Host Machine Infos
     # Host model
     command = 'grep "Model" /proc/cpuinfo | cut -d\':\' -f2'
-    model = subprocess.check_output(command, shell=True).decode('utf-8').strip()
+    model = core.execute_shell_command(command)
     if model == '':
         command = 'grep "model name" /proc/cpuinfo | cut -d\':\' -f2 | awk NR==1'
-        model = subprocess.check_output(command, shell=True).decode('utf-8').strip()
+        model = core.execute_shell_command(command)
     if model == '':
         model = 'Unknown'
     log_info(f'Model: {model}', log_pre)
@@ -100,30 +108,36 @@ def log_host_info():
     # Avail mem
     #  psutil.virtual_memory().total
     command = 'grep "MemTotal:" /proc/meminfo | awk \'{print $2" "$3}\''
-    memtotal = subprocess.check_output(command, shell=True).decode('utf-8').strip()
+    memtotal = core.execute_shell_command(command)
     log_info(f'Available Memory: {memtotal}', log_pre)
 
     # Avail disk size
     # Alternative psutil.disk_usage('/').total
     command = 'LC_ALL=C df -h / | awk \'NR==2 {print $4" / "$2}\''
-    disksize = subprocess.check_output(command, shell=True).decode('utf-8').strip()
+    disksize = core.execute_shell_command(command)
     log_info(f'Diskspace (avail. / total): {disksize}', log_pre)
 
 def log_cams():
-    log_info("INFO: Detect available Devices")
+    log_info("Detect available Devices")
     libcamera = 0
-    v4l = 0
+    v4l = get_avail_usb_cams()
     legacy = 0
-    total = libcamera + legacy + v4l
+    total = libcamera + legacy + len(v4l.keys())
 
     if total == 0:
         log_error("No usable Devices Found. Stopping ")
         sys.exit()
 
-    log_info(f"Found {total} Devices (V4L: {v4l}, libcamera: {libcamera}, Legacy: {legacy})")
+    log_info(f"Found {total} total available Device(s)")
     if libcamera > 0:
         log_info(f"Detected 'libcamera' device -> {-1}")
     if legacy > 0:
         pass
-    if v4l > 0:
-        pass
+    if not v4l.keys().empty():
+        log_info(f"Found {len(v4l.keys())} available v4l2 (UVC) camera(s)")
+        for cam in v4l.keys():
+            log_info(f"{cam} -> {v4l[cam]['realpath']}", '')
+            log_info(f"Supported Formats:", '')
+            log_multiline(v4l[cam]['formats'], log_info, '\t\t')
+            log_info(f"Supported Controls:", '')
+            log_multiline(v4l[cam]['v4l2ctrls'], log_info, '\t\t')

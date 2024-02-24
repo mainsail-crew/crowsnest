@@ -1,7 +1,6 @@
 import argparse
 import configparser
 from pylibs.crowsnest import Crowsnest
-from pylibs.section import Section
 from pylibs.core import get_module_class
 import pylibs.logger as logger
 
@@ -62,8 +61,12 @@ async def start_processes():
 
 logger.setup_logging(args.log_path)
 logger.log_initial()
+
 parse_config()
+
 logger.log_host_info()
 logger.log_config(args.config)
+logger.log_cams()
+
 # Run async to wait for all tasks to finish
 asyncio.run(start_processes())
