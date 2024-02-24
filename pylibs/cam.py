@@ -3,8 +3,7 @@ from .section import Section
 from .parameter import Parameter
 from .core import get_module_class
 
-import copy
-import logging
+from . import logger
 
 class Cam(Section):
     keyword = 'cam'
@@ -13,7 +12,7 @@ class Cam(Section):
         super().__init__(name)
 
         self.parameters.update({
-            'mode': Parameter()
+            'mode': Parameter(str)
         })
 
         self.streamer = None
@@ -21,6 +20,7 @@ class Cam(Section):
     def parse_config(self, config_section: SectionProxy, *args, **kwargs):
         # Dynamically import module
         mode = config_section["mode"].split()[0]
+        self.parameters["mode"] = mode
         mode_class = get_module_class('pylibs.streamer', mode)
         self.streamer = mode_class(self.name)
         self.streamer.parse_config(config_section)
@@ -32,7 +32,7 @@ class Cam(Section):
         try:
             process = await self.streamer.execute()
             await process.wait()
-            logging.error(f'Start of {self.parameters["mode"].value} [cam {self.name}] failed!')
+            logger.log_error(f'Start of {self.parameters["mode"].value} [cam {self.name}] failed!')
         except Exception as e:
             pass
 

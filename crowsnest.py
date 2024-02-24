@@ -44,7 +44,6 @@ async def start_processes():
             section_object.parse_config(config[section])
             task = asyncio.create_task(section_object.execute())
             sec_exec_tasks.add(task)
-            task.add_done_callback(sec_exec_tasks.discard)
 
             if section_object == None:
                 print(f"Section [{section}] couldn't get parsed")

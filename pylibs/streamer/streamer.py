@@ -13,8 +13,8 @@ class Streamer(Section):
         self.parameters.update({
             'mode': Parameter(str),
             'port': Parameter(int),
-            'device': Parameter(),
-            'resolution': Parameter(),
+            'device': Parameter(str),
+            'resolution': Parameter(str),
             'max_fps': Parameter(int),
             'no_proxy': Parameter(bool, False),
             'custom_flags': Parameter(str, ''),
