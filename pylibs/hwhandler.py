@@ -5,7 +5,7 @@ from . import core
 def get_avail_usb_cams() -> dict:
     avail_cmd='find /dev/v4l/by-id/ -iname "*index0" 2> /dev/null'
     avail = core.execute_shell_command(avail_cmd)
-    count = avail.count('\n')
+    count = len(avail.readlines())
     cams = {}
     if count > 0:
         for cam_path in avail.split('\n'):
