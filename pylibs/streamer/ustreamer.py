@@ -1,7 +1,8 @@
 from configparser import SectionProxy
 from .streamer import Streamer
 from ..parameter import Parameter
-from ..core import execute_command, log_debug
+from ..core import execute_command
+from ..logger import log_debug
 
 class Ustreamer(Streamer):
     keyword = 'ustreamer'
@@ -42,7 +43,11 @@ class Ustreamer(Streamer):
         cmd = streamer_args
         log_pre = f'ustreamer [cam {self.name}]: '
 
-        process,_,_ = await execute_command(' '.join(cmd), error_log_pre=log_pre, error_log_func=log_debug)
+        process,_,_ = await execute_command(
+            ' '.join(cmd),
+            error_log_pre=log_pre,
+            error_log_func=log_debug
+        )
 
         return process
 

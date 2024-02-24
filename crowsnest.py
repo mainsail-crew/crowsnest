@@ -3,54 +3,28 @@ import configparser
 from pylibs.crowsnest import Crowsnest
 from pylibs.section import Section
 from pylibs.core import get_module_class
+import pylibs.logger as logger
 
-import logging
 import asyncio
 
 parser = argparse.ArgumentParser(
     prog='Crowsnest',
     description='Crowsnest - A webcam daemon for Raspberry Pi OS distributions like MainsailOS'
 )
+config = configparser.ConfigParser()
 
 parser.add_argument('-c', '--config', help='Path to config file', required=True)
 parser.add_argument('-l', '--log_path', help='Path to log file', required=True)
 
 args = parser.parse_args()
 
-def setup_logging():
-    logging.basicConfig(
-        filename=args.log_path,
-        encoding='utf-8',
-        level=logging.INFO,
-        format='[%(asctime)s] %(levelname)s: %(message)s',
-        datefmt='%d/%m/%y %H:%M:%S'
-    )
-
-    # Change DEBUG to DEB and add custom DEBUG logging level.
-    logging.addLevelName(10, 'DEV')
-    logging.addLevelName(15, 'DEBUG')
-
-# Read config
-config_path = args.config
-
-config = configparser.ConfigParser()
-config.read(config_path)
-
-# Example of printing section and values
-# for section in config.sections():
-#     print("Section: " + section)
-#     for key in config[section]:
-#         print('Key: '+key+'\t\tValue: '+config[section][key].replace(' ', '').split('#')[0])
-# print(config)
-
-
-crowsnest = Crowsnest('crowsnest')
-crowsnest.parse_config(config['crowsnest'])
-logging.getLogger().setLevel(crowsnest.parameters['log_level'].value)
-
-print('Log Level: ' + crowsnest.parameters['log_level'].value)
-
-print(crowsnest.name)
+def parse_config():
+    global crowsnest, config, args
+    config_path = args.config
+    config.read(config_path)
+    crowsnest = Crowsnest('crowsnest')
+    crowsnest.parse_config(config['crowsnest'])
+    logger.set_log_level(crowsnest.parameters['log_level'].value)
 
 async def start_processes():
     sec_objs = []
@@ -77,7 +51,7 @@ async def start_processes():
                 print(f"Section [{section}] couldn't get parsed")
             sec_objs.append(section_object)
         for task in sec_exec_tasks:
-            if task != None:
+            if task is not None:
                 await task
     except Exception as e:
         print(e)
@@ -86,7 +60,10 @@ async def start_processes():
             if task != None:
                 task.cancel()
 
-setup_logging()
-
-# Run async as it will wait for all tasks to finish
+logger.setup_logging(args.log_path)
+logger.log_initial()
+parse_config()
+logger.log_host_info()
+logger.log_config(args.config)
+# Run async to wait for all tasks to finish
 asyncio.run(start_processes())

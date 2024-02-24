@@ -18,7 +18,7 @@ class Crowsnest(Section):
         super().parse_config(section)
         log_level = self.parameters['log_level'].value.lower()
         if log_level == 'quiet':
-            self.parameters['log_level'].value = 'WARNING'
+            self.parameters['log_level'].value = 'QUIET'
         elif log_level == 'debug':
             self.parameters['log_level'].value = 'DEBUG'
         elif log_level == 'dev':

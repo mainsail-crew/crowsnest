@@ -1,8 +1,10 @@
 import importlib
 import asyncio
-import logging
 import time
 import os
+
+from .logger import log_debug, log_error
+# import logging
 
 # Dynamically import module
 # Requires module to have a load_module() function,
@@ -26,8 +28,8 @@ async def log_subprocess_output(stream, log_func, line_prefix = ''):
 
 async def execute_command(
         command: str,
-        info_log_func = logging.info,
-        error_log_func = logging.error,
+        info_log_func = log_debug,
+        error_log_func = log_error,
         info_log_pre = '',
         error_log_pre = ''):
 
@@ -59,6 +61,3 @@ async def execute_command(
     # Wait for the output handling tasks to finish
     #await stdout_task
     #await stderr_task
-
-def log_debug(msg):
-    logging.log(15, msg)
