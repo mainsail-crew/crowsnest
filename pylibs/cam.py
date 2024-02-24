@@ -20,7 +20,7 @@ class Cam(Section):
     def parse_config(self, config_section: SectionProxy, *args, **kwargs):
         # Dynamically import module
         mode = config_section["mode"].split()[0]
-        self.parameters["mode"] = mode
+        self.parameters["mode"].set_value(mode)
         mode_class = get_module_class('pylibs.streamer', mode)
         self.streamer = mode_class(self.name)
         self.streamer.parse_config(config_section)
