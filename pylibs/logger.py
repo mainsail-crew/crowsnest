@@ -133,7 +133,7 @@ def log_cams():
         log_info(f"Detected 'libcamera' device -> {-1}")
     if legacy > 0:
         pass
-    if not v4l.keys().empty():
+    if v4l:
         log_info(f"Found {len(v4l.keys())} available v4l2 (UVC) camera(s)")
         for cam in v4l.keys():
             log_info(f"{cam} -> {v4l[cam]['realpath']}", '')

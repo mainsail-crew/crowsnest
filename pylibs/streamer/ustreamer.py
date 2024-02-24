@@ -1,6 +1,6 @@
-from configparser import SectionProxy
+import re
+
 from .streamer import Streamer
-from ..parameter import Parameter
 from ..core import execute_command
 from ..logger import log_debug
 
@@ -50,6 +50,10 @@ class Ustreamer(Streamer):
         )
 
         return process
+    
+    def custom_log(self, msg):
+        msg = re.sub(r'\[.*?\]', '', msg, count=1)
+        log_debug(msg)
 
 
 def load_module():
