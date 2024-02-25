@@ -7,7 +7,7 @@ import os
 from . import core
 # log_cams
 import sys
-from .hwhandler import get_avail_uvc_dev, get_avail_libcamera
+from .hwhandler import get_avail_uvc_dev, get_avail_libcamera, get_avail_legacy
 
 DEV = 10
 DEBUG = 15
@@ -73,12 +73,9 @@ def log_host_info():
 
     ### OS Infos
     # OS Version
-    with open('/etc/os-release', 'r') as file:
-        lines = file.readlines()
-        for line in lines:
-            if line.startswith('PRETTY_NAME'):
-                distribution = line.strip().split('=')[1].strip('"')
-                log_info(f'Distribution: {distribution}', log_pre)
+    distribution = grep('/etc/os-release', 'PRETTY_NAME')
+    distribution = distribution.strip().split('=')[1].strip('"')
+    log_info(f'Distribution: {distribution}', log_pre)
     
     # Release Version of MainsailOS (if file present)
     try:
@@ -95,11 +92,9 @@ def log_host_info():
 
     ### Host Machine Infos
     # Host model
-    command = 'grep "Model" /proc/cpuinfo | cut -d\':\' -f2'
-    model = core.execute_shell_command(command)
+    model = grep('/proc/cpuinfo', 'Model').split(':')[1].strip()
     if model == '':
-        command = 'grep "model name" /proc/cpuinfo | cut -d\':\' -f2 | awk NR==1'
-        model = core.execute_shell_command(command)
+        model == grep('/proc/cpuinfo', 'model name').split(':')[1].strip()
     if model == '':
         model = 'Unknown'
     log_info(f'Model: {model}', log_pre)
@@ -110,8 +105,7 @@ def log_host_info():
 
     # Avail mem
     # psutil.virtual_memory().total
-    command = 'grep "MemTotal:" /proc/meminfo | awk \'{print $2" "$3}\''
-    memtotal = core.execute_shell_command(command)
+    memtotal = grep('/proc/meminfo', 'MemTotal:').split(':')[1].strip()
     log_info(f'Available Memory: {memtotal}', log_pre)
 
     # Avail disk size
@@ -120,12 +114,20 @@ def log_host_info():
     disksize = core.execute_shell_command(command)
     log_info(f'Diskspace (avail. / total): {disksize}', log_pre)
 
+def grep(path: str, search: str) -> str:
+    with open(path, 'r') as file:
+        lines = file.readlines()
+        for line in lines:
+            if search in line:
+                return line
+    return ''
+
 def log_cams():
     log_info("Detect available Devices")
     libcamera = get_avail_libcamera()
     uvc = get_avail_uvc_dev()
-    legacy = 0
-    total = len(libcamera.keys()) + legacy + len(uvc.keys())
+    legacy = get_avail_legacy()
+    total = len(libcamera.keys()) + len(legacy.keys()) + len(uvc.keys())
 
     if total == 0:
         log_error("No usable Devices Found. Stopping ")
@@ -136,12 +138,17 @@ def log_cams():
         log_info(f"Found {len(libcamera.keys())} available 'libcamera' device(s)")
         for path, properties in libcamera.items():
             log_libcamera_dev(path, properties)
-    if legacy > 0:
-        pass
+    if legacy:
+        log_info(f"Detected 'Raspicam' Device -> ${legacy.keys()[0]}")
+        _, properties = legacy.items()[0]
+        log_uvc_formats(properties)
+        log_uvc_v4l2ctrls(properties)
     if uvc:
         log_info(f"Found {len(uvc.keys())} available v4l2 (UVC) camera(s)")
         for path, properties in uvc.items():
-            log_uvc_dev(path, properties)
+            log_info(f"{path} -> {properties['realpath']}", '')
+            log_uvc_formats(properties)
+            log_uvc_v4l2ctrls(properties)
 
 def log_libcamera_dev(path: str, properties: dict) -> str:
     log_info(f"Detected 'libcamera' device -> {path}")
@@ -162,12 +169,13 @@ def log_libcamera_dev(path: str, properties: dict) -> str:
         log_info("apt package 'python3-libcamera' is not installed! \
 Make sure to install it to log the controls!", indentation)
 
-def get_type_str(obj):
+def get_type_str(obj) -> str:
     return str(type(obj)).split('\'')[1]
 
-def log_uvc_dev(path: str, properties: dict) -> str:
-    log_info(f"{path} -> {properties['realpath']}", '')
+def log_uvc_formats(properties: dict) -> None:
     log_info(f"Supported Formats:", '')
     log_multiline(properties['formats'], log_info, indentation)
+
+def log_uvc_v4l2ctrls(properties: dict) -> None:
     log_info(f"Supported Controls:", '')
     log_multiline(properties['v4l2ctrls'], log_info, indentation)

@@ -5,6 +5,7 @@ import re
 from . import core
 
 def get_avail_uvc_dev() -> dict:
+    # TODO: Change to use syslib
     avail_cmd='find /dev/v4l/by-id/ -iname "*index0" 2> /dev/null'
     avail = core.execute_shell_command(avail_cmd)
     cams = {}
@@ -69,6 +70,7 @@ def get_libcamera_controls(camera_path: str) -> list:
             for k, v in cam.controls.items():
                 def rectangle_to_tuple(rectangle):
                     return (rectangle.x, rectangle.y, rectangle.width, rectangle.height)
+
                 if isinstance(v.min, Rectangle):
                     ctrls[k.name] = {
                         'min': rectangle_to_tuple(v.min),
@@ -85,4 +87,28 @@ def get_libcamera_controls(camera_path: str) -> list:
         pass
     return ctrls
 
-
+def get_avail_legacy() -> dict:
+    cmd = shutil.which('vcgencmd')
+    legacy = {}
+    if not cmd:
+        return legacy
+    count_cmd = f'{cmd} get_camera'
+    count = core.execute_shell_command(count_cmd)
+    # Gets the number behind detected: "supported=1 detected=1, libcamera interfaces=0"
+    if not count:
+        return legacy
+    count = count.split('=')[2].split(',')[0]
+    if count == '0':
+        return legacy
+    v4l2_cmd = 'v4l2-ctl --list-devices'
+    v4l2 = core.execute_shell_command(v4l2_cmd) 
+    legacy_path = ''
+    lines = v4l2.split('\n')
+    for i in range(len(lines)):
+        if 'mmal' in lines[i]:
+            legacy_path = lines[i+1]
+            break
+    legacy[legacy_path] = {}
+    legacy[legacy_path]['formats'] = get_uvc_formats(legacy_path)
+    legacy[legacy_path]['v4l2ctrls'] = get_uvc_v4l2ctrls(legacy_path)
+    return legacy

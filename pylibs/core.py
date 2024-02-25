@@ -1,6 +1,7 @@
 import importlib
 import asyncio
 import subprocess
+import math
 
 from . import logger
 # import logging
@@ -71,4 +72,4 @@ def execute_shell_command(command: str, strip: bool = True) -> str:
         return ''
 
 def bytes_to_gigabytes(value: int) -> int:
-    return int(value / 1024 / 1024 / 1024)
+    return math.round(value / 1024 / 1024 / 1024)
