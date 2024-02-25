@@ -1,4 +1,5 @@
 import logging
+import shutil
 # log_config
 import re
 # log_host_info
@@ -6,11 +7,13 @@ import os
 from . import core
 # log_cams
 import sys
-from .hwhandler import get_avail_usb_cams
+from .hwhandler import get_avail_uvc_dev, get_avail_libcamera
 
 DEV = 10
 DEBUG = 15
 QUIET = 25
+
+indentation = 6*' '
 
 def setup_logging(log_path):
     logging.basicConfig(
@@ -62,7 +65,7 @@ def log_config(config_path):
         config_txt = re.sub(r'#.*$', "", config_txt, flags=re.MULTILINE)
         config_txt = config_txt.strip()
         # Split the config file into lines
-        log_multiline(config_txt, log_info, '\t\t')
+        log_multiline(config_txt, log_info, indentation)
 
 def log_host_info():
     log_info("Host Information:")
@@ -106,38 +109,65 @@ def log_host_info():
     log_info(f"Available CPU Cores: {cpu_count}", log_pre)
 
     # Avail mem
-    #  psutil.virtual_memory().total
+    # psutil.virtual_memory().total
     command = 'grep "MemTotal:" /proc/meminfo | awk \'{print $2" "$3}\''
     memtotal = core.execute_shell_command(command)
     log_info(f'Available Memory: {memtotal}', log_pre)
 
     # Avail disk size
-    # Alternative psutil.disk_usage('/').total
+    # Alternative shutil.disk_usage.total
     command = 'LC_ALL=C df -h / | awk \'NR==2 {print $4" / "$2}\''
     disksize = core.execute_shell_command(command)
     log_info(f'Diskspace (avail. / total): {disksize}', log_pre)
 
 def log_cams():
     log_info("Detect available Devices")
-    libcamera = 0
-    v4l = get_avail_usb_cams()
+    libcamera = get_avail_libcamera()
+    uvc = get_avail_uvc_dev()
     legacy = 0
-    total = libcamera + legacy + len(v4l.keys())
+    total = len(libcamera.keys()) + legacy + len(uvc.keys())
 
     if total == 0:
         log_error("No usable Devices Found. Stopping ")
         sys.exit()
 
     log_info(f"Found {total} total available Device(s)")
-    if libcamera > 0:
-        log_info(f"Detected 'libcamera' device -> {-1}")
+    if libcamera:
+        log_info(f"Found {len(libcamera.keys())} available 'libcamera' device(s)")
+        for path, properties in libcamera.items():
+            log_libcamera_dev(path, properties)
     if legacy > 0:
         pass
-    if v4l:
-        log_info(f"Found {len(v4l.keys())} available v4l2 (UVC) camera(s)")
-        for cam in v4l.keys():
-            log_info(f"{cam} -> {v4l[cam]['realpath']}", '')
-            log_info(f"Supported Formats:", '')
-            log_multiline(v4l[cam]['formats'], log_info, '\t\t')
-            log_info(f"Supported Controls:", '')
-            log_multiline(v4l[cam]['v4l2ctrls'], log_info, '\t\t')
+    if uvc:
+        log_info(f"Found {len(uvc.keys())} available v4l2 (UVC) camera(s)")
+        for path, properties in uvc.items():
+            log_uvc_dev(path, properties)
+
+def log_libcamera_dev(path: str, properties: dict) -> str:
+    log_info(f"Detected 'libcamera' device -> {path}")
+    log_info(f"Advertised Formats:", '')
+    resolutions = properties['resolutions']
+    for res in resolutions:
+        log_info(f"{res}", indentation)
+    log_info(f"Supported Controls:", '')
+    controls = properties['controls']
+    if controls:
+        for name, value in controls.items():
+            min, max, default = value.values()
+            str_first = f"{name} ({get_type_str(min)}):"
+            str_second = f"min={min} max={max} default={default}"
+            str_indent = (30 - len(str_first)) * ' '
+            log_info(str_first + str_indent + str_second, indentation)
+    else:
+        log_info("apt package 'python3-libcamera' is not installed! \
+Make sure to install it to log the controls!", indentation)
+
+def get_type_str(obj):
+    return str(type(obj)).split('\'')[1]
+
+def log_uvc_dev(path: str, properties: dict) -> str:
+    log_info(f"{path} -> {properties['realpath']}", '')
+    log_info(f"Supported Formats:", '')
+    log_multiline(properties['formats'], log_info, indentation)
+    log_info(f"Supported Controls:", '')
+    log_multiline(properties['v4l2ctrls'], log_info, indentation)

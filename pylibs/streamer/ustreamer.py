@@ -14,7 +14,7 @@ class Ustreamer(Streamer):
         if Ustreamer.binary_path is None:
             Ustreamer.binary_path = 'bin/ustreamer/ustreamer'
         self.binary_path = Ustreamer.binary_path
-        
+
     async def execute(self):
         if not super().execute():
             return None
@@ -36,7 +36,7 @@ class Ustreamer(Streamer):
             '--format', 'MJPEG',
             '--encoder', 'HW'
         ]
-        
+
         # custom flags
         streamer_args += self.parameters['custom_flags'].value.split()
 
@@ -50,7 +50,7 @@ class Ustreamer(Streamer):
         )
 
         return process
-    
+
     def custom_log(self, msg: str):
         if msg.endswith('==='):
             msg = msg[:-28]

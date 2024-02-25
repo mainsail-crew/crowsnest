@@ -61,8 +61,14 @@ async def execute_command(
     #await stdout_task
     #await stderr_task
 
-def execute_shell_command(command: str):
+def execute_shell_command(command: str, strip: bool = True) -> str:
     try:
-        return subprocess.check_output(command, shell=True).decode('utf-8').strip()
+        output = subprocess.check_output(command, shell=True).decode('utf-8')
+        if strip:
+            output = output.strip()
+        return output
     except subprocess.CalledProcessError as e:
         return ''
+
+def bytes_to_gigabytes(value: int) -> int:
+    return int(value / 1024 / 1024 / 1024)
