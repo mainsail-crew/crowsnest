@@ -28,6 +28,7 @@ versioncontrol() {
         local cur_ver avail_ver
         pushd "${BASE_CN_PATH}"/bin/ustreamer &> /dev/null || exit 1
             avail_ver="$(git describe --tags --always)"
+            # shellcheck disable=SC2153
             cur_ver="v$(${UST_BIN} -v)"
             if [[ "${cur_ver}" == "${avail_ver}" ]]; then
                 vc_log_msg "ustreamer is up to date. (${cur_ver})"
