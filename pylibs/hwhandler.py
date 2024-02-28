@@ -5,21 +5,25 @@ import re
 from . import core
 
 def get_avail_uvc_dev() -> dict:
-    # TODO: Change to use syslib
-    avail_cmd='find /dev/v4l/by-id/ -iname "*index0" 2> /dev/null'
-    avail = core.execute_shell_command(avail_cmd)
+    uvc_path = '/dev/v4l/by-id/'
+    avail_uvc = []
+    for file in os.listdir(uvc_path):
+        path = os.path.join(uvc_path, file)
+        if os.path.islink(path) and path.endswith("index0"):
+            avail_uvc.append(path)
     cams = {}
-    if avail:
-        for cam_path in avail.split('\n'):
-            cams[cam_path] = {}
-            cams[cam_path]['realpath'] = os.path.realpath(cam_path)
-            cams[cam_path]['formats'] = get_uvc_formats(cam_path)
-            cams[cam_path]['v4l2ctrls'] = get_uvc_v4l2ctrls(cam_path)
+    for cam_path in avail_uvc:
+        cams[cam_path] = {}
+        cams[cam_path]['realpath'] = os.path.realpath(cam_path)
+        cams[cam_path]['formats'] = get_uvc_formats(cam_path)
+        cams[cam_path]['v4l2ctrls'] = get_uvc_v4l2ctrls(cam_path)
     return cams
 
 def get_uvc_formats(cam_path: str) -> str:
-    command = f'v4l2-ctl -d {cam_path} --list-formats-ext | sed "1,3d"'
+    command = f'v4l2-ctl -d {cam_path} --list-formats-ext'
     formats = core.execute_shell_command(command)
+    # Remove first 3 lines
+    formats = '\n'.join(formats.split('\n')[3:])
     return formats
 
 def get_uvc_v4l2ctrls(cam_path: str) -> str:
@@ -106,7 +110,7 @@ def get_avail_legacy() -> dict:
     lines = v4l2.split('\n')
     for i in range(len(lines)):
         if 'mmal' in lines[i]:
-            legacy_path = lines[i+1]
+            legacy_path = lines[i+1].strip()
             break
     legacy[legacy_path] = {}
     legacy[legacy_path]['formats'] = get_uvc_formats(legacy_path)

@@ -69,7 +69,7 @@ def log_config(config_path):
 
 def log_host_info():
     log_info("Host Information:")
-    log_pre = "Host Info: "
+    log_pre = indentation #"Host Info: "
 
     ### OS Infos
     # OS Version
@@ -139,10 +139,10 @@ def log_cams():
         for path, properties in libcamera.items():
             log_libcamera_dev(path, properties)
     if legacy:
-        log_info(f"Detected 'Raspicam' Device -> ${legacy.keys()[0]}")
-        _, properties = legacy.items()[0]
-        log_uvc_formats(properties)
-        log_uvc_v4l2ctrls(properties)
+        for path, properties in legacy.items():
+            log_info(f"Detected 'Raspicam' Device -> {path}")
+            log_uvc_formats(properties)
+            log_uvc_v4l2ctrls(properties)
     if uvc:
         log_info(f"Found {len(uvc.keys())} available v4l2 (UVC) camera(s)")
         for path, properties in uvc.items():
@@ -161,9 +161,9 @@ def log_libcamera_dev(path: str, properties: dict) -> str:
     if controls:
         for name, value in controls.items():
             min, max, default = value.values()
-            str_first = f"{name} ({get_type_str(min)}):"
+            str_first = f"{name} ({get_type_str(min)})"
             str_second = f"min={min} max={max} default={default}"
-            str_indent = (30 - len(str_first)) * ' '
+            str_indent = (30 - len(str_first)) * ' ' + ': '
             log_info(str_first + str_indent + str_second, indentation)
     else:
         log_info("apt package 'python3-libcamera' is not installed! \
