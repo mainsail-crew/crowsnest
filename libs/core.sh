@@ -82,11 +82,15 @@ function check_dep {
 
 function check_apps {
     local cstreamer ustreamer
-    ustreamer="bin/ustreamer/ustreamer"
+    ustreamer_base="bin/ustreamer"
+    ustreamer="$(find ${BASE_CN_PATH}/${ustreamer_base} \
+                -iname 'ustreamer.bin' 2> /dev/null | sed '1q')"
     cstreamer="bin/camera-streamer/camera-streamer"
 
-    if [[ -x "${BASE_CN_PATH}/${ustreamer}" ]]; then
-        log_msg "Dependency: '${ustreamer##*/}' found in ${ustreamer}."
+    if [[ -x "${ustreamer}" ]]; then
+        log_msg "Dependency: '${ustreamer##*/}' found in ${ustreamer_base}/${ustreamer##*/}."
+        UST_BIN="${ustreamer}"
+        declare -r UST_BIN
     else
         log_msg "Dependency: '${ustreamer##*/}' not found. Exiting!"
         exit 1
