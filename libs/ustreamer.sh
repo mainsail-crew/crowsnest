@@ -31,7 +31,8 @@ run_mjpg() {
 run_ustreamer() {
     local cam_sec ust_bin dev pt res fps cstm start_param
     cam_sec="${1}"
-    ust_bin="${BASE_CN_PATH}/bin/ustreamer/ustreamer"
+    # shellcheck disable=SC2153
+    ust_bin="${UST_BIN}"
     dev="$(get_param "cam ${cam_sec}" device)"
     pt="$(get_param "cam ${cam_sec}" port)"
     res="$(get_param "cam ${cam_sec}" resolution)"
