@@ -2,6 +2,11 @@
 # Changelog
 All notable changes to Crowsnest will be documented in this file.
 
+## [4.1.5](https://github.com/mainsail-crew/crowsnest/releases/tag/v4.1.5) - 2024-02-28
+### Bug Fixes and Improvements
+
+- Fix ustreamer binary path for v5.52 changes ([#245](https://github.com/mainsail-crew/crowsnest/pull/245))
+
 ## [4.1.4](https://github.com/mainsail-crew/crowsnest/releases/tag/v4.1.4) - 2024-02-17
 ### Bug Fixes and Improvements
 
