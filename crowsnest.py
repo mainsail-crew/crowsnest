@@ -43,11 +43,11 @@ async def start_processes():
             section_class = get_module_class('pylibs', section_keyword)
             section_name = ' '.join(section_header[1:])
             section_object = section_class(section_name)
-            section_object.parse_config(config[section])
-
-            if section_object == None:
-                print(f"Section [{section}] couldn't get parsed")
-            sec_objs.append(section_object)
+            if section_object.parse_config(config[section]):
+                sec_objs.append(section_object)
+                logger.log_info(f"Configuration of section [{section}] looks good. Continue ...")
+            else:
+                logger.log_error(f"Failed to parse config for section [{section}]!")
 
         for section_object in sec_objs:
             task = asyncio.create_task(section_object.execute())

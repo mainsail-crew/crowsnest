@@ -5,8 +5,8 @@ from .parameter import Parameter
 from . import logger
 
 class Section:
-    section_name = 'Section'
-    keyword = 'Section'
+    section_name = 'section'
+    keyword = 'section'
     available_sections = {}
     # Section looks like this:
     # [<keyword> <name>]
@@ -22,13 +22,13 @@ class Section:
         for parameter in config_section:
             value = config_section[parameter]
             if parameter not in self.parameters:
-                print(f"Warning: Parameter {parameter} is not supported by {self.keyword}")
+                print(f"Warning: Parameter '{parameter}' is not supported by {self.keyword}")
                 continue
             value = value.split('#')[0].strip()
             self.parameters[parameter].set_value(value)
         for parameter in self.parameters:
             if self.parameters[parameter].value is None:
-                logger.log_error(f"Parameter {parameter} not found in Section [{self.section_name} {self.name}]")
+                logger.log_error(f"Parameter '{parameter}' not found in section [{self.section_name} {self.name}]")
                 success = False
         return success
 

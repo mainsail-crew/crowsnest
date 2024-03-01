@@ -3,6 +3,7 @@ import shutil
 import re
 
 from . import core
+from .v4l2_control import get_uvc_formats, get_uvc_v4l2ctrls
 
 avail_cams = {
     'uvc': {},
@@ -25,18 +26,6 @@ def get_avail_uvc_dev() -> dict:
         cams[cam_path]['v4l2ctrls'] = get_uvc_v4l2ctrls(cam_path)
     avail_cams['uvc'].update(cams)
     return cams
-
-def get_uvc_formats(cam_path: str) -> str:
-    command = f'v4l2-ctl -d {cam_path} --list-formats-ext'
-    formats = core.execute_shell_command(command)
-    # Remove first 3 lines
-    formats = '\n'.join(formats.split('\n')[3:])
-    return formats
-
-def get_uvc_v4l2ctrls(cam_path: str) -> str:
-    command = f'v4l2-ctl -d {cam_path} --list-ctrls-menus'
-    v4l2ctrls = core.execute_shell_command(command)
-    return v4l2ctrls
 
 def has_device_mjpg_hw(cam_path: str) -> bool:
     global avail_cams

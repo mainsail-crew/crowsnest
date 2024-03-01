@@ -1,10 +1,11 @@
-from configparser import SectionProxy
 from .streamer import Streamer
 from ..parameter import Parameter
 from ..core import execute_command, get_executable
+from ..hwhandler import has_device_mjpg_hw
+from .. import logger
 
 class Camera_Streamer(Streamer):
-    keyword = 'ustreamer'
+    keyword = 'camera-streamer'
 
     def __init__(self, name: str = '') -> None:
         super().__init__(name)
@@ -16,38 +17,82 @@ class Camera_Streamer(Streamer):
 
         if Camera_Streamer.binary_path is None:
             Camera_Streamer.binary_path = get_executable(
-                ['ustreamer.bin', 'ustreamer'],
-                ['bin/ustreamer']
+                ['camera-streamer'],
+                ['bin/camera-streamer']
             )
-        self.binary_path = get_executable.binary_path
-        
+        self.binary_path = Camera_Streamer.binary_path
+
     async def execute(self):
-        host = '0.0.0.0' if self.parameters['no_proxy'].value else '127.0.0.1'
+        if not super().execute():
+            return None
+        if self.parameters['no_proxy'].value:
+            host = '0.0.0.0'
+            logger.log_info("Set to 'no_proxy' mode! Using 0.0.0.0!")
+        else:
+            host = '127.0.0.1'
         port = self.parameters['port'].value
-        res = self.parameters['resolution'].value
+        res = self.parameters['resolution'].value.split('x')
+        width = res[0]
+        height = res[1]
+
         fps = self.parameters['max_fps'].value
+        device = self.parameters['device'].value
 
         streamer_args = [
-            self.binary_path,
-            '--host', host,
-            '--port', str(port),
-            '--resolution', res,
-            '--desired-fps', str(fps),
-            # webroot & allow crossdomain requests
-            '--allow-origin=\*',
-            '--static', '"ustreamer-www"',
-            '--device', '/dev/video0',
-            '--format', 'MJPEG',
-            '--encoder', 'HW'
+            '--camera-path=' + device,
+            '--http-listen=' + host,
+            '--http-port=' + str(port),
+            '--camera-fps=' + str(fps),
+            '--camera-width=' + width,
+            '--camera-height=' + height,
+            '--camera-snapshot.height=' + height,
+            '--camera-video.height=' + height,
+            '--camera-stream.height=' + height,
+            '--camera-auto_reconnect=1'
         ]
-        
+
+        v4l2ctl = self.parameters['v4l2ctl'].value
+        if v4l2ctl:
+            prefix = "V4L2 Control: "
+            logger.log_quiet(f"Handling done by camera-streamer", prefix)
+            logger.log_quiet(f"Trying to set: {v4l2ctl}", prefix)
+            for ctrl in v4l2ctl.split(','):
+                streamer_args += [f'--camera-options={ctrl}']
+
+        if device.startswith('/base') and 'i2c' in device:
+            streamer_args += [
+                '--camera-type=libcamera',
+                '--camera-format=YUYV'
+            ]
+        elif device.startswith('/dev/video') or device.startswith('/dev/v4l'):
+            streamer_args += [
+                '--camera-type=v4l2'
+            ]
+            if has_device_mjpg_hw(device):
+                streamer_args += [
+                    '--camera-format=MJPEG'
+                ]
+
+        if self.parameters['enable_rtsp'].value:
+            streamer_args += [
+                '--rtsp-port=' + str(self.parameters['rtsp_port'].value)
+            ]
+
         # custom flags
         streamer_args += self.parameters['custom_flags'].value.split()
 
-        cmd = streamer_args
-        info_log_pre = f'DEBUG: ustreamer [{self.name}]: '
-        return await execute_command(' '.join(cmd), info_log_pre=info_log_pre)
-        #ustreamer = subprocess.Popen(['bin/ustreamer/ustreamer'] + streamer_args, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        cmd = self.binary_path + ' ' + ' '.join(streamer_args)
+        log_pre = f'ustreamer [cam {self.name}]: '
+
+        # logger.log_quiet(f"Starting ustreamer with device {device} ...")
+        logger.log_debug(f"Parameters: {' '.join(streamer_args)}")
+        process,_,_ = await execute_command(
+            cmd,
+            error_log_pre=log_pre,
+            error_log_func=logger.log_debug
+        )
+
+        return process
 
 
 def load_module():

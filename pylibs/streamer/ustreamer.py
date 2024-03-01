@@ -1,10 +1,10 @@
 import re
-import os
 
 from .streamer import Streamer
 from ..core import execute_command, get_executable
-from .. import logger
 from ..hwhandler import is_device_legacy, has_device_mjpg_hw
+from ..v4l2_control import set_v4l2ctrl
+from .. import logger
 
 class Ustreamer(Streamer):
     section_name = 'cam'
@@ -60,14 +60,18 @@ class Ustreamer(Streamer):
                     '--encoder', 'HW'
                 ]
 
+        v4l2ctl = self.parameters['v4l2ctl'].value
+        if v4l2ctl:
+            set_v4l2ctrl(f'[cam {self.name}]', device, v4l2ctl.split(','))
+
         # custom flags
         streamer_args += self.parameters['custom_flags'].value.split()
 
         cmd = self.binary_path + ' ' + ' '.join(streamer_args)
         log_pre = f'ustreamer [cam {self.name}]: '
 
-        logger.log_info(f"Starting ustreamer with Device {device} ...")
-        logger.log_debug(f"Parameters: {' '.join(streamer_args)}")
+        # logger.log_quiet(f"Starting ustreamer with device {device} ...")
+        logger.log_debug(log_pre + f"Parameters: {' '.join(streamer_args)}")
         process,_,_ = await execute_command(
             cmd,
             error_log_pre=log_pre,

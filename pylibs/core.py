@@ -76,7 +76,7 @@ def execute_shell_command(command: str, strip: bool = True) -> str:
 def bytes_to_gigabytes(value: int) -> int:
     return math.round(value / 1024 / 1024 / 1024)
 
-def get_executable(names: list, paths: list) -> str:
+def get_executable(names: list[str], paths: list[str]) -> str:
     for name in names:
         exec = shutil.which(name)
         if exec:

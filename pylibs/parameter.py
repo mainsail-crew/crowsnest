@@ -1,3 +1,5 @@
+from . import logger
+
 class Parameter:
     def __init__(self, type=str, default=None) -> None:
         self.type = type
@@ -12,7 +14,9 @@ class Parameter:
                     self.value = True
                 elif value.lower() == 'false':
                     self.value = False
+                else:
+                    logger.log_error(f"{value} is not 'true' or 'false'! Parameter ignored!")
             else:
                 self.value = self.type(value)
         except ValueError:
-            print(f"Error: {value} is not of type {self.type}")
+            logger.log_error(f"{value} is not of type {self.type}! Parameter ignored!")

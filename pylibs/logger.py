@@ -23,8 +23,8 @@ def setup_logging(log_path):
 def set_log_level(level):
     logging.getLogger().setLevel(level)
 
-def log_quiet(msg):
-    logging.log(QUIET, msg)
+def log_quiet(msg, prefix=''):
+    logging.log(QUIET, prefix + msg)
 
 def log_info(msg, prefix='INFO: '):
     logging.info(prefix + msg)

@@ -30,7 +30,8 @@ Run 'make update' inside the crowsnest directory to install and update everythin
     def parse_config(self, config_section: SectionProxy, *args, **kwargs) -> bool:
         success = super().parse_config(config_section, *args, **kwargs)
         if self.binary_path is None:
-            logger.log_multiline(self.missing_bin_txt % self.parameters['mode'].value, logger.log_error)
+            logger.log_multiline(self.missing_bin_txt % self.parameters['mode'].value,
+                                 logger.log_error)
             return False
         return success
     
@@ -38,6 +39,9 @@ Run 'make update' inside the crowsnest directory to install and update everythin
         if not os.path.exists(self.binary_path):
             logger.log_multiline(self.missing_bin_txt, logger.log_error)
             return False
+        logger.log_quiet(
+            f"Starting {self.keyword} with device {self.parameters['device'].value} ..."
+        )
         return True
 
 def load_module():
