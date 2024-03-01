@@ -3,6 +3,7 @@ import configparser
 from pylibs.crowsnest import Crowsnest
 from pylibs.core import get_module_class
 import pylibs.logger as logger
+import pylibs.logging as logging
 
 import asyncio
 
@@ -29,6 +30,7 @@ async def start_processes():
     sec_objs = []
     sec_exec_tasks = set()
 
+    logger.log_quiet("Try to start configured Cams / Services...")
     try:
         for section in config.sections():
             section_header = section.split(' ')
@@ -42,12 +44,15 @@ async def start_processes():
             section_name = ' '.join(section_header[1:])
             section_object = section_class(section_name)
             section_object.parse_config(config[section])
-            task = asyncio.create_task(section_object.execute())
-            sec_exec_tasks.add(task)
 
             if section_object == None:
                 print(f"Section [{section}] couldn't get parsed")
             sec_objs.append(section_object)
+
+        for section_object in sec_objs:
+            task = asyncio.create_task(section_object.execute())
+            sec_exec_tasks.add(task)
+            
         for task in sec_exec_tasks:
             if task is not None:
                 await task
@@ -59,13 +64,13 @@ async def start_processes():
                 task.cancel()
 
 logger.setup_logging(args.log_path)
-logger.log_initial()
+logging.log_initial()
 
 parse_config()
 
-logger.log_host_info()
-logger.log_config(args.config)
-logger.log_cams()
+logging.log_host_info()
+logging.log_config(args.config)
+logging.log_cams()
 
 # Run async to wait for all tasks to finish
 asyncio.run(start_processes())

@@ -2,6 +2,8 @@ import importlib
 import asyncio
 import subprocess
 import math
+import shutil
+import os
 
 from . import logger
 # import logging
@@ -73,3 +75,16 @@ def execute_shell_command(command: str, strip: bool = True) -> str:
 
 def bytes_to_gigabytes(value: int) -> int:
     return math.round(value / 1024 / 1024 / 1024)
+
+def get_executable(names: list, paths: list) -> str:
+    for name in names:
+        exec = shutil.which(name)
+        if exec:
+            return exec
+        for path in paths:
+            for dpath, _, fnames in os.walk(path):
+                for fname in fnames:
+                    if fname == name:
+                        exec = os.path.join(dpath, fname)
+                        return exec
+    return None

@@ -4,6 +4,12 @@ import re
 
 from . import core
 
+avail_cams = {
+    'uvc': {},
+    'libcamera': {},
+    'legacy': {}
+}
+
 def get_avail_uvc_dev() -> dict:
     uvc_path = '/dev/v4l/by-id/'
     avail_uvc = []
@@ -17,6 +23,7 @@ def get_avail_uvc_dev() -> dict:
         cams[cam_path]['realpath'] = os.path.realpath(cam_path)
         cams[cam_path]['formats'] = get_uvc_formats(cam_path)
         cams[cam_path]['v4l2ctrls'] = get_uvc_v4l2ctrls(cam_path)
+    avail_cams['uvc'].update(cams)
     return cams
 
 def get_uvc_formats(cam_path: str) -> str:
@@ -31,6 +38,10 @@ def get_uvc_v4l2ctrls(cam_path: str) -> str:
     v4l2ctrls = core.execute_shell_command(command)
     return v4l2ctrls
 
+def has_device_mjpg_hw(cam_path: str) -> bool:
+    global avail_cams
+    return 'Motion-JPEG, compressed' in get_uvc_formats(cam_path)
+
 def get_avail_libcamera() -> dict:
     cmd = shutil.which('libcamera-hello')
     if not cmd:
@@ -44,7 +55,7 @@ def get_avail_libcamera() -> dict:
                 'resolutions': get_libcamera_resolutions(libcam, path),
                 'controls': get_libcamera_controls(path)
             }
-        pass
+    avail_cams['libcamera'].update(libcams)
     return libcams
 
 def get_libcamera_paths(libcamera_output: str) -> list:
@@ -115,4 +126,9 @@ def get_avail_legacy() -> dict:
     legacy[legacy_path] = {}
     legacy[legacy_path]['formats'] = get_uvc_formats(legacy_path)
     legacy[legacy_path]['v4l2ctrls'] = get_uvc_v4l2ctrls(legacy_path)
+    avail_cams['legacy'].update(legacy)
     return legacy
+
+def is_device_legacy(cam_path: str) -> bool:
+    global avail_cams
+    return cam_path in avail_cams['legacy']

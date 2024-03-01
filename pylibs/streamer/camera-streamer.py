@@ -1,7 +1,7 @@
 from configparser import SectionProxy
 from .streamer import Streamer
 from ..parameter import Parameter
-from ..core import execute_command
+from ..core import execute_command, get_executable
 
 class Camera_Streamer(Streamer):
     keyword = 'ustreamer'
@@ -10,11 +10,16 @@ class Camera_Streamer(Streamer):
         super().__init__(name)
 
         self.parameters.update({
-            'enable_rtsp': Parameter(bool, False),
+            'enable_rtsp': Parameter(bool, 'False'),
             'rtsp_port': Parameter(int, 8554)
         })
 
-        self.binary_path = 'bin/ustreamer/ustreamer'
+        if Camera_Streamer.binary_path is None:
+            Camera_Streamer.binary_path = get_executable(
+                ['ustreamer.bin', 'ustreamer'],
+                ['bin/ustreamer']
+            )
+        self.binary_path = get_executable.binary_path
         
     async def execute(self):
         host = '0.0.0.0' if self.parameters['no_proxy'].value else '127.0.0.1'

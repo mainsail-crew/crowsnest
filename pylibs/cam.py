@@ -6,6 +6,7 @@ from .core import get_module_class
 from . import logger
 
 class Cam(Section):
+    section_name = 'cam'
     keyword = 'cam'
 
     def __init__(self, name: str = '') -> None:
@@ -23,7 +24,7 @@ class Cam(Section):
         self.parameters["mode"].set_value(mode)
         mode_class = get_module_class('pylibs.streamer', mode)
         self.streamer = mode_class(self.name)
-        self.streamer.parse_config(config_section)
+        return self.streamer.parse_config(config_section)
 
     async def execute(self):
         if self.streamer is None:

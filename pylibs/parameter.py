@@ -7,7 +7,7 @@ class Parameter:
         try:
             if value is None:
                 self.value = None
-            elif self.type == 'bool':
+            elif self.type == bool:
                 if value.lower() == 'true':
                     self.value = True
                 elif value.lower() == 'false':

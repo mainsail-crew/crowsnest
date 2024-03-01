@@ -1,11 +1,11 @@
 from ..section import Section
 from ..parameter import Parameter
+from .. import logger
 from configparser import SectionProxy
 import os
-import logging
 
 class Streamer(Section):
-    keyword = ''
+    binary_path = None
 
     def __init__(self, name: str = '') -> None:
         super().__init__(name)
@@ -16,22 +16,29 @@ class Streamer(Section):
             'device': Parameter(str),
             'resolution': Parameter(str),
             'max_fps': Parameter(int),
-            'no_proxy': Parameter(bool, False),
+            'no_proxy': Parameter(bool, 'False'),
             'custom_flags': Parameter(str, ''),
             'v4l2ctl': Parameter(str, '')
         })
         self.binary_path = None
+
+        self.missing_bin_txt = """\
+'%s' executable not found!
+Please make sure everything is installed correctly and up to date!
+Run 'make update' inside the crowsnest directory to install and update everything."""
     
-    def parse_config(self, config_section: SectionProxy, *args, **kwargs):
-        super().parse_config(config_section, *args, **kwargs)
+    def parse_config(self, config_section: SectionProxy, *args, **kwargs) -> bool:
+        success = super().parse_config(config_section, *args, **kwargs)
         if self.binary_path is None:
-            raise Exception("""This shouldn't happen. Please join our discord and open a post inside the support forum!\nhttps://discord.gg/mainsail""")
+            logger.log_multiline(self.missing_bin_txt % self.parameters['mode'].value, logger.log_error)
+            return False
+        return success
     
     def execute(self):
         if not os.path.exists(self.binary_path):
-            logging.info(f"'{self.binary_path}' not found! Please make sure that everything is installed correctly!")
+            logger.log_multiline(self.missing_bin_txt, logger.log_error)
             return False
         return True
 
 def load_module():
-    raise NotImplementedError("If you see this, a module is implemented wrong!!!")
+    raise NotImplementedError("If you see this, a Streamer module is implemented wrong!!!")
