@@ -32,6 +32,9 @@ def log_info(msg, prefix='INFO: '):
 def log_debug(msg, prefix='DEBUG: '):
     logging.log(DEBUG, prefix + msg)
 
+def log_warning(msg, prefix='WARN: '):
+    logging.warning(prefix + msg)
+
 def log_error(msg, prefix='ERROR: '):
     logging.error(prefix + msg)
 

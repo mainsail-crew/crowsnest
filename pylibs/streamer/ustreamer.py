@@ -1,9 +1,10 @@
 import re
+import asyncio
 
 from .streamer import Streamer
 from ..core import execute_command, get_executable
 from ..hwhandler import is_device_legacy, has_device_mjpg_hw
-from ..v4l2_control import set_v4l2ctrl
+from ..v4l2_control import set_v4l2ctrls, blockyfix, brokenfocus
 from .. import logger
 
 class Ustreamer(Streamer):
@@ -49,6 +50,7 @@ class Ustreamer(Streamer):
                 '--device-timeout', '5',
                 '--buffers', '3'
             ]
+            blockyfix(device)
         else:
             streamer_args += [
                 '--device', device,
@@ -62,7 +64,7 @@ class Ustreamer(Streamer):
 
         v4l2ctl = self.parameters['v4l2ctl'].value
         if v4l2ctl:
-            set_v4l2ctrl(f'[cam {self.name}]', device, v4l2ctl.split(','))
+            set_v4l2ctrls(f'[cam {self.name}]', device, v4l2ctl.split(','))
 
         # custom flags
         streamer_args += self.parameters['custom_flags'].value.split()
@@ -77,6 +79,13 @@ class Ustreamer(Streamer):
             error_log_pre=log_pre,
             error_log_func=self.custom_log
         )
+        asyncio.sleep(0.5)
+
+        for ctl in v4l2ctl.split(','):
+            if 'focus_absolute' in ctl:
+                focus_absolute = ctl.split('=')[1].strip()
+                brokenfocus(device, focus_absolute)
+                break
 
         return process
 
