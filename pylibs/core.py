@@ -76,15 +76,20 @@ def execute_shell_command(command: str, strip: bool = True) -> str:
 def bytes_to_gigabytes(value: int) -> int:
     return math.round(value / 1024 / 1024 / 1024)
 
+def find_file(name: str, path: str) -> str:
+    for dpath, _, fnames in os.walk(path):
+        for fname in fnames:
+            if fname == name:
+                return os.path.join(dpath, fname)
+    return None
+
 def get_executable(names: list[str], paths: list[str]) -> str:
     for name in names:
         exec = shutil.which(name)
         if exec:
             return exec
         for path in paths:
-            for dpath, _, fnames in os.walk(path):
-                for fname in fnames:
-                    if fname == name:
-                        exec = os.path.join(dpath, fname)
-                        return exec
+            found = find_file(name, path)
+            if found:
+                return found
     return None

@@ -2,6 +2,7 @@ import argparse
 import configparser
 from pylibs.crowsnest import Crowsnest
 from pylibs.core import get_module_class
+from pylibs.watchdog import crowsnest_watchdog
 import pylibs.logger as logger
 import pylibs.logging as logging
 
@@ -18,6 +19,8 @@ parser.add_argument('-l', '--log_path', help='Path to log file', required=True)
 
 args = parser.parse_args()
 
+watchdog_running = True
+
 def parse_config():
     global crowsnest, config, args
     config_path = args.config
@@ -27,6 +30,7 @@ def parse_config():
     logger.set_log_level(crowsnest.parameters['log_level'].value)
 
 async def start_processes():
+    global config, watchdog_running
     sec_objs = []
     sec_exec_tasks = set()
 
@@ -62,15 +66,31 @@ async def start_processes():
         for task in sec_exec_tasks:
             if task != None:
                 task.cancel()
+        watchdog_running = False
 
-logger.setup_logging(args.log_path)
-logging.log_initial()
+async def run_watchdog():
+    global watchdog_running
+    while watchdog_running:
+        await asyncio.sleep(120)
+        crowsnest_watchdog()
 
-parse_config()
 
-logging.log_host_info()
-logging.log_config(args.config)
-logging.log_cams()
+async def main():
+    global args
+    logger.setup_logging(args.log_path)
+    logging.log_initial()
 
-# Run async to wait for all tasks to finish
-asyncio.run(start_processes())
+    parse_config()
+
+    logging.log_host_info()
+    logging.log_config(args.config)
+    logging.log_cams()
+
+    asyncio.gather(start_processes(), run_watchdog())
+
+if __name__ == "__main__":
+    loop = asyncio.get_event_loop()
+    try:
+        loop.run_until_complete(main())
+    finally:
+        loop.close()
