@@ -2,6 +2,11 @@
 # Changelog
 All notable changes to Crowsnest will be documented in this file.
 
+## [4.1.6](https://github.com/mainsail-crew/crowsnest/releases/tag/v4.1.6) - 2024-03-03
+### Bug Fixes and Improvements
+
+- Change ustreamer repo to own fork as workaround for #247 ([#249](https://github.com/mainsail-crew/crowsnest/pull/249))
+
 ## [4.1.5](https://github.com/mainsail-crew/crowsnest/releases/tag/v4.1.5) - 2024-02-28
 ### Bug Fixes and Improvements
 
