@@ -33,6 +33,20 @@ BASE_CN_PATH="$(dirname "$(readlink -f "${0}")")"
 # . "${BASE_CN_PATH}/libs/versioncontrol.sh"
 # . "${BASE_CN_PATH}/libs/watchdog.sh"
 
+function missing_args_msg {
+    echo -e "crowsnest: Missing Arguments!"
+    echo -e "\n\tTry: crowsnest -h\n"
+}
+
+function check_cfg {
+    if [ ! -r "${1}" ]; then
+        log_msg "ERROR: No Configuration File found. Exiting!"
+        exit 1
+    else
+        return 0
+    fi
+}
+
 #### MAIN
 ## Args given?
 if [ "$#" -eq 0 ]; then
@@ -108,4 +122,4 @@ function get_param {
     return
 }
 
-python3 -m "${BASE_CN_PATH}/crowsnest.py" -c "${CROWSNEST_CFG}" -l "${CROWSNEST_LOG_PATH}"
+python3 "${BASE_CN_PATH}/crowsnest.py" -c "${CROWSNEST_CFG}" -l "${CROWSNEST_LOG_PATH}"

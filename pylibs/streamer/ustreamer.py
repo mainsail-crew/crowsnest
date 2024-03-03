@@ -79,7 +79,7 @@ class Ustreamer(Streamer):
             error_log_pre=log_pre,
             error_log_func=self.custom_log
         )
-        asyncio.sleep(0.5)
+        await asyncio.sleep(0.5)
 
         for ctl in v4l2ctl.split(','):
             if 'focus_absolute' in ctl:

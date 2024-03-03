@@ -86,7 +86,12 @@ async def main():
     logging.log_config(args.config)
     logging.log_cams()
 
-    asyncio.gather(start_processes(), run_watchdog())
+    task1 = asyncio.create_task(start_processes())
+    task2 = asyncio.create_task(run_watchdog())
+    await task1
+    await task2
+
+    # asyncio.gather(start_processes(), run_watchdog())
 
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()
