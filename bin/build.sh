@@ -32,7 +32,7 @@ CLONE_FLAGS=(--depth=1 --single-branch)
 # Ustreamer repo
 USTREAMER_PATH="ustreamer"
 if [[ -z "${CROWSNEST_USTREAMER_REPO_SHIP}" ]]; then
-    CROWSNEST_USTREAMER_REPO_SHIP="https://github.com/pikvm/ustreamer.git"
+    CROWSNEST_USTREAMER_REPO_SHIP="https://github.com/mryel00/ustreamer.git"
 fi
 if [[ -z "${CROWSNEST_USTREAMER_REPO_BRANCH}" ]]; then
     CROWSNEST_USTREAMER_REPO_BRANCH="master"
