@@ -35,7 +35,7 @@ import_config() {
         [[ -n "${CROWSNEST_CONFIG_PATH}" ]] || CROWSNEST_CONFIG_PATH="/home/${BASE_USER}/printer_data/config"
         [[ -n "${CROWSNEST_LOG_PATH}" ]] || CROWSNEST_LOG_PATH="/home/${BASE_USER}/printer_data/logs"
         [[ -n "${CROWSNEST_ENV_PATH}" ]] || CROWSNEST_ENV_PATH="/home/${BASE_USER}/printer_data/systemd"
-        [[ -n "${CROWSNEST_USTREAMER_REPO_SHIP}" ]] || CROWSNEST_USTREAMER_REPO_SHIP="https://github.com/pikvm/ustreamer.git"
+        [[ -n "${CROWSNEST_USTREAMER_REPO_SHIP}" ]] || CROWSNEST_USTREAMER_REPO_SHIP="https://github.com/mryel00/ustreamer.git"
         [[ -n "${CROWSNEST_USTREAMER_REPO_BRANCH}" ]] || CROWSNEST_USTREAMER_REPO_BRANCH="master"
         [[ -n "${CROWSNEST_CAMERA_STREAMER_REPO_SHIP}" ]] || CROWSNEST_CAMERA_STREAMER_REPO_SHIP="https://github.com/ayufan/camera-streamer.git"
         [[ -n "${CROWSNEST_CAMERA_STREAMER_REPO_BRANCH}" ]] || CROWSNEST_CAMERA_STREAMER_REPO_BRANCH="master"
