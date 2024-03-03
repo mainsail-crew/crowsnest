@@ -64,10 +64,10 @@ Not available: :heavy_minus_sign:
 
 |         Operating System          |  X86 Architecture  |     ARM Architecture                        |
 | :-------------------------------: | :----------------: | :-----------------------------------------: |
-|     Raspberry Pi OS (buster)      | :heavy_minus_sign: |   :x: ([Hint](#hint))                       |
+|     Raspberry Pi OS (buster)      | :heavy_minus_sign: |   :x: ([Hint](#hint-buster))                       |
 |    Raspberry Pi OS (bullseye)     | :heavy_minus_sign: |    :heavy_check_mark:                       |
 |    Raspberry Pi OS (bookworm)     | :heavy_minus_sign: | :heavy_check_mark: ([Hint](#hint-bookworm)) |
-|        MainsailOS (<0.7.1)        | :heavy_minus_sign: |   :x: ([Hint](#hint))                       |
+|        MainsailOS (<0.7.1)        | :heavy_minus_sign: |   :x: ([Hint](#hint-buster))                       |
 |        MainsailOS (>1.0.0)        | :heavy_minus_sign: | :heavy_check_mark: (rpi)                    |
 |              Armbian              |     :question:     |    :heavy_check_mark:                       |
 |              DietPi               |     :question:     |    :heavy_check_mark: (rpi)                 |
@@ -90,6 +90,7 @@ See the [README.md](https://github.com/mainsail-crew/crowsnest/tree/legacy/v3) o
 #### Hint Bookworm
 
 Raspberry Pi OS images that are based on Debian 12 (codename 'bookworm') currently use a different branch of [camera-streamer](https://github.com/ayufan/camera-streamer)!
+The Raspberry Pi 5 has only [ustreamer](https://github.com/pikvm/ustreamer) support! This is due to the missing JPEG and H264 Hardware encoders.
 
 ---
 

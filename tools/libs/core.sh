@@ -67,6 +67,15 @@ is_raspberry_pi() {
     fi
 }
 
+is_pi5() {
+    if [[ -f /proc/device-tree/model ]] &&
+    grep -q "Raspberry Pi 5" /proc/device-tree/model; then
+        echo "1"
+    else
+        echo "0"
+    fi
+}
+
 is_ubuntu_arm() {
     if [[ "$(is_raspberry_pi)" = "1" ]] &&
     grep -q "ubuntu" /etc/os-release; then
@@ -103,6 +112,14 @@ shallow_cs_dependencies_check() {
         return 1
     fi
     status_msg "Checking if device is a Raspberry Pi ..." "0"
+
+    msg "Checking if device is not a Raspberry Pi 5 ...\n"
+    if [[ "$(is_pi5)" = "1" ]]; then
+        status_msg "Checking if device is not a Raspberry Pi 5 ..." "3"
+        msg "This device is a Raspberry Pi 5 therefore camera-streeamer cannot be installed ..."
+        return 1
+    fi
+    status_msg "Checking if device is not a Raspberry Pi 5 ..." "0"
 
     msg "Checking if device is not running Ubuntu ...\n"
     if [[ "$(is_ubuntu_arm)" = "1" ]]; then

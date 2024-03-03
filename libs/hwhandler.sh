@@ -65,7 +65,7 @@ detect_libcamera() {
     [[ -x "$(command -v libcamera-hello)" ]]; then
         avail="$(libcamera-hello --list-cameras | sed '/^\[.*\].*/d' | awk 'NR==1 {print $1}')"
         if [[ "${avail}" = "Available" ]]; then
-            echo "1"
+            get_libcamera_path | wc -l
         else
             echo "0"
         fi
@@ -86,13 +86,16 @@ get_libcamera_path() {
 # Determine connected "legacy" device
 function detect_legacy {
     local avail
-    if [[ -f /proc/device-tree/model ]] &&
-    grep -q "Raspberry" /proc/device-tree/model; then
-        avail="$(vcgencmd get_camera | awk -F '=' '{ print $3 }' | cut -d',' -f1)"
-    else
-        avail="0"
+    if [[ "$(is_raspberry_pi)" = "1" ]] &&
+    command -v vcgencmd &> /dev/null; then
+        if vcgencmd get_camera &> /dev/null ; then
+            avail="$(vcgencmd get_camera \
+                    | awk -F '=' '{ print $3 }' \
+                    | cut -d',' -f1 \
+                    )"
+        fi
     fi
-    echo "${avail}"
+    echo "${avail:-0}"
 }
 
 function dev_is_legacy {
@@ -122,6 +125,15 @@ detect_mjpeg() {
 is_raspberry_pi() {
     if [[ -f /proc/device-tree/model ]] &&
     grep -q "Raspberry" /proc/device-tree/model; then
+        echo "1"
+    else
+        echo "0"
+    fi
+}
+
+is_pi5() {
+    if [[ -f /proc/device-tree/model ]] &&
+    grep -q "Raspberry Pi 5" /proc/device-tree/model; then
         echo "1"
     else
         echo "0"

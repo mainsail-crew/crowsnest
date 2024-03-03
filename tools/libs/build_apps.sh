@@ -19,6 +19,29 @@ set -Ee
 # Debug
 # set -x
 
+clone_ustreamer() {
+    ## remove bin/ustreamer if exist
+    if [[ -d bin/ustreamer ]]; then
+        rm -rf bin/ustreamer
+    fi
+    sudo -u "${BASE_USER}" \
+    git clone "${CROWSNEST_USTREAMER_REPO_SHIP}" \
+    -b "${CROWSNEST_USTREAMER_REPO_BRANCH}" \
+    --depth=1 --single-branch bin/ustreamer
+}
+
+clone_cstreamer() {
+    ## remove bin/ustreamer if exist
+    if [[ -d bin/camera-streamer ]]; then
+        rm -rf bin/camera-streamer
+    fi
+    sudo -u "${BASE_USER}" \
+    git clone "${CROWSNEST_CAMERA_STREAMER_REPO_SHIP}" \
+    --recurse-submodules --shallow-submodules \
+    -b "${CROWSNEST_CAMERA_STREAMER_REPO_BRANCH}" \
+    --depth=1 --single-branch bin/camera-streamer
+}
+
 build_apps() {
     export CN_INSTALL_CS
     sudo -E -u "${BASE_USER}" "${PWD}"/bin/build.sh --reclone

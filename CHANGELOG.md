@@ -2,6 +2,46 @@
 # Changelog
 All notable changes to Crowsnest will be documented in this file.
 
+## [4.1.5](https://github.com/mainsail-crew/crowsnest/releases/tag/v4.1.5) - 2024-02-28
+### Bug Fixes and Improvements
+
+- Fix ustreamer binary path for v5.52 changes ([#245](https://github.com/mainsail-crew/crowsnest/pull/245))
+
+## [4.1.4](https://github.com/mainsail-crew/crowsnest/releases/tag/v4.1.4) - 2024-02-17
+### Bug Fixes and Improvements
+
+- Support `no_proxy` mode with camera-streamer (bookworm) ([#238](https://github.com/mainsail-crew/crowsnest/pull/238))
+
+## [4.1.3](https://github.com/mainsail-crew/crowsnest/releases/tag/v4.1.3) - 2024-01-16
+### Features
+
+- Add dual picam detection ([#229](https://github.com/mainsail-crew/crowsnest/pull/229))
+
+### Documentation
+
+- Fix buster hint link ([#236](https://github.com/mainsail-crew/crowsnest/pull/236))
+
+### Other
+
+- Fix `clean_apps` for installations without all backends ([#230](https://github.com/mainsail-crew/crowsnest/pull/230))
+- Remove `buildclean` from `make update` ([#231](https://github.com/mainsail-crew/crowsnest/pull/231))
+- Update issue bot to add github discussions ([#234](https://github.com/mainsail-crew/crowsnest/pull/234))
+- Add warning for libcamera on pi5 ([#235](https://github.com/mainsail-crew/crowsnest/pull/235))
+
+## [4.1.2](https://github.com/mainsail-crew/crowsnest/releases/tag/v4.1.2) - 2024-01-08
+### Bug Fixes and Improvements
+
+- **build.sh**: Fix wrong cs branch for cloning ([#215](https://github.com/mainsail-crew/crowsnest/pull/215))
+- Fixes error in detect_legacy ([#217](https://github.com/mainsail-crew/crowsnest/pull/217))
+- Skip do_memory_split on bookworm ([#223](https://github.com/mainsail-crew/crowsnest/pull/223))
+- Fix crash with brokenfocus and camera-streamer ([#224](https://github.com/mainsail-crew/crowsnest/pull/224))
+- Add pi5 support ([#225](https://github.com/mainsail-crew/crowsnest/pull/225))
+
+### Other
+
+- Shallow clone camera-streamer submodules ([#226](https://github.com/mainsail-crew/crowsnest/pull/226))
+- Add note about proxies to crowsnest.conf ([#227](https://github.com/mainsail-crew/crowsnest/pull/227))
+
 ## [4.1.1](https://github.com/mainsail-crew/crowsnest/releases/tag/v4.1.1) - 2023-11-23
 ### Documentation
 

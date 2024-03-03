@@ -3,9 +3,9 @@
 #### crowsnest - A webcam Service for multiple Cams and Stream Services.
 ####
 #### Written by Stephan Wendel aka KwadFan <me@stephanwe.de>
-#### Copyright 2021 - 2023
+#### Copyright 2021 - 2024
 #### Co-authored by Patrick Gehrsitz aka mryel00 <mryel00.github@gmail.com>
-#### Copyright 2023 - till today
+#### Copyright 2024 - till today
 #### https://github.com/mainsail-crew/crowsnest
 ####
 #### This File is distributed under GPLv3
@@ -111,6 +111,15 @@ is_bookworm() {
     fi
 }
 
+is_pi5() {
+    if [[ -f /proc/device-tree/model ]] &&
+    grep -q "Raspberry Pi 5" /proc/device-tree/model; then
+        echo "1"
+    else
+        echo "0"
+    fi
+}
+
 is_ubuntu_arm() {
     if [[ "$(is_raspberry_pi)" = "1" ]] &&
     grep -q "ubuntu" /etc/os-release; then
@@ -118,56 +127,6 @@ is_ubuntu_arm() {
     else
         echo "0"
     fi
-}
-
-test_load_module() {
-    if modprobe -n "${1}" &> /dev/null; then
-        echo 1
-    else
-        echo 0
-    fi
-}
-
-shallow_cs_dependencies_check() {
-    printf "\nChecking for camera-streamer dependencies ...\n"
-
-    printf "Checking if device is a Raspberry Pi ...\n"
-    if [[ "$(is_raspberry_pi)" = "0" ]]; then
-        status_msg_build "Checking if device is a Raspberry Pi ..." "3"
-        printf "This device is not a Raspberry Pi therefore camera-streeamer cannot be installed ..."
-        return 1
-    fi
-    status_msg_build "Checking if device is a Raspberry Pi ..." "0"
-
-    printf "Checking if device is not running Ubuntu ...\n"
-    if [[ "$(is_ubuntu_arm)" = "1" ]]; then
-        status_msg_build "Checking if device is not running Ubuntu ..." "3"
-        printf "This device is running Ubuntu therefore camera-streeamer cannot be installed ..."
-        return 1
-    fi
-    status_msg_build "Checking if device is not running Ubuntu ..." "0"
-
-    printf "Checking for required kernel module ...\n"
-    SHALLOW_CHECK_MODULESLIST="bcm2835_codec"
-    if [[ "$(test_load_module "${SHALLOW_CHECK_MODULESLIST}")" = "0" ]]; then
-        status_msg_build "Checking for required kernel module ..." "3"
-        printf "Not all required kernel modules for camera-streamer can be loaded ..."
-        return 1
-    fi
-    status_msg_build "Checking for required kernel module ..." "0"
-
-    printf "Checking for required packages ...\n"
-    # Update the number below if you update SHALLOW_CHECK_PKGLIST
-    SHALLOW_CHECK_PKGLIST="^(libavformat-dev|libavutil-dev|libavcodec-dev|liblivemedia-dev|libcamera-dev|libcamera-apps-lite)$"
-    if [[ $(apt-cache search --names-only "${SHALLOW_CHECK_PKGLIST}" | wc -l) -lt 6 ]]; then
-        status_msg_build "Checking for required packages ..." "3"
-        printf "Not all required packages for camera-streamer can be installed ..."
-        return 1
-    fi
-    status_msg_build "Checking for required packages ..." "0"
-
-    status_msg_build "Checking for camera-streamer dependencies ..." "0"
-    return 0
 }
 
 ### Get avail mem
@@ -180,10 +139,10 @@ get_avail_mem() {
 delete_apps() {
     for path in "${ALL_PATHS[@]}"; do
         if [[ ! -d "${path}" ]]; then
-            printf "'%s' does not exist! Delete skipped ...\n" "${path}"
+            printf "'%s' does not exist! Delete ... [SKIPPED]\n" "${path}"
         fi
         if [[ -d "${path}" ]]; then
-            printf "Deleting '%s' ... \n" "${path}"
+            printf "Deleting '%s' ... [DONE]\n" "${path}"
             rm -rf "${path}"
         fi
     done
@@ -211,18 +170,11 @@ clone_ustreamer() {
 clone_cstreamer() {
     ## Special handling because only supported on Raspberry Pi
     [[ -n "${CROWSNEST_UNATTENDED}" ]] || CROWSNEST_UNATTENDED="0"
-
-    ## If CROWSNEST_UNATTENDED is 1, CN_INSTALL_CS should be already set
-    if [[ "${CROWSNEST_UNATTENDED}" = "0" ]] && [[ -z "${CN_INSTALL_CS}" ]]; then
-        if shallow_cs_dependencies_check; then
-            CN_INSTALL_CS="1"
-        else
-            CN_INSTALL_CS="0"
-        fi
-    fi
-
-    if [[ "${CN_INSTALL_CS}" = "0" ]]; then
-        printf "WARN: Cloning camera-streamer skipped! Device is not supported!"
+    if { [[ "$(is_raspberry_pi)" = "0" ]] ||
+    [[ "$(is_pi5)" = "1" ]] ||
+    [[ "$(is_ubuntu_arm)" = "1" ]]; } &&
+    [[ "${CROWSNEST_UNATTENDED}" = "0" ]]; then
+        printf "Device is not supported! Cloning camera-streamer ... [SKIPPED]\n"
         return
     fi
 
@@ -262,10 +214,14 @@ clone_apps() {
 ### Run 'make clean' in cloned folders
 clean_apps() {
     for app in "${ALL_PATHS[@]}"; do
-        printf "\nRunning 'make clean' in %s ... \n" "${app}"
-        pushd "${app}" &> /dev/null || exit 1
-        make clean
-        popd &> /dev/null || exit 1
+        if [[ ! -d "${app}" ]]; then
+            printf "'%s' does not exist! Clean ... [SKIPPED]\n" "${app}"
+        else 
+            printf "\nRunning 'make clean' in %s ... \n" "${app}"
+            pushd "${app}" &> /dev/null || exit 1
+            make clean
+            popd &> /dev/null || exit 1
+        fi
     done
     printf "\nRunning 'make clean' ... [DONE]\n"
 }
