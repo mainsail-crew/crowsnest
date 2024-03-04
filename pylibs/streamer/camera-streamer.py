@@ -1,3 +1,5 @@
+import asyncio
+
 from .streamer import Streamer
 from ..parameter import Parameter
 from ..core import execute_command, get_executable
@@ -22,8 +24,8 @@ class Camera_Streamer(Streamer):
             )
         self.binary_path = Camera_Streamer.binary_path
 
-    async def execute(self):
-        if not super().execute():
+    async def execute(self, lock: asyncio.Lock):
+        if not await super().execute(lock):
             return None
         if self.parameters['no_proxy'].value:
             host = '0.0.0.0'
@@ -92,6 +94,7 @@ class Camera_Streamer(Streamer):
             error_log_pre=log_pre,
             error_log_func=logger.log_debug
         )
+        lock.release()
 
         return process
 

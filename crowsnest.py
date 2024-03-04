@@ -53,11 +53,15 @@ async def start_processes():
             else:
                 logger.log_error(f"Failed to parse config for section [{section}]!")
 
+        lock = asyncio.Lock()
         for section_object in sec_objs:
-            task = asyncio.create_task(section_object.execute())
+            task = asyncio.create_task(section_object.execute(lock))
             sec_exec_tasks.add(task)
 
-        logger.log_quiet("... Done!")
+        # Let sec_exec_tasks finish first
+        await asyncio.sleep(0)
+        async with lock:
+            logger.log_quiet("... Done!")
 
         for task in sec_exec_tasks:
             if task is not None:

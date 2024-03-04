@@ -1,4 +1,4 @@
-import re
+import asyncio
 from configparser import SectionProxy
 
 from .parameter import Parameter
@@ -33,5 +33,5 @@ class Section:
         return success
 
     # Execute section specific stuff, e.g. starting cam
-    async def execute(self):
+    async def execute(self, lock: asyncio.Lock):
         raise NotImplementedError("If you see this, a module is implemented wrong!!!")

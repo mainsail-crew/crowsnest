@@ -1,9 +1,11 @@
+import os
+import asyncio
+
 from ..section import Section
 from ..parameter import Parameter
 from .. import logger
 from ..watchdog import configured_devices
 from configparser import SectionProxy
-import os
 
 class Streamer(Section):
     binary_path = None
@@ -36,7 +38,7 @@ Run 'make update' inside the crowsnest directory to install and update everythin
             return False
         return success
     
-    def execute(self):
+    async def execute(self, lock: asyncio.Lock):
         global configured_devices
         if not os.path.exists(self.binary_path):
             logger.log_multiline(self.missing_bin_txt, logger.log_error)

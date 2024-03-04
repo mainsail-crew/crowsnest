@@ -21,8 +21,8 @@ class Ustreamer(Streamer):
             )
         self.binary_path = Ustreamer.binary_path
 
-    async def execute(self):
-        if not super().execute():
+    async def execute(self, lock: asyncio.Lock):
+        if not await super().execute(lock):
             return None
         if self.parameters['no_proxy'].value:
             host = '0.0.0.0'
@@ -81,8 +81,9 @@ class Ustreamer(Streamer):
             error_log_pre=log_pre,
             error_log_func=self.custom_log
         )
-        await asyncio.sleep(0.5)
+        lock.release()
 
+        await asyncio.sleep(0.5)
         for ctl in v4l2ctl.split(','):
             if 'focus_absolute' in ctl:
                 focus_absolute = ctl.split('=')[1].strip()

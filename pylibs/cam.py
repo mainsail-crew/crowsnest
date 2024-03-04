@@ -1,8 +1,9 @@
+import asyncio
+
 from configparser import SectionProxy
 from .section import Section
 from .parameter import Parameter
 from .core import get_module_class
-
 from . import logger
 
 class Cam(Section):
@@ -26,16 +27,20 @@ class Cam(Section):
         self.streamer = mode_class(self.name)
         return self.streamer.parse_config(config_section)
 
-    async def execute(self):
+    async def execute(self, lock: asyncio.Lock):
         if self.streamer is None:
             print("No streamer loaded")
             return
         try:
-            process = await self.streamer.execute()
+            await lock.acquire()
+            process = await self.streamer.execute(lock)
             await process.wait()
             logger.log_error(f'Start of {self.parameters["mode"].value} [cam {self.name}] failed!')
         except Exception as e:
             pass
+        finally:
+            if lock.locked():
+                lock.release()
 
 def load_module():
     return Cam
