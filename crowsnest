@@ -122,4 +122,5 @@ function get_param {
     return
 }
 
+set_log_path
 python3 "${BASE_CN_PATH}/crowsnest.py" -c "${CROWSNEST_CFG}" -l "${CROWSNEST_LOG_PATH}"
