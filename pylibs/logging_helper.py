@@ -23,6 +23,7 @@ def log_config(config_path):
         # Remove comments
         config_txt = re.sub(r'#.*$', "", config_txt, flags=re.MULTILINE)
         config_txt = config_txt.strip()
+        config_txt = config_txt.replace('\n\n', '\n')
         # Split the config file into lines
         log_multiline(config_txt, log_info, indentation)
 

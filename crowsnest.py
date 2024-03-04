@@ -56,7 +56,9 @@ async def start_processes():
         for section_object in sec_objs:
             task = asyncio.create_task(section_object.execute())
             sec_exec_tasks.add(task)
-            
+
+        logger.log_quiet("... Done!")
+
         for task in sec_exec_tasks:
             if task is not None:
                 await task
@@ -67,6 +69,9 @@ async def start_processes():
             if task != None:
                 task.cancel()
         watchdog_running = False
+        logger.log_quiet("Shutdown or Killed by User!")
+        logger.log_quiet("Please come again :)")
+        logger.log_quiet("Goodbye...")
 
 async def run_watchdog():
     global watchdog_running
