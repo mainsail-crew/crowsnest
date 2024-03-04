@@ -6,7 +6,6 @@ import shutil
 import os
 
 from . import logger
-# import logging
 
 # Dynamically import module
 # Requires module to have a load_module() function,

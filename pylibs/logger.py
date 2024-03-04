@@ -1,14 +1,24 @@
 import logging
 
+import os
+
 DEV = 10
 DEBUG = 15
 QUIET = 25
 
 indentation = 6*' '
 
-def setup_logging(log_path):
+logger = logging.getLogger('crowsnest')
+
+def setup_logging(log_path, filemode='a'):
+    global logger
+    logger.propagate = False
+    # Create log directory if it does not exist.
+    os.makedirs(os.path.dirname(log_path), exist_ok=True)
+
     logging.basicConfig(
         filename=log_path,
+        filemode=filemode,
         encoding='utf-8',
         level=logging.INFO,
         format='[%(asctime)s] %(message)s',
@@ -16,27 +26,27 @@ def setup_logging(log_path):
     )
 
     # Change DEBUG to DEB and add custom logging level.
-    logging.addLevelName(DEV, 'DEV')
-    logging.addLevelName(DEBUG, 'DEBUG')
-    logging.addLevelName(QUIET, 'QUIET')
+    logger.addLevelName(DEV, 'DEV')
+    logger.addLevelName(DEBUG, 'DEBUG')
+    logger.addLevelName(QUIET, 'QUIET')
 
 def set_log_level(level):
-    logging.getLogger().setLevel(level)
+    logger.getLogger().setLevel(level)
 
 def log_quiet(msg, prefix=''):
-    logging.log(QUIET, prefix + msg)
+    logger.log(QUIET, prefix + msg)
 
 def log_info(msg, prefix='INFO: '):
-    logging.info(prefix + msg)
+    logger.info(prefix + msg)
 
 def log_debug(msg, prefix='DEBUG: '):
-    logging.log(DEBUG, prefix + msg)
+    logger.log(DEBUG, prefix + msg)
 
 def log_warning(msg, prefix='WARN: '):
-    logging.warning(prefix + msg)
+    logger.warning(prefix + msg)
 
 def log_error(msg, prefix='ERROR: '):
-    logging.error(prefix + msg)
+    logger.error(prefix + msg)
 
 def log_multiline(msg, log_func, *args):
     lines = msg.split('\n')

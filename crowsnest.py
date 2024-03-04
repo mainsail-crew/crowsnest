@@ -4,7 +4,7 @@ from pylibs.crowsnest import Crowsnest
 from pylibs.core import get_module_class
 from pylibs.watchdog import crowsnest_watchdog
 import pylibs.logger as logger
-import pylibs.logging as logging
+import pylibs.logging_helper as logging_helper
 
 import asyncio
 
@@ -76,15 +76,19 @@ async def run_watchdog():
 
 
 async def main():
-    global args
+    global args, crowsnest
     logger.setup_logging(args.log_path)
-    logging.log_initial()
+    logging_helper.log_initial()
 
     parse_config()
 
-    logging.log_host_info()
-    logging.log_config(args.config)
-    logging.log_cams()
+    if crowsnest.parameters['delete_log'].value:
+        logger.setup_logging(args.log_path, 'w')
+        logging_helper.log_initial()
+
+    logging_helper.log_host_info()
+    logging_helper.log_config(args.config)
+    logging_helper.log_cams()
 
     task1 = asyncio.create_task(start_processes())
     task2 = asyncio.create_task(run_watchdog())
