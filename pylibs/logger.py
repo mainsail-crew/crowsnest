@@ -31,7 +31,7 @@ def setup_logging(log_path, filemode='a'):
     logging.addLevelName(QUIET, 'QUIET')
 
 def set_log_level(level):
-    logger.getLogger().setLevel(level)
+    logger.setLevel(level)
 
 def log_quiet(msg, prefix=''):
     logger.log(QUIET, prefix + msg)
