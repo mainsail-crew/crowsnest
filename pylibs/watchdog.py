@@ -14,4 +14,4 @@ def crowsnest_watchdog():
             logger.log_quiet("Lost Devicve: '{device}'", prefix)
         elif device in lost_devices and os.path.exists(device):
             lost_devices.remove(device)
-            logger.log_quiet("Device '{device}' returned.", prefix)
+            logger.log_quiet(f"Device '{device}' returned.", prefix)
