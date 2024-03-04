@@ -84,7 +84,7 @@ class Camera_Streamer(Streamer):
         cmd = self.binary_path + ' ' + ' '.join(streamer_args)
         log_pre = f'camera-streamer [cam {self.name}]: '
 
-        logger.log_debug(f"Parameters: {' '.join(streamer_args)}")
+        logger.log_debug(log_pre + f"Parameters: {' '.join(streamer_args)}")
         process,_,_ = await execute_command(
             cmd,
             info_log_pre=log_pre,
