@@ -1,7 +1,7 @@
 import os
 from . import logger
 
-configured_devices = []
+configured_devices: list[str] = []
 
 def crowsnest_watchdog():
     global configured_devices
@@ -9,6 +9,8 @@ def crowsnest_watchdog():
     lost_devices = []
 
     for device in configured_devices:
+        if device.startswith('/base'):
+            continue
         if not os.path.exists(device):
             lost_devices.append(device)
             logger.log_quiet(f"Lost Devicve: '{device}'", prefix)
