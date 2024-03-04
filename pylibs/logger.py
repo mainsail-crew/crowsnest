@@ -8,11 +8,8 @@ QUIET = 25
 
 indentation = 6*' '
 
-logger = logging.getLogger('crowsnest')
-
 def setup_logging(log_path, filemode='a'):
     global logger
-    logger.propagate = False
     # Create log directory if it does not exist.
     os.makedirs(os.path.dirname(log_path), exist_ok=True)
 
@@ -29,23 +26,32 @@ def setup_logging(log_path, filemode='a'):
     logging.addLevelName(DEV, 'DEV')
     logging.addLevelName(DEBUG, 'DEBUG')
     logging.addLevelName(QUIET, 'QUIET')
+    
+    logger = logging.getLogger('crowsnest')
+    logger.propagate = False
 
 def set_log_level(level):
+    global logger
     logger.setLevel(level)
 
 def log_quiet(msg, prefix=''):
+    global logger
     logger.log(QUIET, prefix + msg)
 
 def log_info(msg, prefix='INFO: '):
+    global logger
     logger.info(prefix + msg)
 
 def log_debug(msg, prefix='DEBUG: '):
+    global logger
     logger.log(DEBUG, prefix + msg)
 
 def log_warning(msg, prefix='WARN: '):
+    global logger
     logger.warning(prefix + msg)
 
 def log_error(msg, prefix='ERROR: '):
+    global logger
     logger.error(prefix + msg)
 
 def log_multiline(msg, log_func, *args):
