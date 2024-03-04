@@ -8,7 +8,7 @@ QUIET = 25
 
 indentation = 6*' '
 
-def setup_logging(log_path, filemode='a'):
+def setup_logging(log_path, filemode='a', log_level=logging.INFO):
     global logger
     # Create log directory if it does not exist.
     os.makedirs(os.path.dirname(log_path), exist_ok=True)
@@ -33,7 +33,7 @@ def setup_logging(log_path, filemode='a'):
     filehandler = logging.FileHandler(log_path, filemode, 'utf-8')
     filehandler.setFormatter(formatter)
     logger.addHandler(filehandler)
-    logger.setLevel(logging.INFO)
+    logger.setLevel(log_level)
 
 def set_log_level(level):
     global logger

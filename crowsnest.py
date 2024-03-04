@@ -83,7 +83,7 @@ async def main():
     parse_config()
 
     if crowsnest.parameters['delete_log'].value:
-        logger.setup_logging(args.log_path, 'w')
+        logger.setup_logging(args.log_path, 'w', crowsnest.parameters['log_level'].value)
         logging_helper.log_initial()
 
     logging_helper.log_host_info()
