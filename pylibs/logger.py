@@ -26,9 +26,9 @@ def setup_logging(log_path, filemode='a'):
     )
 
     # Change DEBUG to DEB and add custom logging level.
-    logger.addLevelName(DEV, 'DEV')
-    logger.addLevelName(DEBUG, 'DEBUG')
-    logger.addLevelName(QUIET, 'QUIET')
+    logging.addLevelName(DEV, 'DEV')
+    logging.addLevelName(DEBUG, 'DEBUG')
+    logging.addLevelName(QUIET, 'QUIET')
 
 def set_log_level(level):
     logger.getLogger().setLevel(level)
