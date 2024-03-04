@@ -21,6 +21,7 @@ def log_config(config_path):
     with open(config_path, 'r') as file:
         config_txt = file.read()
         # Remove comments
+        config_txt = re.sub(r'#.*$', "", config_txt, flags=re.MULTILINE)
         config_txt = re.sub(r'\s*$', "", config_txt, flags=re.MULTILINE)
         config_txt = re.sub(r'(\[.*\])$', "\n\\1", config_txt, flags=re.MULTILINE)
         config_txt = config_txt.strip()
