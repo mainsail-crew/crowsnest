@@ -76,6 +76,8 @@ class Ustreamer(Streamer):
         logger.log_debug(log_pre + f"Parameters: {' '.join(streamer_args)}")
         process,_,_ = await execute_command(
             cmd,
+            info_log_pre=log_pre,
+            info_log_func=logger.log_debug,
             error_log_pre=log_pre,
             error_log_func=self.custom_log
         )

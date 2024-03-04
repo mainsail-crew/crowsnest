@@ -87,6 +87,8 @@ class Camera_Streamer(Streamer):
         logger.log_debug(f"Parameters: {' '.join(streamer_args)}")
         process,_,_ = await execute_command(
             cmd,
+            info_log_pre=log_pre,
+            info_log_func=logger.log_debug,
             error_log_pre=log_pre,
             error_log_func=logger.log_debug
         )
