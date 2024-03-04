@@ -1,6 +1,7 @@
 from ..section import Section
 from ..parameter import Parameter
 from .. import logger
+from ..watchdog import configured_devices
 from configparser import SectionProxy
 import os
 
@@ -36,12 +37,14 @@ Run 'make update' inside the crowsnest directory to install and update everythin
         return success
     
     def execute(self):
+        global configured_devices
         if not os.path.exists(self.binary_path):
             logger.log_multiline(self.missing_bin_txt, logger.log_error)
             return False
         logger.log_quiet(
             f"Starting {self.keyword} with device {self.parameters['device'].value} ..."
         )
+        configured_devices.append(self.parameters['device'].value)
         return True
 
 def load_module():
