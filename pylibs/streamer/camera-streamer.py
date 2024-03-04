@@ -57,7 +57,7 @@ class Camera_Streamer(Streamer):
             logger.log_quiet(f"Handling done by camera-streamer", prefix)
             logger.log_quiet(f"Trying to set: {v4l2ctl}", prefix)
             for ctrl in v4l2ctl.split(','):
-                streamer_args += [f'--camera-options={ctrl}']
+                streamer_args += [f'--camera-options={ctrl.strip()}']
 
         if device.startswith('/base') and 'i2c' in device:
             streamer_args += [
