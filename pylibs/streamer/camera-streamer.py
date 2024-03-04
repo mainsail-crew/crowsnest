@@ -40,7 +40,7 @@ class Camera_Streamer(Streamer):
 
         streamer_args = [
             '--camera-path=' + device,
-            '--http-listen=' + host,
+            # '--http-listen=' + host,
             '--http-port=' + str(port),
             '--camera-fps=' + str(fps),
             '--camera-width=' + width,
@@ -82,9 +82,8 @@ class Camera_Streamer(Streamer):
         streamer_args += self.parameters['custom_flags'].value.split()
 
         cmd = self.binary_path + ' ' + ' '.join(streamer_args)
-        log_pre = f'ustreamer [cam {self.name}]: '
+        log_pre = f'camera-streamer [cam {self.name}]: '
 
-        # logger.log_quiet(f"Starting ustreamer with device {device} ...")
         logger.log_debug(f"Parameters: {' '.join(streamer_args)}")
         process,_,_ = await execute_command(
             cmd,
