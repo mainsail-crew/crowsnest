@@ -32,7 +32,7 @@ def setup_logging(log_path, filemode='a'):
     formatter = logging.Formatter('[%(asctime)s] %(message)s', datefmt='%d/%m/%y %H:%M:%S')
     filehandler = logging.FileHandler(log_path, filemode, 'utf-8')
     filehandler.setFormatter(formatter)
-    logger.addHandler()
+    logger.addHandler(filehandler)
     logger.setLevel(logging.INFO)
 
 def set_log_level(level):
