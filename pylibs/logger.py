@@ -13,14 +13,14 @@ def setup_logging(log_path, filemode='a'):
     # Create log directory if it does not exist.
     os.makedirs(os.path.dirname(log_path), exist_ok=True)
 
-    logging.basicConfig(
-        filename=log_path,
-        filemode=filemode,
-        encoding='utf-8',
-        level=logging.INFO,
-        format='[%(asctime)s] %(message)s',
-        datefmt='%d/%m/%y %H:%M:%S'
-    )
+    # logging.basicConfig(
+    #     filename=log_path,
+    #     filemode=filemode,
+    #     encoding='utf-8',
+    #     level=logging.INFO,
+    #     format='[%(asctime)s] %(message)s',
+    #     datefmt='%d/%m/%y %H:%M:%S'
+    # )
 
     # Change DEBUG to DEB and add custom logging level.
     logging.addLevelName(DEV, 'DEV')
@@ -28,6 +28,12 @@ def setup_logging(log_path, filemode='a'):
     logging.addLevelName(QUIET, 'QUIET')
     
     logger = logging.getLogger('crowsnest')
+    logger.propagate = True
+    formatter = logging.Formatter('[%(asctime)s] %(message)s', datefmt='%d/%m/%y %H:%M:%S')
+    filehandler = logging.FileHandler(log_path, filemode, 'utf-8')
+    filehandler.setFormatter(formatter)
+    logger.addHandler()
+    logger.setLevel(logging.INFO)
 
 def set_log_level(level):
     global logger
