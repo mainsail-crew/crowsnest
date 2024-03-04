@@ -28,7 +28,6 @@ def setup_logging(log_path, filemode='a'):
     logging.addLevelName(QUIET, 'QUIET')
     
     logger = logging.getLogger('crowsnest')
-    logger.propagate = False
 
 def set_log_level(level):
     global logger
