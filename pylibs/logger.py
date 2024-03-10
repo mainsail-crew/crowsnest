@@ -1,6 +1,7 @@
 import logging
 
 import os
+import sys
 
 DEV = 10
 DEBUG = 15
@@ -33,6 +34,11 @@ def setup_logging(log_path, filemode='a', log_level=logging.INFO):
     filehandler = logging.FileHandler(log_path, filemode, 'utf-8')
     filehandler.setFormatter(formatter)
     logger.addHandler(filehandler)
+
+    streamhandler = logging.StreamHandler(sys.stdout)
+    filehandler.setFormatter(formatter)
+    logger.addHandler(streamhandler)
+
     logger.setLevel(log_level)
 
 def set_log_level(level):
