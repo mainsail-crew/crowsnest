@@ -7,6 +7,7 @@ import pylibs.logger as logger
 import pylibs.logging_helper as logging_helper
 
 import asyncio
+import pathlib
 
 parser = argparse.ArgumentParser(
     prog='Crowsnest',
@@ -92,7 +93,7 @@ async def main():
     parse_config()
 
     if crowsnest.parameters['delete_log'].value:
-        logger.setup_logging(args.log_path, 'w', crowsnest.parameters['log_level'].value)
+        pathlib.Path.unlink(args.log_path)
         logging_helper.log_initial()
 
     logging_helper.log_host_info()

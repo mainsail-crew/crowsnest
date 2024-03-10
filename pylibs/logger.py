@@ -1,4 +1,5 @@
 import logging
+import logging.handlers
 
 import os
 import sys
@@ -31,7 +32,7 @@ def setup_logging(log_path, filemode='a', log_level=logging.INFO):
     logger = logging.getLogger('crowsnest')
     logger.propagate = False
     formatter = logging.Formatter('[%(asctime)s] %(message)s', datefmt='%d/%m/%y %H:%M:%S')
-    filehandler = logging.FileHandler(log_path, filemode, 'utf-8')
+    filehandler = logging.handlers.WatchedFileHandler(log_path, filemode, 'utf-8')
     filehandler.setFormatter(formatter)
     logger.addHandler(filehandler)
 
