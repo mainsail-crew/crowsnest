@@ -27,7 +27,7 @@ def setup_logging(log_path, filemode='a', log_level=logging.INFO):
     logging.addLevelName(DEV, 'DEV')
     logging.addLevelName(DEBUG, 'DEBUG')
     logging.addLevelName(QUIET, 'QUIET')
-    
+
     logger = logging.getLogger('crowsnest')
     logger.propagate = False
     formatter = logging.Formatter('[%(asctime)s] %(message)s', datefmt='%d/%m/%y %H:%M:%S')
