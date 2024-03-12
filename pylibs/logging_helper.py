@@ -37,7 +37,7 @@ def log_host_info():
     distribution = grep('/etc/os-release', 'PRETTY_NAME')
     distribution = distribution.strip().split('=')[1].strip('"')
     log_info(f'Distribution: {distribution}', log_pre)
-    
+
     # Release Version of MainsailOS (if file present)
     try:
         with open('/etc/mainsailos-release', 'r') as file:
@@ -127,8 +127,8 @@ def log_libcamera_dev(path: str, properties: dict) -> str:
             str_indent = (30 - len(str_first)) * ' ' + ': '
             log_info(str_first + str_indent + str_second, indentation)
     else:
-        log_info("apt package 'python3-libcamera' is not installed! \
-Make sure to install it to log the controls!", indentation)
+        log_info("apt package 'python3-libcamera' is not installed! "
+                 "Make sure to install it to log the controls!", indentation)
 
 def get_type_str(obj) -> str:
     return str(type(obj)).split('\'')[1]

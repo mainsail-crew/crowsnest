@@ -15,15 +15,6 @@ def setup_logging(log_path, filemode='a', log_level=logging.INFO):
     # Create log directory if it does not exist.
     os.makedirs(os.path.dirname(log_path), exist_ok=True)
 
-    # logging.basicConfig(
-    #     filename=log_path,
-    #     filemode=filemode,
-    #     encoding='utf-8',
-    #     level=logging.INFO,
-    #     format='[%(asctime)s] %(message)s',
-    #     datefmt='%d/%m/%y %H:%M:%S'
-    # )
-
     # Change DEBUG to DEB and add custom logging level.
     logging.addLevelName(DEV, 'DEV')
     logging.addLevelName(DEBUG, 'DEBUG')
@@ -32,14 +23,18 @@ def setup_logging(log_path, filemode='a', log_level=logging.INFO):
     logger = logging.getLogger('crowsnest')
     logger.propagate = False
     formatter = logging.Formatter('[%(asctime)s] %(message)s', datefmt='%d/%m/%y %H:%M:%S')
+
+    # WatchedFileHandler for log file. This handler will reopen the file if it is moved or deleted.
     filehandler = logging.handlers.WatchedFileHandler(log_path, filemode, 'utf-8')
     filehandler.setFormatter(formatter)
     logger.addHandler(filehandler)
 
+    # StreamHandler for stdout.
     streamhandler = logging.StreamHandler(sys.stdout)
     streamhandler.setFormatter(formatter)
     logger.addHandler(streamhandler)
 
+    # Set log level.
     logger.setLevel(log_level)
 
 def set_log_level(level):
