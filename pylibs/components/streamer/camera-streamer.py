@@ -2,9 +2,7 @@ import asyncio
 
 from pylibs.components.streamer.streamer import Streamer
 from pylibs.parameter import Parameter
-from pylibs.utils import execute_command, get_executable
-from pylibs.hwhandler import has_device_mjpg_hw
-from pylibs import logger
+from pylibs import logger, utils, hwhandler
 
 class Camera_Streamer(Streamer):
     keyword = 'camera-streamer'
@@ -18,7 +16,7 @@ class Camera_Streamer(Streamer):
         })
 
         if Camera_Streamer.binary_path is None:
-            Camera_Streamer.binary_path = get_executable(
+            Camera_Streamer.binary_path = utils.get_executable(
                 ['camera-streamer'],
                 ['bin/camera-streamer']
             )
@@ -70,7 +68,7 @@ class Camera_Streamer(Streamer):
             streamer_args += [
                 '--camera-type=v4l2'
             ]
-            if has_device_mjpg_hw(device):
+            if hwhandler.has_device_mjpg_hw(device):
                 streamer_args += [
                     '--camera-format=MJPEG'
                 ]
@@ -87,7 +85,7 @@ class Camera_Streamer(Streamer):
         log_pre = f'camera-streamer [cam {self.name}]: '
 
         logger.log_debug(log_pre + f"Parameters: {' '.join(streamer_args)}")
-        process,_,_ = await execute_command(
+        process,_,_ = await utils.execute_command(
             cmd,
             info_log_pre=log_pre,
             info_log_func=logger.log_debug,

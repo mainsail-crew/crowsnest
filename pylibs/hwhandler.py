@@ -2,8 +2,7 @@ import os
 import shutil
 import re
 
-from pylibs import utils
-from pylibs.v4l2_control import get_uvc_formats, get_uvc_v4l2ctrls
+from pylibs import utils, v4l2_control as v4l2_ctl
 
 avail_cams = {
     'uvc': {},
@@ -22,14 +21,14 @@ def get_avail_uvc_dev() -> dict:
     for cam_path in avail_uvc:
         cams[cam_path] = {}
         cams[cam_path]['realpath'] = os.path.realpath(cam_path)
-        cams[cam_path]['formats'] = get_uvc_formats(cam_path)
-        cams[cam_path]['v4l2ctrls'] = get_uvc_v4l2ctrls(cam_path)
+        cams[cam_path]['formats'] = v4l2_ctl.get_uvc_formats(cam_path)
+        cams[cam_path]['v4l2ctrls'] = v4l2_ctl.get_uvc_v4l2ctrls(cam_path)
     avail_cams['uvc'].update(cams)
     return cams
 
 def has_device_mjpg_hw(cam_path: str) -> bool:
     global avail_cams
-    return 'Motion-JPEG, compressed' in get_uvc_formats(cam_path)
+    return 'Motion-JPEG, compressed' in v4l2_ctl.get_uvc_formats(cam_path)
 
 def get_avail_libcamera() -> dict:
     cmd = shutil.which('libcamera-hello')
@@ -113,8 +112,8 @@ def get_avail_legacy() -> dict:
             legacy_path = lines[i+1].strip()
             break
     legacy[legacy_path] = {}
-    legacy[legacy_path]['formats'] = get_uvc_formats(legacy_path)
-    legacy[legacy_path]['v4l2ctrls'] = get_uvc_v4l2ctrls(legacy_path)
+    legacy[legacy_path]['formats'] = v4l2_ctl.get_uvc_formats(legacy_path)
+    legacy[legacy_path]['v4l2ctrls'] = v4l2_ctl.get_uvc_v4l2ctrls(legacy_path)
     avail_cams['legacy'].update(legacy)
     return legacy
 

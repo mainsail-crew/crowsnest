@@ -2,10 +2,7 @@ import re
 import asyncio
 
 from pylibs.components.streamer.streamer import Streamer
-from pylibs.utils import execute_command, get_executable
-from pylibs.hwhandler import is_device_legacy, has_device_mjpg_hw
-from pylibs.v4l2_control import set_v4l2ctrls, blockyfix, brokenfocus
-from pylibs import logger
+from pylibs import logger, utils, hwhandler, v4l2_control as v4l2_ctl
 
 class Ustreamer(Streamer):
     section_name = 'cam'
@@ -15,7 +12,7 @@ class Ustreamer(Streamer):
         super().__init__(name)
 
         if Ustreamer.binary_path is None:
-            Ustreamer.binary_path = get_executable(
+            Ustreamer.binary_path = utils.get_executable(
                 ['ustreamer.bin', 'ustreamer'],
                 ['bin/ustreamer']
             )
@@ -44,19 +41,19 @@ class Ustreamer(Streamer):
             '--static', '"ustreamer-www"'
         ]
 
-        if is_device_legacy(device):
+        if hwhandler.is_device_legacy(device):
             streamer_args += [
                 '--format', 'MJPEG',
                 '--device-timeout', '5',
                 '--buffers', '3'
             ]
-            blockyfix(device)
+            v4l2_ctl.blockyfix(device)
         else:
             streamer_args += [
                 '--device', device,
                 '--device-timeout', '2'
             ]
-            if has_device_mjpg_hw(device):
+            if hwhandler.has_device_mjpg_hw(device):
                 streamer_args += [
                     '--format', 'MJPEG',
                     '--encoder', 'HW'
@@ -64,7 +61,7 @@ class Ustreamer(Streamer):
 
         v4l2ctl = self.parameters['v4l2ctl'].value
         if v4l2ctl:
-            set_v4l2ctrls(f'[cam {self.name}]', device, v4l2ctl.split(','))
+            v4l2_ctl.set_v4l2ctrls(f'[cam {self.name}]', device, v4l2ctl.split(','))
 
         # custom flags
         streamer_args += self.parameters['custom_flags'].value.split()
@@ -74,7 +71,7 @@ class Ustreamer(Streamer):
 
         # logger.log_quiet(f"Starting ustreamer with device {device} ...")
         logger.log_debug(log_pre + f"Parameters: {' '.join(streamer_args)}")
-        process,_,_ = await execute_command(
+        process,_,_ = await utils.execute_command(
             cmd,
             info_log_pre=log_pre,
             info_log_func=logger.log_debug,
@@ -88,7 +85,7 @@ class Ustreamer(Streamer):
         for ctl in v4l2ctl.split(','):
             if 'focus_absolute' in ctl:
                 focus_absolute = ctl.split('=')[1].strip()
-                brokenfocus(device, focus_absolute)
+                v4l2_ctl.brokenfocus(device, focus_absolute)
                 break
 
         return process

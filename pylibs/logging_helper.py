@@ -1,23 +1,18 @@
-import shutil
-# log_config
 import re
-# log_host_info
 import os
-from pylibs import utils
-# log_cams
 import sys
-from pylibs.logger import log_quiet, log_info, log_error, log_multiline, indentation
-from pylibs.hwhandler import get_avail_uvc_dev, get_avail_libcamera, get_avail_legacy
+
+from pylibs import utils, logger, hwhandler
 
 def log_initial():
-    log_quiet('crowsnest - A webcam Service for multiple Cams and Stream Services.')
+    logger.log_quiet('crowsnest - A webcam Service for multiple Cams and Stream Services.')
     command = 'git describe --always --tags'
     version = utils.execute_shell_command(command)
-    log_quiet(f'Version: {version}')
-    log_quiet('Prepare Startup ...')
+    logger.log_quiet(f'Version: {version}')
+    logger.log_quiet('Prepare Startup ...')
 
 def log_config(config_path):
-    log_info("Print Configfile: '" + config_path + "'")
+    logger.log_info("Print Configfile: '" + config_path + "'")
     with open(config_path, 'r') as file:
         config_txt = file.read()
         # Remove comments
@@ -29,29 +24,29 @@ def log_config(config_path):
         # Remove leading and trailing whitespaces
         config_txt = config_txt.strip()
         # Split the config file into lines
-        log_multiline(config_txt, log_info, indentation)
+        logger.log_multiline(config_txt, logger.log_info, logger.indentation)
 
 def log_host_info():
-    log_info("Host Information:")
-    log_pre = indentation #"Host Info: "
+    logger.log_info("Host Information:")
+    log_pre = logger.indentation
 
     ### OS Infos
     # OS Version
     distribution = grep('/etc/os-release', 'PRETTY_NAME')
     distribution = distribution.strip().split('=')[1].strip('"')
-    log_info(f'Distribution: {distribution}', log_pre)
+    logger.log_info(f'Distribution: {distribution}', log_pre)
 
     # Release Version of MainsailOS (if file present)
     try:
         with open('/etc/mainsailos-release', 'r') as file:
             content = file.read()
-            log_info(f'Release: {content.strip()}', log_pre)
+            logger.log_info(f'Release: {content.strip()}', log_pre)
     except FileNotFoundError:
         pass
 
     # Kernel Version
     uname = os.uname()
-    log_info(f'Kernel: {uname.sysname} {uname.release} {uname.machine}', log_pre)
+    logger.log_info(f'Kernel: {uname.sysname} {uname.release} {uname.machine}', log_pre)
 
 
     ### Host Machine Infos
@@ -61,22 +56,22 @@ def log_host_info():
         model == grep('/proc/cpuinfo', 'model name').split(':')[1].strip()
     if model == '':
         model = 'Unknown'
-    log_info(f'Model: {model}', log_pre)
+    logger.log_info(f'Model: {model}', log_pre)
 
     # CPU count
     cpu_count = os.cpu_count()
-    log_info(f"Available CPU Cores: {cpu_count}", log_pre)
+    logger.log_info(f"Available CPU Cores: {cpu_count}", log_pre)
 
     # Avail mem
     # psutil.virtual_memory().total
     memtotal = grep('/proc/meminfo', 'MemTotal:').split(':')[1].strip()
-    log_info(f'Available Memory: {memtotal}', log_pre)
+    logger.log_info(f'Available Memory: {memtotal}', log_pre)
 
     # Avail disk size
     # Alternative shutil.disk_usage.total
     command = 'LC_ALL=C df -h / | awk \'NR==2 {print $4" / "$2}\''
     disksize = utils.execute_shell_command(command)
-    log_info(f'Diskspace (avail. / total): {disksize}', log_pre)
+    logger.log_info(f'Diskspace (avail. / total): {disksize}', log_pre)
 
 def grep(path: str, search: str) -> str:
     with open(path, 'r') as file:
@@ -87,40 +82,40 @@ def grep(path: str, search: str) -> str:
     return ''
 
 def log_cams():
-    log_info("Detect available Devices")
-    libcamera = get_avail_libcamera()
-    uvc = get_avail_uvc_dev()
-    legacy = get_avail_legacy()
+    logger.log_info("Detect available Devices")
+    libcamera = hwhandler.get_avail_libcamera()
+    uvc = hwhandler.get_avail_uvc_dev()
+    legacy = hwhandler.get_avail_legacy()
     total = len(libcamera.keys()) + len(legacy.keys()) + len(uvc.keys())
 
     if total == 0:
-        log_error("No usable Devices Found. Stopping ")
+        logger.log_error("No usable Devices Found. Stopping ")
         sys.exit()
 
-    log_info(f"Found {total} total available Device(s)")
+    logger.log_info(f"Found {total} total available Device(s)")
     if libcamera:
-        log_info(f"Found {len(libcamera.keys())} available 'libcamera' device(s)")
+        logger.log_info(f"Found {len(libcamera.keys())} available 'libcamera' device(s)")
         for path, properties in libcamera.items():
             log_libcamera_dev(path, properties)
     if legacy:
         for path, properties in legacy.items():
-            log_info(f"Detected 'Raspicam' Device -> {path}")
+            logger.log_info(f"Detected 'Raspicam' Device -> {path}")
             log_uvc_formats(properties)
             log_uvc_v4l2ctrls(properties)
     if uvc:
-        log_info(f"Found {len(uvc.keys())} available v4l2 (UVC) camera(s)")
+        logger.log_info(f"Found {len(uvc.keys())} available v4l2 (UVC) camera(s)")
         for path, properties in uvc.items():
-            log_info(f"{path} -> {properties['realpath']}", '')
+            logger.log_info(f"{path} -> {properties['realpath']}", '')
             log_uvc_formats(properties)
             log_uvc_v4l2ctrls(properties)
 
 def log_libcamera_dev(path: str, properties: dict) -> str:
-    log_info(f"Detected 'libcamera' device -> {path}")
-    log_info(f"Advertised Formats:", '')
+    logger.log_info(f"Detected 'libcamera' device -> {path}")
+    logger.log_info(f"Advertised Formats:", '')
     resolutions = properties['resolutions']
     for res in resolutions:
-        log_info(f"{res}", indentation)
-    log_info(f"Supported Controls:", '')
+        logger.log_info(f"{res}", logger.indentation)
+    logger.log_info(f"Supported Controls:", '')
     controls = properties['controls']
     if controls:
         for name, value in controls.items():
@@ -128,18 +123,18 @@ def log_libcamera_dev(path: str, properties: dict) -> str:
             str_first = f"{name} ({get_type_str(min)})"
             str_second = f"min={min} max={max} default={default}"
             str_indent = (30 - len(str_first)) * ' ' + ': '
-            log_info(str_first + str_indent + str_second, indentation)
+            logger.log_info(str_first + str_indent + str_second, logger.indentation)
     else:
-        log_info("apt package 'python3-libcamera' is not installed! "
-                 "Make sure to install it to log the controls!", indentation)
+        logger.log_info("apt package 'python3-libcamera' is not installed! "
+                 "Make sure to install it to log the controls!", logger.indentation)
 
 def get_type_str(obj) -> str:
     return str(type(obj)).split('\'')[1]
 
 def log_uvc_formats(properties: dict) -> None:
-    log_info(f"Supported Formats:", '')
-    log_multiline(properties['formats'], log_info, indentation)
+    logger.log_info(f"Supported Formats:", '')
+    logger.log_multiline(properties['formats'], logger.log_info, logger.indentation)
 
 def log_uvc_v4l2ctrls(properties: dict) -> None:
-    log_info(f"Supported Controls:", '')
-    log_multiline(properties['v4l2ctrls'], log_info, indentation)
+    logger.log_info(f"Supported Controls:", '')
+    logger.log_multiline(properties['v4l2ctrls'], logger.log_info, logger.indentation)

@@ -3,8 +3,7 @@ import asyncio
 from configparser import SectionProxy
 from pylibs.components.section import Section
 from pylibs.parameter import Parameter
-from pylibs.utils import get_module_class
-from pylibs import logger
+from pylibs import logger, utils
 
 class Cam(Section):
     section_name = 'cam'
@@ -23,7 +22,7 @@ class Cam(Section):
         # Dynamically import module
         mode = config_section["mode"].split()[0]
         self.parameters["mode"].set_value(mode)
-        mode_class = get_module_class('pylibs.components.streamer', mode)
+        mode_class = utils.get_module_class('pylibs.components.streamer', mode)
         self.streamer = mode_class(self.name)
         return self.streamer.parse_config(config_section)
 
