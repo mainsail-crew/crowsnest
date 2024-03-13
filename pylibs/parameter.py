@@ -15,7 +15,7 @@ class Parameter:
                 elif value.lower() == 'false':
                     self.value = False
                 else:
-                    logger.log_error(f"{value} is not 'true' or 'false'! Parameter ignored!")
+                    raise ValueError()
             else:
                 self.value = self.type(value)
         except ValueError:

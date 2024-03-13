@@ -19,7 +19,7 @@ class Cam(Section):
 
         self.streamer = None
 
-    def parse_config(self, config_section: SectionProxy, *args, **kwargs):
+    def parse_config(self, config_section: SectionProxy, *args, **kwargs) -> bool:
         # Dynamically import module
         mode = config_section["mode"].split()[0]
         self.parameters["mode"].set_value(mode)
@@ -44,8 +44,3 @@ class Cam(Section):
 
 def load_module():
     return Cam
-
-#if __name__ == "__main__":
-#    print("This is a module and shouldn't be executed directly")
-#else:
-#    CN_Section.available_sections[CN_Cam.keyword] = CN_Cam

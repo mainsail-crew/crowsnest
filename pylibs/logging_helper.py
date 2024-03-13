@@ -22,8 +22,11 @@ def log_config(config_path):
         config_txt = file.read()
         # Remove comments
         config_txt = re.sub(r'#.*$', "", config_txt, flags=re.MULTILINE)
+        # Remove multiple whitespaces next to each other at the end of a line
         config_txt = re.sub(r'\s*$', "", config_txt, flags=re.MULTILINE)
+        # Add newlines before sections
         config_txt = re.sub(r'(\[.*\])$', "\n\\1", config_txt, flags=re.MULTILINE)
+        # Remove leading and trailing whitespaces
         config_txt = config_txt.strip()
         # Split the config file into lines
         log_multiline(config_txt, log_info, indentation)

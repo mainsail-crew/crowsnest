@@ -10,8 +10,8 @@ class Section:
     available_sections = {}
     # Section looks like this:
     # [<keyword> <name>]
-    # param1
-    # param2
+    # param1: value1
+    # param2: value2
     def __init__(self, name: str = '') -> None:
         self.name = name
         self.parameters: dict[str, Parameter] = {}
@@ -28,7 +28,8 @@ class Section:
             self.parameters[parameter].set_value(value)
         for parameter in self.parameters:
             if self.parameters[parameter].value is None:
-                logger.log_error(f"Parameter '{parameter}' not found in section [{self.section_name} {self.name}]")
+                logger.log_error(f"Parameter '{parameter}' not found in section "
+                                  "[{self.section_name} {self.name}]")
                 success = False
         return success
 

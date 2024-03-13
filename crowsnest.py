@@ -30,7 +30,7 @@ def parse_config():
     crowsnest.parse_config(config['crowsnest'])
     logger.set_log_level(crowsnest.parameters['log_level'].value)
 
-async def start_processes():
+async def start_sections():
     global config, watchdog_running
     sec_objs = []
     sec_exec_tasks = set()
@@ -42,6 +42,7 @@ async def start_processes():
             section_object = None
             section_keyword = section_header[0]
 
+            # Skip crowsnest section
             if section_keyword == 'crowsnest':
                 continue
 
@@ -100,10 +101,12 @@ async def main():
     logging_helper.log_config(args.config)
     logging_helper.log_cams()
 
-    task1 = asyncio.create_task(start_processes())
+    task1 = asyncio.create_task(start_sections())
     task2 = asyncio.create_task(run_watchdog())
+
     await task1
-    await task2
+    if task2:
+        task2.cancel()
 
     # asyncio.gather(start_processes(), run_watchdog())
 
