@@ -3,16 +3,16 @@ import shutil
 import re
 # log_host_info
 import os
-from . import core
+from pylibs import utils
 # log_cams
 import sys
-from .logger import log_quiet, log_info, log_error, log_multiline, indentation
-from .hwhandler import get_avail_uvc_dev, get_avail_libcamera, get_avail_legacy
+from pylibs.logger import log_quiet, log_info, log_error, log_multiline, indentation
+from pylibs.hwhandler import get_avail_uvc_dev, get_avail_libcamera, get_avail_legacy
 
 def log_initial():
     log_quiet('crowsnest - A webcam Service for multiple Cams and Stream Services.')
     command = 'git describe --always --tags'
-    version = core.execute_shell_command(command)
+    version = utils.execute_shell_command(command)
     log_quiet(f'Version: {version}')
     log_quiet('Prepare Startup ...')
 
@@ -75,7 +75,7 @@ def log_host_info():
     # Avail disk size
     # Alternative shutil.disk_usage.total
     command = 'LC_ALL=C df -h / | awk \'NR==2 {print $4" / "$2}\''
-    disksize = core.execute_shell_command(command)
+    disksize = utils.execute_shell_command(command)
     log_info(f'Diskspace (avail. / total): {disksize}', log_pre)
 
 def grep(path: str, search: str) -> str:

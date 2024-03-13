@@ -1,10 +1,10 @@
 import os
 import asyncio
 
-from ..section import Section
-from ..parameter import Parameter
-from .. import logger
-from ..watchdog import configured_devices
+from pylibs.components.section import Section
+from pylibs.parameter import Parameter
+from pylibs import logger
+from pylibs.watchdog import configured_devices
 from configparser import SectionProxy
 
 class Streamer(Section):

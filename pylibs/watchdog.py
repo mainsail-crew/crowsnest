@@ -1,5 +1,5 @@
 import os
-from . import logger
+from pylibs import logger
 
 configured_devices: list[str] = []
 

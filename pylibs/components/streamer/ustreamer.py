@@ -1,11 +1,11 @@
 import re
 import asyncio
 
-from .streamer import Streamer
-from ..core import execute_command, get_executable
-from ..hwhandler import is_device_legacy, has_device_mjpg_hw
-from ..v4l2_control import set_v4l2ctrls, blockyfix, brokenfocus
-from .. import logger
+from pylibs.components.streamer.streamer import Streamer
+from pylibs.utils import execute_command, get_executable
+from pylibs.hwhandler import is_device_legacy, has_device_mjpg_hw
+from pylibs.v4l2_control import set_v4l2ctrls, blockyfix, brokenfocus
+from pylibs import logger
 
 class Ustreamer(Streamer):
     section_name = 'cam'

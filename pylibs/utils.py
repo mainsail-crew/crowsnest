@@ -5,7 +5,7 @@ import math
 import shutil
 import os
 
-from . import logger
+from pylibs import logger
 
 # Dynamically import module
 # Requires module to have a load_module() function,

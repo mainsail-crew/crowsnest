@@ -1,5 +1,5 @@
-from .section import Section
-from .parameter import Parameter
+from pylibs.components.section import Section
+from pylibs.parameter import Parameter
 
 from configparser import SectionProxy
 

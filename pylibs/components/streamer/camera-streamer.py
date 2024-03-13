@@ -1,10 +1,10 @@
 import asyncio
 
-from .streamer import Streamer
-from ..parameter import Parameter
-from ..core import execute_command, get_executable
-from ..hwhandler import has_device_mjpg_hw
-from .. import logger
+from pylibs.components.streamer.streamer import Streamer
+from pylibs.parameter import Parameter
+from pylibs.utils import execute_command, get_executable
+from pylibs.hwhandler import has_device_mjpg_hw
+from pylibs import logger
 
 class Camera_Streamer(Streamer):
     keyword = 'camera-streamer'

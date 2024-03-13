@@ -2,8 +2,8 @@ import os
 import shutil
 import re
 
-from . import core
-from .v4l2_control import get_uvc_formats, get_uvc_v4l2ctrls
+from pylibs import utils
+from pylibs.v4l2_control import get_uvc_formats, get_uvc_v4l2ctrls
 
 avail_cams = {
     'uvc': {},
@@ -36,7 +36,7 @@ def get_avail_libcamera() -> dict:
     if not cmd:
         return {}
     libcam_cmd =f'{cmd} --list-cameras'
-    libcam = core.execute_shell_command(libcam_cmd, strip=False)
+    libcam = utils.execute_shell_command(libcam_cmd, strip=False)
     libcams = {}
     if 'Available' in libcam:
         for path in get_libcamera_paths(libcam):
@@ -97,7 +97,7 @@ def get_avail_legacy() -> dict:
     if not cmd:
         return legacy
     count_cmd = f'{cmd} get_camera'
-    count = core.execute_shell_command(count_cmd)
+    count = utils.execute_shell_command(count_cmd)
     # Gets the number behind detected: "supported=1 detected=1, libcamera interfaces=0"
     if not count:
         return legacy
@@ -105,7 +105,7 @@ def get_avail_legacy() -> dict:
     if count == '0':
         return legacy
     v4l2_cmd = 'v4l2-ctl --list-devices'
-    v4l2 = core.execute_shell_command(v4l2_cmd) 
+    v4l2 = utils.execute_shell_command(v4l2_cmd) 
     legacy_path = ''
     lines = v4l2.split('\n')
     for i in range(len(lines)):
