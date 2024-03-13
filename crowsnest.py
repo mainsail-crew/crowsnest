@@ -1,10 +1,8 @@
 import argparse
 import configparser
+
 from pylibs.components.crowsnest import Crowsnest
-from pylibs.utils import get_module_class
-from pylibs.watchdog import crowsnest_watchdog
-import pylibs.logger as logger
-import pylibs.logging_helper as logging_helper
+from pylibs import utils, watchdog, logger, logging_helper
 
 import asyncio
 import pathlib
@@ -46,7 +44,7 @@ async def start_sections():
             if section_keyword == 'crowsnest':
                 continue
 
-            section_class = get_module_class('pylibs.components', section_keyword)
+            section_class = utils.get_module_class('pylibs.components', section_keyword)
             section_name = ' '.join(section_header[1:])
             section_object = section_class(section_name)
             if section_object.parse_config(config[section]):
@@ -83,7 +81,7 @@ async def run_watchdog():
     global watchdog_running
     while watchdog_running:
         await asyncio.sleep(120)
-        crowsnest_watchdog()
+        watchdog.crowsnest_watchdog()
 
 
 async def main():
