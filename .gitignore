@@ -16,7 +16,7 @@ leftover*
 # tmp file workaround
 lost*
 
-# ignore bin paths
+# Ignore bin paths
 bin/ustreamer
 bin/camera-streamer
 
@@ -30,3 +30,6 @@ tools/.config
 
 # Ignore pkglist
 tools/pkglist.sh
+
+# Ignore pycache
+**/__pycache__/
