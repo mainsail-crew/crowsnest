@@ -81,7 +81,8 @@ class Ustreamer(Streamer):
             error_log_pre=log_pre,
             error_log_func=self.custom_log
         )
-        lock.release()
+        if lock.locked():
+            lock.release()
 
         await asyncio.sleep(0.5)
         for ctl in v4l2ctl.split(','):

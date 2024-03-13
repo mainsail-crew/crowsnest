@@ -94,7 +94,8 @@ class Camera_Streamer(Streamer):
             error_log_pre=log_pre,
             error_log_func=logger.log_debug
         )
-        lock.release()
+        if lock.locked():
+            lock.release()
 
         return process
 
