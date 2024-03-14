@@ -46,8 +46,6 @@ async def start_sections():
 
             section_name = ' '.join(section_header[1:])
             section = utils.load_component(section_keyword, section_name, config[section])
-            # section_object = section_class(section_name)
-            # if section_object.parse_config_section(config[section]):
             if section:
                 sect_objs.append(section)
                 logger.log_info(f"Configuration of section [{section}] looks good. Continue ...")
@@ -106,8 +104,6 @@ async def main():
     await task1
     if task2:
         task2.cancel()
-
-    # asyncio.gather(start_processes(), run_watchdog())
 
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()

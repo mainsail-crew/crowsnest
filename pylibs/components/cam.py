@@ -30,7 +30,6 @@ class Cam(Section):
             return True
         else:
             return False
-        # return self.streamer.parse_config_section(config_section)
 
     async def execute(self, lock: asyncio.Lock):
         if self.streamer is None:

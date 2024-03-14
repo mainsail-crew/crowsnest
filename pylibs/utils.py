@@ -8,8 +8,8 @@ from configparser import SectionProxy
 
 from pylibs import logger
 
-# Dynamically import module
-# Requires module to have a load_module() function,
+# Dynamically import component
+# Requires module to have a load_component() function,
 # as well as the same name as the section keyword
 def load_component(component: str,
                    name: str,
@@ -61,12 +61,6 @@ async def execute_command(
     )
 
     return process, stdout_task, stderr_task
-    # Wait for the subprocess to finish
-    #await process.wait()
-
-    # Wait for the output handling tasks to finish
-    #await stdout_task
-    #await stderr_task
 
 def execute_shell_command(command: str, strip: bool = True) -> str:
     try:
