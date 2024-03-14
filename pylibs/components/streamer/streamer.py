@@ -29,8 +29,8 @@ class Streamer(Section):
 Please make sure everything is installed correctly and up to date!
 Run 'make update' inside the crowsnest directory to install and update everything."""
     
-    def parse_config(self, config_section: SectionProxy, *args, **kwargs) -> bool:
-        success = super().parse_config(config_section, *args, **kwargs)
+    def parse_config_section(self, config_section: SectionProxy, *args, **kwargs) -> bool:
+        success = super().parse_config_section(config_section, *args, **kwargs)
         if self.binary_path is None:
             logger.log_multiline(self.missing_bin_txt % self.parameters['mode'].value,
                                  logger.log_error)

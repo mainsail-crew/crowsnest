@@ -20,18 +20,18 @@ args = parser.parse_args()
 
 watchdog_running = True
 
-def parse_config():
+def initial_parse_config():
     global crowsnest, config, args
     config_path = args.config
     config.read(config_path)
     crowsnest = Crowsnest('crowsnest')
-    crowsnest.parse_config(config['crowsnest'])
+    crowsnest.parse_config_section(config['crowsnest'])
     logger.set_log_level(crowsnest.parameters['log_level'].value)
 
 async def start_sections():
     global config, watchdog_running
-    sec_objs = []
-    sec_exec_tasks = set()
+    sect_objs = []
+    sect_exec_tasks = set()
 
     logger.log_quiet("Try to start configured Cams / Services...")
     try:
@@ -47,29 +47,29 @@ async def start_sections():
             section_class = utils.get_module_class('pylibs.components', section_keyword)
             section_name = ' '.join(section_header[1:])
             section_object = section_class(section_name)
-            if section_object.parse_config(config[section]):
-                sec_objs.append(section_object)
+            if section_object.parse_config_section(config[section]):
+                sect_objs.append(section_object)
                 logger.log_info(f"Configuration of section [{section}] looks good. Continue ...")
             else:
                 logger.log_error(f"Failed to parse config for section [{section}]!")
 
         lock = asyncio.Lock()
-        for section_object in sec_objs:
+        for section_object in sect_objs:
             task = asyncio.create_task(section_object.execute(lock))
-            sec_exec_tasks.add(task)
+            sect_exec_tasks.add(task)
 
         # Let sec_exec_tasks finish first
         await asyncio.sleep(0)
         async with lock:
             logger.log_quiet("... Done!")
 
-        for task in sec_exec_tasks:
+        for task in sect_exec_tasks:
             if task is not None:
                 await task
     except Exception as e:
         print(e)
     finally:
-        for task in sec_exec_tasks:
+        for task in sect_exec_tasks:
             if task != None:
                 task.cancel()
         watchdog_running = False
@@ -89,7 +89,7 @@ async def main():
     logger.setup_logging(args.log_path)
     logging_helper.log_initial()
 
-    parse_config()
+    initial_parse_config()
 
     if crowsnest.parameters['delete_log'].value:
         pathlib.Path.unlink(args.log_path)

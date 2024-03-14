@@ -18,13 +18,13 @@ class Cam(Section):
 
         self.streamer = None
 
-    def parse_config(self, config_section: SectionProxy, *args, **kwargs) -> bool:
+    def parse_config_section(self, config_section: SectionProxy, *args, **kwargs) -> bool:
         # Dynamically import module
         mode = config_section["mode"].split()[0]
         self.parameters["mode"].set_value(mode)
         mode_class = utils.get_module_class('pylibs.components.streamer', mode)
         self.streamer = mode_class(self.name)
-        return self.streamer.parse_config(config_section)
+        return self.streamer.parse_config_section(config_section)
 
     async def execute(self, lock: asyncio.Lock):
         if self.streamer is None:

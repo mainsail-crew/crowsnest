@@ -17,7 +17,7 @@ class Section:
         self.parameters: dict[str, Parameter] = {}
 
     # Parse config according to the needs of the section
-    def parse_config(self, config_section: SectionProxy, *args, **kwargs) -> bool:
+    def parse_config_section(self, config_section: SectionProxy, *args, **kwargs) -> bool:
         success = True
         for parameter in config_section:
             value = config_section[parameter]
