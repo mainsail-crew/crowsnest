@@ -1,4 +1,5 @@
 import asyncio
+from configparser import SectionProxy
 
 from pylibs.components.streamer.streamer import Streamer
 from pylibs.parameter import Parameter
@@ -7,7 +8,7 @@ from pylibs import logger, utils, hwhandler
 class Camera_Streamer(Streamer):
     keyword = 'camera-streamer'
 
-    def __init__(self, name: str = '') -> None:
+    def __init__(self, name: str) -> None:
         super().__init__(name)
 
         self.parameters.update({
@@ -98,5 +99,8 @@ class Camera_Streamer(Streamer):
         return process
 
 
-def load_module():
-    return Camera_Streamer
+def load_component(name: str, config_section: SectionProxy, *args, **kwargs):
+    cst = Camera_Streamer(name)
+    if cst.parse_config_section(config_section, *args, **kwargs):
+        return cst
+    return None

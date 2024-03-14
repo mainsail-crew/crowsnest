@@ -9,7 +9,7 @@ from pylibs import logger, watchdog
 class Streamer(Section):
     binary_path = None
 
-    def __init__(self, name: str = '') -> None:
+    def __init__(self, name: str) -> None:
         super().__init__(name)
 
         self.parameters.update({
@@ -47,5 +47,6 @@ Run 'make update' inside the crowsnest directory to install and update everythin
         watchdog.configured_devices.append(self.parameters['device'].value)
         return True
 
-def load_module():
-    raise NotImplementedError("If you see this, a Streamer module is implemented wrong!!!")
+
+def load_component(name: str, config_section: SectionProxy, *args, **kwargs):
+    raise NotImplementedError("If you see this, something went wrong!!!")

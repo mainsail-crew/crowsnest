@@ -9,7 +9,7 @@ class Cam(Section):
     section_name = 'cam'
     keyword = 'cam'
 
-    def __init__(self, name: str = '') -> None:
+    def __init__(self, name: str) -> None:
         super().__init__(name)
 
         self.parameters.update({
@@ -22,9 +22,15 @@ class Cam(Section):
         # Dynamically import module
         mode = config_section["mode"].split()[0]
         self.parameters["mode"].set_value(mode)
-        mode_class = utils.get_module_class('pylibs.components.streamer', mode)
-        self.streamer = mode_class(self.name)
-        return self.streamer.parse_config_section(config_section)
+        self.streamer = utils.load_component(mode,
+                                             self.name,
+                                             config_section,
+                                             path='pylibs.components.streamer')
+        if self.streamer:
+            return True
+        else:
+            return False
+        # return self.streamer.parse_config_section(config_section)
 
     async def execute(self, lock: asyncio.Lock):
         if self.streamer is None:
@@ -41,5 +47,8 @@ class Cam(Section):
             if lock.locked():
                 lock.release()
 
-def load_module():
-    return Cam
+def load_component(name: str, config_section: SectionProxy, *args, **kwargs):
+    cam = Cam(name)
+    if cam.parse_config_section(config_section, *args, **kwargs):
+        return cam
+    return None

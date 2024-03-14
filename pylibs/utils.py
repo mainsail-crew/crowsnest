@@ -4,19 +4,24 @@ import subprocess
 import math
 import shutil
 import os
+from configparser import SectionProxy
 
 from pylibs import logger
 
 # Dynamically import module
 # Requires module to have a load_module() function,
 # as well as the same name as the section keyword
-def get_module_class(path = '', module_name = ''):
+def load_component(component: str,
+                   name: str,
+                   config_section: SectionProxy,
+                   path='pylibs.components',
+                   *args, **kwargs):
     module_class = None
     try:
-        module = importlib.import_module(f'{path}.{module_name}')
-        module_class = getattr(module, 'load_module')()
+        component = importlib.import_module(f'{path}.{component}')
+        module_class = getattr(component, 'load_component')(name, config_section, *args, **kwargs)
     except (ModuleNotFoundError, AttributeError) as e:
-        print('ERROR: '+str(e))
+        logger.log_error(f"Failed to load module '{component}' from '{path}'")
     return module_class
 
 async def log_subprocess_output(stream, log_func, line_prefix = ''):

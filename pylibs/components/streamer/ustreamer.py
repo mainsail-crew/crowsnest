@@ -1,5 +1,6 @@
 import re
 import asyncio
+from configparser import SectionProxy
 
 from pylibs.components.streamer.streamer import Streamer
 from pylibs import logger, utils, hwhandler, v4l2_control as v4l2_ctl
@@ -8,7 +9,7 @@ class Ustreamer(Streamer):
     section_name = 'cam'
     keyword = 'ustreamer'
 
-    def __init__(self, name: str = '') -> None:
+    def __init__(self, name: str) -> None:
         super().__init__(name)
 
         if Ustreamer.binary_path is None:
@@ -98,5 +99,8 @@ class Ustreamer(Streamer):
         logger.log_debug(msg)
 
 
-def load_module():
-    return Ustreamer
+def load_component(name: str, config_section: SectionProxy, *args, **kwargs):
+    ust = Ustreamer(name)
+    if ust.parse_config_section(config_section, *args, **kwargs):
+        return ust
+    return None

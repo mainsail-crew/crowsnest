@@ -12,7 +12,7 @@ class Section:
     # [<keyword> <name>]
     # param1: value1
     # param2: value2
-    def __init__(self, name: str = '') -> None:
+    def __init__(self, name: str) -> None:
         self.name = name
         self.parameters: dict[str, Parameter] = {}
 
@@ -36,3 +36,7 @@ class Section:
     # Execute section specific stuff, e.g. starting cam
     async def execute(self, lock: asyncio.Lock):
         raise NotImplementedError("If you see this, a module is implemented wrong!!!")
+
+
+def load_component(*args, **kwargs):
+    raise NotImplementedError("If you see this, something went wrong!!!")

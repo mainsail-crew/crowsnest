@@ -44,11 +44,12 @@ async def start_sections():
             if section_keyword == 'crowsnest':
                 continue
 
-            section_class = utils.get_module_class('pylibs.components', section_keyword)
             section_name = ' '.join(section_header[1:])
-            section_object = section_class(section_name)
-            if section_object.parse_config_section(config[section]):
-                sect_objs.append(section_object)
+            section = utils.load_component(section_keyword, section_name, config[section])
+            # section_object = section_class(section_name)
+            # if section_object.parse_config_section(config[section]):
+            if section:
+                sect_objs.append(section)
                 logger.log_info(f"Configuration of section [{section}] looks good. Continue ...")
             else:
                 logger.log_error(f"Failed to parse config for section [{section}]!")
