@@ -22,7 +22,7 @@ At least you have to configure:
 This takes a conf file from the 'sample_configs' called mainsail_default.conf
 and put it to
 
-    CROWSNEST_CONFIG_PATH="/home/${BASE_USER}/printer_data/config"
+    CROWSNEST_CONFIG_PATH="${BASE_HOME}/printer_data/config"
 
 the folder you configured above.\
 Please feel free to Pull Request your config!

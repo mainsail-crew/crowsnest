@@ -24,6 +24,7 @@ set -Ee
 TITLE="\e[31mcrowsnest\e[0m - $(basename "${0}")"
 DH_VERSION="v0.0.0"
 [[ -n "${BASE_USER}" ]] || BASE_USER="$(logname)"
+[[ -n "${BASE_HOME}" ]] || BASE_HOME="$(bash -c "cd ~$(printf %q "${BASE_USER}") && pwd")"
 
 # Set fallback lang
 export LC_ALL=C

@@ -15,11 +15,11 @@
 
 # crowsnest setup
 [[ -n "$CROWSNEST_DEFAULT_CONF" ]] || CROWSNEST_DEFAULT_CONF="resources/crowsnest.conf"
-[[ -n "$CROWSNEST_CONFIG_PATH" ]] || CROWSNEST_CONFIG_PATH="/home/${BASE_USER}/printer_data/config"
-[[ -n "$CROWSNEST_LOG_PATH" ]] || CROWSNEST_LOG_PATH="/home/${BASE_USER}/printer_data/logs"
-[[ -n "$CROWSNEST_ENV_PATH" ]] || CROWSNEST_ENV_PATH="/home/${BASE_USER}/printer_data/systemd"
+[[ -n "$CROWSNEST_CONFIG_PATH" ]] || CROWSNEST_CONFIG_PATH="${BASE_HOME}/printer_data/config"
+[[ -n "$CROWSNEST_LOG_PATH" ]] || CROWSNEST_LOG_PATH="${BASE_HOME}/printer_data/logs"
+[[ -n "$CROWSNEST_ENV_PATH" ]] || CROWSNEST_ENV_PATH="${BASE_HOME}/printer_data/systemd"
 [[ -n "$CROWSNEST_ADD_CROWSNEST_MOONRAKER" ]] || CROWSNEST_ADD_CROWSNEST_MOONRAKER="1"
-[[ -n "$CROWSNEST_MOONRAKER_CONF_PATH" ]] || CROWSNEST_MOONRAKER_CONF_PATH="/home/${BASE_USER}/printer_data/config/moonraker.conf"
+[[ -n "$CROWSNEST_MOONRAKER_CONF_PATH" ]] || CROWSNEST_MOONRAKER_CONF_PATH="${BASE_HOME}/printer_data/config/moonraker.conf"
 
 
 # ustreamer

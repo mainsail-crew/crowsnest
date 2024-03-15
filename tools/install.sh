@@ -50,6 +50,7 @@ main() {
     fi
 
     [[ -n "${BASE_USER}" ]] || BASE_USER="${SUDO_USER}"
+    [[ -n "${BASE_HOME}" ]] || BASE_HOME="$(bash -c "cd ~$(printf %q "${BASE_USER}") && pwd")"
 
     if [[ "$(is_buster)" = "1" ]]; then
         not_supported_msg
