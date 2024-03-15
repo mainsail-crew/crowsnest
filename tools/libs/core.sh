@@ -219,7 +219,7 @@ install_service_file() {
         rm -f "${target_dir}/crowsnest.service"
     fi
     cp -f "${service_file}" "${target_dir}"
-    sed -i 's|%USER%|'"${BASE_USER}"'|g;s|%ENV%|'"${CROWSNEST_ENV_PATH}/crowsnest.env"'|g' \
+    sed -i 's|%USER%|'"${BASE_USER}"'|g;s|%ENV%|'"${CROWSNEST_ENV_PATH}/crowsnest.env"'|g;s|%HOME%|'"${BASE_HOME}"'|g' \
     "${target_dir}/crowsnest.service"
     [[ -f "${target_dir}/crowsnest.service" ]] &&
     grep -q "${BASE_USER}" "${target_dir}/crowsnest.service" || return 1
@@ -306,7 +306,7 @@ dietpi_cs_settings() {
 detect_existing_webcamd() {
     local disable
     msg "Checking for mjpg-streamer ...\n"
-    if  [[ -x "/usr/local/bin/webcamd" ]] && [[ -d "/home/${BASE_USER}/mjpg-streamer" ]]; then
+    if  [[ -x "/usr/local/bin/webcamd" ]] && [[ -d "${BASE_HOME}/mjpg-streamer" ]]; then
         msg "Found an existing mjpg-streamer installation!"
         msg "This should be stopped and disabled!"
         while true; do
@@ -316,7 +316,7 @@ detect_existing_webcamd() {
                     msg "Stopping webcamd.service ..."
                     sudo systemctl stop webcamd.service &> /dev/null
                     status_msg "Stopping webcamd.service ..." "0"
-                    
+
                     msg "\nDisabling webcamd.service ...\r"
                     sudo systemctl disable webcamd.service &> /dev/null
                     status_msg "Disabling webcamd.service ..." "0"

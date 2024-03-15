@@ -24,6 +24,7 @@ set -Ee
 TITLE="\e[31mcrowsnest\e[0m - $(basename "${0}")"
 DH_VERSION="v0.0.0"
 [[ -n "${BASE_USER}" ]] || BASE_USER="$(logname)"
+[[ -n "${BASE_HOME}" ]] || BASE_HOME="$(bash -c "cd ~$(printf %q "${BASE_USER}") && pwd")"
 
 # Set fallback lang
 export LC_ALL=C
@@ -74,6 +75,13 @@ help_msg() {
     echo_blank
     exit 1
 }
+
+if [[ -z "${BASE_HOME}" ]]; then
+    echo -e "User home directory not inferred! [${CN_FL}]\n"
+    echo_red "Cannot proceed further without a valid base path...\n"
+    echo -e "Run this script as a user with a valid home directory.\n"
+    exit 1
+fi
 
 # Global functions
 

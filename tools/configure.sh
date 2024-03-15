@@ -20,8 +20,9 @@ set -Ee
 
 # Global Vars
 CN_CONFIG_USER=$(whoami)
+CN_CONFIG_HOME="$(bash -c "cd ~$(printf %q "${CN_CONFIG_USER}") && pwd")"
 CN_CONFIG_CONFIGFILE="tools/.config"
-CN_CONFIG_ROOTPATH="/home/${CN_CONFIG_USER}/printer_data"
+CN_CONFIG_ROOTPATH="${CN_CONFIG_HOME}/printer_data"
 CN_CONFIG_CONFIGPATH="${CN_CONFIG_ROOTPATH}/config"
 CN_CONFIG_LOGPATH="${CN_CONFIG_ROOTPATH}/logs"
 CN_CONFIG_ENVPATH="${CN_CONFIG_ROOTPATH}/systemd"
