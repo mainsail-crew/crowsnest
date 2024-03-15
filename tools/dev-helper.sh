@@ -76,6 +76,13 @@ help_msg() {
     exit 1
 }
 
+if [[ -z "${BASE_HOME}" ]]; then
+    echo -e "User home directory not inferred! [${CN_FL}]\n"
+    echo_red "Cannot proceed further without a valid base path...\n"
+    echo -e "Run this script as a user with a valid home directory.\n"
+    exit 1
+fi
+
 # Global functions
 
 ## call get_os_version <keyword>

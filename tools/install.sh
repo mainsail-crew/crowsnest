@@ -52,6 +52,11 @@ main() {
     [[ -n "${BASE_USER}" ]] || BASE_USER="${SUDO_USER}"
     [[ -n "${BASE_HOME}" ]] || BASE_HOME="$(bash -c "cd ~$(printf %q "${BASE_USER}") && pwd")"
 
+    if [[ -z "${BASE_HOME}" ]]; then
+        home_missing_msg
+        exit 1
+    fi
+
     if [[ "$(is_buster)" = "1" ]]; then
         not_supported_msg
         exit 1

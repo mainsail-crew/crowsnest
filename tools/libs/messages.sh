@@ -61,6 +61,11 @@ need_sudo_msg() {
     msg "\tPlease try '\e[32msudo make install\e[0m'\n\nExiting..."
 }
 
+home_missing_msg() {
+    msg "\nHome directory for user ${BASE_USER} could not be inferred.\n"
+    msg "Select a user with an existing Linux home directory and try again.\n"
+}
+
 not_supported_msg() {
     msg "\nDebian 10 (buster) has reached end of life.\n"
     msg "Therefore, crowsnest has also ended support for it.\n"
