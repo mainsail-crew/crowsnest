@@ -91,7 +91,7 @@ async def main():
     initial_parse_config()
 
     if crowsnest.parameters['delete_log'].value:
-        pathlib.Path.unlink(args.log_path)
+        pathlib.Path(args.log_path).unlink(missing_ok=True)
         logging_helper.log_initial()
 
     logging_helper.log_host_info()
