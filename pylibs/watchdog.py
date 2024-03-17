@@ -1,7 +1,9 @@
 import os
+import asyncio
 from pylibs import logger
 
 configured_devices: list[str] = []
+running = True
 
 def crowsnest_watchdog():
     global configured_devices
@@ -17,3 +19,9 @@ def crowsnest_watchdog():
         elif device in lost_devices and os.path.exists(device):
             lost_devices.remove(device)
             logger.log_quiet(f"Device '{device}' returned.", prefix)
+
+async def run_watchdog():
+    global running
+    while running:
+        await asyncio.sleep(120)
+        crowsnest_watchdog()

@@ -29,7 +29,7 @@ def initial_parse_config():
     logger.set_log_level(crowsnest.parameters['log_level'].value)
 
 async def start_sections():
-    global config, watchdog_running
+    global config
     sect_objs = []
     sect_exec_tasks = set()
 
@@ -71,16 +71,10 @@ async def start_sections():
         for task in sect_exec_tasks:
             if task != None:
                 task.cancel()
-        watchdog_running = False
+        watchdog.running = False
         logger.log_quiet("Shutdown or Killed by User!")
         logger.log_quiet("Please come again :)")
         logger.log_quiet("Goodbye...")
-
-async def run_watchdog():
-    global watchdog_running
-    while watchdog_running:
-        await asyncio.sleep(120)
-        watchdog.crowsnest_watchdog()
 
 
 async def main():
@@ -99,7 +93,7 @@ async def main():
     logging_helper.log_cams()
 
     task1 = asyncio.create_task(start_sections())
-    task2 = asyncio.create_task(run_watchdog())
+    task2 = asyncio.create_task(watchdog.run_watchdog())
 
     await task1
     if task2:
