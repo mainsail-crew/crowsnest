@@ -2,8 +2,9 @@ import asyncio
 
 from configparser import SectionProxy
 from pylibs.components.section import Section
+from pylibs.components.streamer.streamer import Streamer
 from pylibs.parameter import Parameter
-from pylibs import logger, utils
+from pylibs import logger, utils, watchdog
 
 class Cam(Section):
     section_name = 'cam'
@@ -16,7 +17,7 @@ class Cam(Section):
             'mode': Parameter(str)
         })
 
-        self.streamer = None
+        self.streamer: Streamer = None
 
     def parse_config_section(self, config_section: SectionProxy, *args, **kwargs) -> bool:
         # Dynamically import module
@@ -24,12 +25,8 @@ class Cam(Section):
         self.parameters["mode"].set_value(mode)
         self.streamer = utils.load_component(mode,
                                              self.name,
-                                             config_section,
                                              path='pylibs.components.streamer')
-        if self.streamer:
-            return True
-        else:
-            return False
+        return self.streamer.parse_config_section(config_section, *args, **kwargs)
 
     async def execute(self, lock: asyncio.Lock):
         if self.streamer is None:
@@ -37,6 +34,11 @@ class Cam(Section):
             return
         try:
             await lock.acquire()
+            logger.log_quiet(
+                f"Starting {self.streamer.keyword} with device "
+                f"{self.streamer.parameters['device'].value} ..."
+            )
+            watchdog.configured_devices.append(self.streamer.parameters['device'].value)
             process = await self.streamer.execute(lock)
             await process.wait()
             logger.log_error(f'Start of {self.parameters["mode"].value} [cam {self.name}] failed!')
@@ -46,8 +48,5 @@ class Cam(Section):
             if lock.locked():
                 lock.release()
 
-def load_component(name: str, config_section: SectionProxy, *args, **kwargs):
-    cam = Cam(name)
-    if cam.parse_config_section(config_section, *args, **kwargs):
-        return cam
-    return None
+def load_component(name: str):
+    return Cam(name)

@@ -35,7 +35,7 @@ class Section:
 
     # Execute section specific stuff, e.g. starting cam
     async def execute(self, lock: asyncio.Lock):
-        raise NotImplementedError("If you see this, a module is implemented wrong!!!")
+        raise NotImplementedError("If you see this, a componenent is implemented wrong!!!")
 
 
 def load_component(*args, **kwargs):

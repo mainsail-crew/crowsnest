@@ -6,22 +6,15 @@ from pylibs.components.streamer.streamer import Streamer
 from pylibs import logger, utils, hwhandler, v4l2_control as v4l2_ctl
 
 class Ustreamer(Streamer):
-    section_name = 'cam'
     keyword = 'ustreamer'
 
     def __init__(self, name: str) -> None:
         super().__init__(name)
 
-        if Ustreamer.binary_path is None:
-            Ustreamer.binary_path = utils.get_executable(
-                ['ustreamer.bin', 'ustreamer'],
-                ['bin/ustreamer']
-            )
-        self.binary_path = Ustreamer.binary_path
+        self.binary_names = ['ustreamer.bin', 'ustreamer']
+        self.binary_paths = ['bin/ustreamer']
 
     async def execute(self, lock: asyncio.Lock):
-        if not await super().execute(lock):
-            return None
         if self.parameters['no_proxy'].value:
             host = '0.0.0.0'
             logger.log_info("Set to 'no_proxy' mode! Using 0.0.0.0!")
@@ -98,8 +91,5 @@ class Ustreamer(Streamer):
         logger.log_debug(msg)
 
 
-def load_component(name: str, config_section: SectionProxy, *args, **kwargs):
-    ust = Ustreamer(name)
-    if ust.parse_config_section(config_section, *args, **kwargs):
-        return ust
-    return None
+def load_component(name: str):
+    return Ustreamer(name)

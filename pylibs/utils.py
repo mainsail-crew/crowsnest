@@ -13,13 +13,11 @@ from pylibs import logger
 # as well as the same name as the section keyword
 def load_component(component: str,
                    name: str,
-                   config_section: SectionProxy,
-                   path='pylibs.components',
-                   *args, **kwargs):
+                   path='pylibs.components'):
     module_class = None
     try:
         component = importlib.import_module(f'{path}.{component}')
-        module_class = getattr(component, 'load_component')(name, config_section, *args, **kwargs)
+        module_class = getattr(component, 'load_component')(name)
     except (ModuleNotFoundError, AttributeError) as e:
         logger.log_error(f"Failed to load module '{component}' from '{path}'")
     return module_class
@@ -82,6 +80,8 @@ def find_file(name: str, path: str) -> str:
     return None
 
 def get_executable(names: list[str], paths: list[str]) -> str:
+    if names is None or paths is None:
+        return None
     for name in names:
         exec = shutil.which(name)
         if exec:

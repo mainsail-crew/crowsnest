@@ -11,21 +11,15 @@ class Camera_Streamer(Streamer):
     def __init__(self, name: str) -> None:
         super().__init__(name)
 
+        self.binary_names = ['camera-streamer']
+        self.binary_paths = ['bin/camera-streamer']
+
         self.parameters.update({
             'enable_rtsp': Parameter(bool, 'False'),
             'rtsp_port': Parameter(int, 8554)
         })
 
-        if Camera_Streamer.binary_path is None:
-            Camera_Streamer.binary_path = utils.get_executable(
-                ['camera-streamer'],
-                ['bin/camera-streamer']
-            )
-        self.binary_path = Camera_Streamer.binary_path
-
     async def execute(self, lock: asyncio.Lock):
-        if not await super().execute(lock):
-            return None
         if self.parameters['no_proxy'].value:
             host = '0.0.0.0'
             logger.log_info("Set to 'no_proxy' mode! Using 0.0.0.0!")
@@ -99,8 +93,5 @@ class Camera_Streamer(Streamer):
         return process
 
 
-def load_component(name: str, config_section: SectionProxy, *args, **kwargs):
-    cst = Camera_Streamer(name)
-    if cst.parse_config_section(config_section, *args, **kwargs):
-        return cst
-    return None
+def load_component(name: str):
+    return Camera_Streamer(name)

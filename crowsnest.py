@@ -45,9 +45,9 @@ async def start_sections():
                 continue
 
             section_name = ' '.join(section_header[1:])
-            section = utils.load_component(section_keyword, section_name, config[section])
-            if section:
-                sect_objs.append(section)
+            component = utils.load_component(section_keyword, section_name)
+            if component.parse_config_section(config[section]):
+                sect_objs.append(component)
                 logger.log_info(f"Configuration of section [{section}] looks good. Continue ...")
             else:
                 logger.log_error(f"Failed to parse config for section [{section}]!")
