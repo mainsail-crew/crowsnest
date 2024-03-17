@@ -1,6 +1,5 @@
 import re
 import asyncio
-from configparser import SectionProxy
 
 from pylibs.components.streamer.streamer import Streamer
 from pylibs import logger, utils, hwhandler, v4l2_control as v4l2_ctl

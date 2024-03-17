@@ -1,5 +1,4 @@
 import asyncio
-from configparser import SectionProxy
 
 from pylibs.components.streamer.streamer import Streamer
 from pylibs.parameter import Parameter
