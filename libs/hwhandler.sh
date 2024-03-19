@@ -94,27 +94,17 @@ list_picam_resolution() {
 }
 
 get_libcamera_controls() {
-    python - <<EOL
-from picamera2 import Picamera2
-picam = Picamera2()
-ctrls = picam.camera_controls
-
-for key, value in ctrls.items():
-        min, max, default = value
-        if type(min) is int:
-            ctrl_type = "int"
-        elif type(min) is float:
-            ctrl_type = "float"
-        elif type(min) is bool:
-            ctrl_type = "bool"
-        elif type(min) is tuple:
-            ctrl_type = "tuple"
-        else:
-            ctrl_type=type(min)
-
-        print(f"{key} ({ctrl_type}) :\t\tmin={min} max={max} default={default}")
-
-EOL
+    local ust_bin flags
+    flags=( --camera-type=libcamera --camera-list_options )
+    ust_bin="${BASE_CN_PATH}/bin/camera-streamer/camera-streamer"
+    if [[ -x "${ust_bin}" ]]; then
+        "${ust_bin}" "${flags[@]}" 2> /dev/null | \
+        sed 's/device//g;^SNAPSHOT/q' | sed '/^SNAPSHOT/d' | \
+        sed '/^CAMERA/d;/- property/d' | sed '/\.\/camera/d'
+    else
+        log_msg "WARN: 'libcamera' device option can not be displayed, because"
+        log_msg "WARN: camera-streamer is not installed"
+    fi
 }
 
 list_picam_controls() {
