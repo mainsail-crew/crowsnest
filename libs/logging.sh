@@ -80,16 +80,16 @@ function print_cfg {
     local prefix
     prefix="$(date +'[%D %T]') crowsnest:"
     log_msg "INFO: Print Configfile: '${CROWSNEST_CFG}'"
-    (sed '/^#.*/d;/./,$!d' | cut -d'#' -f1) <"${CROWSNEST_CFG}" |
+    (sed '/^#.*/d;/./,$!d' | cut -d'#' -f1) < "${CROWSNEST_CFG}" | \
     while read -r line; do
-        printf "%s\t\t%s\n" "${prefix}" "${line}" >>"${CROWSNEST_LOG_PATH}"
+        printf "%s\t\t%s\n" "${prefix}" "${line}" >> "${CROWSNEST_LOG_PATH}"
         printf "\t\t%s\n" "${line}"
     done
 }
 
 function print_cams {
     local device total v4l
-    v4l="$(find /dev/v4l/by-id/ -iname "*index0" 2>/dev/null | wc -l)"
+    v4l="$(find /dev/v4l/by-id/ -iname "*index0" 2> /dev/null | wc -l)"
     libcamera="$(detect_libcamera)"
     legacy="$(detect_legacy)"
     total="$((v4l+libcamera+legacy))"
@@ -114,8 +114,8 @@ function print_cams {
         fi
     fi
     if [[ "${legacy}" -ne 0 ]]; then
-        raspicam="$(v4l2-ctl --list-devices | grep -A1 -e 'mmal' \
-        | awk 'NR==2 {print $1}')"
+        raspicam="$(v4l2-ctl --list-devices | grep -A1 -e 'mmal' | \
+        awk 'NR==2 {print $1}')"
         log_msg "Detected 'Raspicam' Device -> ${raspicam}"
         if [[ ! "${CROWSNEST_LOG_LEVEL}" = "quiet" ]]; then
             list_cam_formats "${raspicam}"
@@ -139,8 +139,8 @@ function print_host {
         ## OS Infos
         ## OS Version
         if [[ -f /etc/os-release ]]; then
-            log_msg "Host Info: Distribution: $(grep "PRETTY" /etc/os-release \
-            | cut -d '=' -f2 | sed 's/^"//;s/"$//')"
+            log_msg "Host Info: Distribution: $(grep "PRETTY" /etc/os-release | \
+            cut -d '=' -f2 | sed 's/^"//;s/"$//')"
         fi
         ## Release Version of MainsailOS (if file present)
         if [[ -f /etc/mainsailos-release ]]; then

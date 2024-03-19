@@ -21,8 +21,7 @@ detect_avail_cams() {
     local avail realpath
     avail="$(find /dev/v4l/by-id/ -iname "*index0" 2>/dev/null)"
     count="$(echo "${avail}" | wc -l)"
-    if [[ -d "/dev/v4l/by-id/" ]] &&
-        [[ -n "${avail}" ]]; then
+    if [[ -d "/dev/v4l/by-id/" ]] && [[ -n "${avail}" ]]; then
         log_msg "INFO: Found ${count} available v4l2 (UVC) camera(s)"
         echo "${avail}" | while read -r v4l; do
             realpath=$(readlink -e "${v4l}")
@@ -77,7 +76,7 @@ detect_libcamera() {
 ## Spit /base/soc path for libcamera device
 get_libcamera_path() {
     if [[ "$(is_raspberry_pi)" = "1" ]] &&
-        [[ -x "$(command -v libcamera-hello)" ]]; then
+    [[ -x "$(command -v libcamera-hello)" ]]; then
         libcamera-hello --list-cameras | sed '1,2d' \
         | grep "\(/base/*\)" | cut -d"(" -f2 | tr -d '$)'
     fi
@@ -131,19 +130,15 @@ function detect_legacy {
     if [[ "$(is_raspberry_pi)" = "1" ]] &&
         command -v vcgencmd &>/dev/null; then
         if vcgencmd get_camera &>/dev/null; then
-            avail="$(
-                vcgencmd get_camera \
-                | awk -F '=' '{ print $3 }' \
-                | cut -d',' -f1
-                )"
+            avail="$( vcgencmd get_camera | awk -F '=' '{ print $3 }' | cut -d',' -f1)"
         fi
     fi
     echo "${avail:-0}"
 }
 
 function dev_is_legacy {
-    v4l2-ctl --list-devices | grep -A1 -e 'mmal' \
-    | awk 'NR==2 {print $1}'
+    v4l2-ctl --list-devices | grep -A1 -e 'mmal' | \
+    awk 'NR==2 {print $1}'
 }
 
 ## Determine if cam has H.264 Hardware encoder
