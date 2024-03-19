@@ -100,7 +100,8 @@ get_libcamera_controls() {
     if [[ -x "${ust_bin}" ]]; then
         "${ust_bin}" "${flags[@]}" 2> /dev/null | \
         sed 's/device//g;/^SNAPSHOT/q' | sed '/^SNAPSHOT/d' | \
-        sed '/^CAMERA/d;/- property/d' | sed '/camera-streamer Version:/d'
+        sed '/^CAMERA/d;/- property/d' | sed '/camera-streamer Version:/d' | \
+        sed 's/- available option: //g'
     else
         log_msg "WARN: 'libcamera' device option can not be displayed, because"
         log_msg "WARN: camera-streamer is not installed"
