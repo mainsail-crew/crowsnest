@@ -93,6 +93,7 @@ list_picam_resolution() {
     done < <(libcamera-hello --list-cameras | sed '1,2d;s/Modes:/Colorspace:/')
 }
 
+#type=3):
 get_libcamera_controls() {
     local ust_bin flags
     flags=( --camera-type=libcamera --camera-list_options )
@@ -102,7 +103,8 @@ get_libcamera_controls() {
         sed 's/device//g;/^SNAPSHOT/q' | sed '/^SNAPSHOT/d' | \
         sed '/^CAMERA/d;/- property/d' | sed '/camera-streamer Version:/d' | \
         sed 's/- available option: //g' | sed '/^$/d;' | \
-        sed 's/([0-9]*[a-z,0-9]\,//g'
+        sed 's/([0-9]*[a-z,0-9]\,//g' | \
+        sed '/type=7/d;s/type=1\)\:/\(/\(bool\)/g'
     else
         log_msg "WARN: 'libcamera' device option can not be displayed, because"
         log_msg "WARN: camera-streamer is not installed"
