@@ -19,7 +19,7 @@ set -Ee
 ### Detect Hardware
 detect_avail_cams() {
     local avail realpath
-    avail="$(find /dev/v4l/by-id/ -iname "*index0" 2>/dev/null)"
+    avail="$(find /dev/v4l/by-id/ -iname "*index0" 2> /dev/null)"
     count="$(echo "${avail}" | wc -l)"
     if [[ -d "/dev/v4l/by-id/" ]] && [[ -n "${avail}" ]]; then
         log_msg "INFO: Found ${count} available v4l2 (UVC) camera(s)"
