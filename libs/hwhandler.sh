@@ -99,7 +99,7 @@ get_libcamera_controls() {
     ust_bin="${BASE_CN_PATH}/bin/camera-streamer/camera-streamer"
     if [[ -x "${ust_bin}" ]]; then
         "${ust_bin}" "${flags[@]}" 2> /dev/null | \
-        sed 's/device//g;^SNAPSHOT/q' | sed '/^SNAPSHOT/d' | \
+        sed 's/device//g;/^SNAPSHOT/q' | sed '/^SNAPSHOT/d' | \
         sed '/^CAMERA/d;/- property/d' | sed '/\.\/camera/d'
     else
         log_msg "WARN: 'libcamera' device option can not be displayed, because"
