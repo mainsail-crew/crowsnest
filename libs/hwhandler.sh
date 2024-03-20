@@ -129,7 +129,7 @@ function detect_legacy {
     local avail
     if [[ "$(is_raspberry_pi)" = "1" ]] &&
     command -v vcgencmd &> /dev/null; then
-        if vcgencmd get_camera &>/dev/null; then
+        if vcgencmd get_camera &> /dev/null; then
             avail="$( vcgencmd get_camera | awk -F '=' '{ print $3 }' | cut -d',' -f1)"
         fi
     fi
