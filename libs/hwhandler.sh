@@ -102,7 +102,7 @@ get_libcamera_controls() {
         sed '/^CAMERA/d;/- property/d' | sed '/camera-streamer Version:/d' | \
         sed 's/- available option: //g' | sed '/^$/d;' | \
         sed 's/([0-9]*[a-z,0-9]\,//g' | sed '/type=7/d;/type=4/d' | \
-        sed 's/type=1/  (bool/g;s/type=3/  (int/g;s/type=5/  (float/g' | \
+        sed 's/type=1/ (bool/g;s/type=3/ (int/g;s/type=5/ (float/g' | \
         sed 's/\[/\tmin=/g;s/\.\./ max=/g;s/\]$//g'
     else
         log_msg "WARN: 'libcamera' device option can not be displayed, because"
