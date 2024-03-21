@@ -97,7 +97,7 @@ get_libcamera_controls() {
     flags=( --camera-type=libcamera --camera-list_options )
     ust_bin="${BASE_CN_PATH}/bin/camera-streamer/camera-streamer"
     if [[ -x "${ust_bin}" ]]; then
-        "${ust_bin}" "${flags[@]}" 2> /dev/null | \
+        "${ust_bin}" "${flags[@]}" --camera-path="$(get_libcamera_path)" 2> /dev/null | \
         sed 's/device//g;/^SNAPSHOT/q' | sed '/^SNAPSHOT/d' | \
         sed '/^CAMERA/d;/- property/d' | sed '/camera-streamer Version:/d' | \
         sed 's/- available option: //g' | sed '/^$/d;' | \
