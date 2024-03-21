@@ -1,10 +1,8 @@
 import importlib
 import asyncio
 import subprocess
-import math
 import shutil
 import os
-from configparser import SectionProxy
 
 from pylibs import logger
 
@@ -70,7 +68,7 @@ def execute_shell_command(command: str, strip: bool = True) -> str:
         return ''
 
 def bytes_to_gigabytes(value: int) -> int:
-    return math.round(value / 1024 / 1024 / 1024)
+    return round(value / 1024**3)
 
 def find_file(name: str, path: str) -> str:
     for dpath, _, fnames in os.walk(path):
@@ -91,3 +89,14 @@ def get_executable(names: list[str], paths: list[str]) -> str:
             if found:
                 return found
     return None
+
+def grep(path: str, search: str) -> str:
+    try:
+        with open(path, 'r') as file:
+            lines = file.readlines()
+            for line in lines:
+                if search in line:
+                    return line
+    except FileNotFoundError:
+        logger.log_error(f"File '{path}' not found!")    
+    return ''

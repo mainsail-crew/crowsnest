@@ -1,6 +1,7 @@
 import re
 import os
 import sys
+import shutil
 
 from pylibs import utils, logger, hwhandler
 
@@ -32,7 +33,7 @@ def log_host_info():
 
     ### OS Infos
     # OS Version
-    distribution = grep('/etc/os-release', 'PRETTY_NAME')
+    distribution = utils.grep('/etc/os-release', 'PRETTY_NAME')
     distribution = distribution.strip().split('=')[1].strip('"')
     logger.log_info(f'Distribution: {distribution}', log_pre)
 
@@ -51,9 +52,9 @@ def log_host_info():
 
     ### Host Machine Infos
     # Host model
-    model = grep('/proc/cpuinfo', 'Model').split(':')[1].strip()
+    model = utils.grep('/proc/cpuinfo', 'Model').split(':')[1].strip()
     if model == '':
-        model == grep('/proc/cpuinfo', 'model name').split(':')[1].strip()
+        model == utils.grep('/proc/cpuinfo', 'model name').split(':')[1].strip()
     if model == '':
         model = 'Unknown'
     logger.log_info(f'Model: {model}', log_pre)
@@ -63,23 +64,14 @@ def log_host_info():
     logger.log_info(f"Available CPU Cores: {cpu_count}", log_pre)
 
     # Avail mem
-    # psutil.virtual_memory().total
-    memtotal = grep('/proc/meminfo', 'MemTotal:').split(':')[1].strip()
+    memtotal = utils.grep('/proc/meminfo', 'MemTotal:').split(':')[1].strip()
     logger.log_info(f'Available Memory: {memtotal}', log_pre)
 
     # Avail disk size
-    # Alternative shutil.disk_usage.total
-    command = 'LC_ALL=C df -h / | awk \'NR==2 {print $4" / "$2}\''
-    disksize = utils.execute_shell_command(command)
-    logger.log_info(f'Diskspace (avail. / total): {disksize}', log_pre)
-
-def grep(path: str, search: str) -> str:
-    with open(path, 'r') as file:
-        lines = file.readlines()
-        for line in lines:
-            if search in line:
-                return line
-    return ''
+    total, _, free = shutil.disk_usage("/")
+    total = utils.bytes_to_gigabytes(total)
+    free = utils.bytes_to_gigabytes(free)
+    logger.log_info(f'Diskspace (avail. / total): {free}G / {total}G', log_pre)
 
 def log_cams():
     logger.log_info("Detect available Devices")
