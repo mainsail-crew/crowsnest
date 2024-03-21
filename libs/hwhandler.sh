@@ -92,7 +92,6 @@ list_picam_resolution() {
     done < <(libcamera-hello --list-cameras | sed '1,2d;s/Modes:/Colorspace:/')
 }
 
-#type=3):
 get_libcamera_controls() {
     local ust_bin flags
     flags=( --camera-type=libcamera --camera-list_options )
