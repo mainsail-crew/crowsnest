@@ -93,7 +93,7 @@ function check_apps {
         # shellcheck disable=SC2034
         declare -r UST_BIN
     else
-        log_msg "Dependency: '${ustreamer##*/}' not found. Exiting!"
+        log_msg "Dependency: '${ustreamer_base##*/}' not found. Exiting!"
         exit 1
     fi
 
