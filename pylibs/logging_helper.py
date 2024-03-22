@@ -126,13 +126,18 @@ def get_type_str(obj) -> str:
 
 def log_uvc_formats(properties: dict) -> None:
     logger.log_info(f"Supported Formats:", '')
-    logger.log_multiline(properties['formats'], logger.log_info, logger.indentation)
+    indent = ' '*8
+    for fmt, data in properties['formats'].items():
+        logger.log_info(f"{fmt}:", logger.indentation)
+        for res, fps in data.items():
+            logger.log_info(f"{res}", logger.indentation+indent)
+            for f in fps:
+                logger.log_info(f"{f}", logger.indentation+indent*2)
 
 def log_uvc_v4l2ctrls(device_path: str, properties: dict) -> None:
     logger.log_info(f"Supported Controls:", '')
-    logger.log_info('', '')
     for section, controls in properties['v4l2ctrls'].items():
-        logger.log_info(f"{section}:", '')
+        logger.log_info(f"{section}:", logger.indentation)
         for control, data in controls.items():
             line = f"{control} ({data['type']})"
             line += (35 - len(line)) * ' ' + ': '
@@ -142,8 +147,8 @@ def log_uvc_v4l2ctrls(device_path: str, properties: dict) -> None:
             line += f" value={ctl.get_control(device_path, control)}"
             if 'flags' in data:
                 line += f" flags={data['flags']}"
-            logger.log_info(line, logger.indentation)
+            logger.log_info(line, logger.indentation*2)
             if 'menu' in data:
                 for value, name in data['menu'].items():
-                    logger.log_info(f"{value}: {name}", logger.indentation*2)
+                    logger.log_info(f"{value}: {name}", logger.indentation*3)
         logger.log_info('', '')

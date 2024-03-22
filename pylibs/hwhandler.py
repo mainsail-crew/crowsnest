@@ -36,14 +36,17 @@ def get_avail_uvc_dev() -> dict:
         cams[cam_path] = {}
         cams[cam_path]['realpath'] = os.path.realpath(cam_path)
         ctl.init_device(cam_path)
-        cams[cam_path]['formats'] = v4l2_ctl.get_uvc_formats(cam_path)
+        cams[cam_path]['formats'] = ctl.get_formats(cam_path)
         cams[cam_path]['v4l2ctrls'] = v4l2_qctl_to_dict(cam_path)
     avail_cams['uvc'].update(cams)
     return cams
 
 def has_device_mjpg_hw(cam_path: str) -> bool:
     global avail_cams
-    return 'Motion-JPEG, compressed' in v4l2_ctl.get_uvc_formats(cam_path)
+    for key in ctl.get_formats(cam_path).keys():
+        if 'Motion-JPEG, compressed' in key:
+            return True
+    return False
 
 def get_avail_libcamera() -> dict:
     cmd = shutil.which('libcamera-hello')
