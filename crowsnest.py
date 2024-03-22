@@ -5,7 +5,7 @@ from pylibs.components.crowsnest import Crowsnest
 from pylibs import utils, watchdog, logger, logging_helper
 
 import asyncio
-import pathlib
+import signal
 
 parser = argparse.ArgumentParser(
     prog='Crowsnest',
@@ -29,7 +29,7 @@ def initial_parse_config():
     logger.set_log_level(crowsnest.parameters['log_level'].value)
 
 async def start_sections():
-    global config
+    global config, sect_exec_tasks
     sect_objs = []
     sect_exec_tasks = set()
 
@@ -62,20 +62,26 @@ async def start_sections():
         async with lock:
             logger.log_quiet("... Done!")
 
+        # Catch SIGINT and SIGTERM to exit gracefully and cancel all tasks
+        signal.signal(signal.SIGINT, exit_gracefully)
+        signal.signal(signal.SIGTERM, exit_gracefully)
+
         for task in sect_exec_tasks:
             if task is not None:
                 await task
     except Exception as e:
-        print(e)
+        logger.log_error(e)
     finally:
         for task in sect_exec_tasks:
-            if task != None:
+            if task is not None:
                 task.cancel()
         watchdog.running = False
         logger.log_quiet("Shutdown or Killed by User!")
         logger.log_quiet("Please come again :)")
         logger.log_quiet("Goodbye...")
 
+async def exit_gracefully(signum, frame):
+    asyncio.sleep(1)
 
 async def main():
     global args, crowsnest
@@ -85,7 +91,8 @@ async def main():
     initial_parse_config()
 
     if crowsnest.parameters['delete_log'].value:
-        pathlib.Path(args.log_path).unlink(missing_ok=True)
+        logger.logger.handlers.clear()
+        logger.setup_logging(args.log_path, 'w', crowsnest.parameters['log_level'].value)
         logging_helper.log_initial()
 
     logging_helper.log_host_info()
