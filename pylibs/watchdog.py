@@ -13,7 +13,7 @@ def crowsnest_watchdog():
     for device in configured_devices:
         if device.startswith('/base'):
             continue
-        if not os.path.exists(device):
+        if device not in lost_devices and not os.path.exists(device):
             lost_devices.append(device)
             logger.log_quiet(f"Lost Devicve: '{device}'", prefix)
         elif device in lost_devices and os.path.exists(device):
