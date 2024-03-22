@@ -3,12 +3,12 @@ import asyncio
 from pylibs import logger
 
 configured_devices: list[str] = []
+lost_devices: list[str] = []
 running = True
 
 def crowsnest_watchdog():
-    global configured_devices
+    global configured_devices, lost_devices
     prefix = "Watchdog: "
-    lost_devices = []
 
     for device in configured_devices:
         if device.startswith('/base'):
@@ -23,5 +23,5 @@ def crowsnest_watchdog():
 async def run_watchdog():
     global running
     while running:
-        await asyncio.sleep(10)
+        await asyncio.sleep(120)
         crowsnest_watchdog()
