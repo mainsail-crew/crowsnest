@@ -3,12 +3,26 @@ import shutil
 import re
 
 from pylibs import utils, v4l2_control as v4l2_ctl
+from pylibs.v4l2 import ctl
 
 avail_cams = {
     'uvc': {},
     'libcamera': {},
     'legacy': {}
 }
+
+def v4l2_qctl_to_dict(device: str) -> dict:
+    dev_ctl = ctl.qctrls[device]
+    values = {}
+    cur_sec = ''
+    for control in dev_ctl:
+        cur_ctl = dev_ctl[control]
+        if not cur_ctl['values']:
+            cur_sec = control
+            values[cur_sec] = {}
+            continue
+        values[cur_sec][control] = cur_ctl['values']
+    return values
 
 def get_avail_uvc_dev() -> dict:
     uvc_path = '/dev/v4l/by-id/'
@@ -21,8 +35,9 @@ def get_avail_uvc_dev() -> dict:
     for cam_path in avail_uvc:
         cams[cam_path] = {}
         cams[cam_path]['realpath'] = os.path.realpath(cam_path)
+        ctl.init_device(cam_path)
         cams[cam_path]['formats'] = v4l2_ctl.get_uvc_formats(cam_path)
-        cams[cam_path]['v4l2ctrls'] = v4l2_ctl.get_uvc_v4l2ctrls(cam_path)
+        cams[cam_path]['v4l2ctrls'] = v4l2_qctl_to_dict(cam_path)
     avail_cams['uvc'].update(cams)
     return cams
 
