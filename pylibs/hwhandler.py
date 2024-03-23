@@ -23,7 +23,7 @@ def get_avail_uvc_dev() -> dict:
         cams[cam_path] = {}
         cams[cam_path]['realpath'] = os.path.realpath(cam_path)
         cams[cam_path]['formats'] = v4l2_ctl.get_formats(cam_path)
-        cams[cam_path]['v4l2ctrls'] = v4l2_utils.get_dev_ctl_parsed_dict(cam_path)
+        cams[cam_path]['v4l2ctrls'] = v4l2_ctl.get_dev_ctl_parsed_dict(cam_path)
     avail_cams['uvc'].update(cams)
     return cams
 
@@ -122,7 +122,7 @@ def get_avail_legacy() -> dict:
     # legacy[legacy_path]['formats'] = v4l2_ctl.get_uvc_formats(legacy_path)
     # legacy[legacy_path]['v4l2ctrls'] = v4l2_ctl.get_uvc_v4l2ctrls(legacy_path)
     legacy[legacy_path]['formats'] = v4l2_ctl.get_formats(legacy_path)
-    legacy[legacy_path]['v4l2ctrls'] = v4l2_utils.get_dev_ctl_parsed_dict(legacy_path)
+    legacy[legacy_path]['v4l2ctrls'] = v4l2_ctl.get_dev_ctl_parsed_dict(legacy_path)
     avail_cams['legacy'].update(legacy)
     return legacy
 
