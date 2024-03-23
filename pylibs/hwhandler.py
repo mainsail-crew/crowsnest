@@ -2,27 +2,14 @@ import os
 import shutil
 import re
 
-from pylibs import utils, v4l2_control as v4l2_ctl
-from pylibs.v4l2 import ctl
+from pylibs import utils
+from pylibs.v4l2 import ctl as v4l2_ctl, utils as v4l2_utils
 
 avail_cams = {
     'uvc': {},
     'libcamera': {},
     'legacy': {}
 }
-
-def v4l2_qctl_to_dict(device: str) -> dict:
-    dev_ctl = ctl.qctrls[device]
-    values = {}
-    cur_sec = ''
-    for control in dev_ctl:
-        cur_ctl = dev_ctl[control]
-        if not cur_ctl['values']:
-            cur_sec = control
-            values[cur_sec] = {}
-            continue
-        values[cur_sec][control] = cur_ctl['values']
-    return values
 
 def get_avail_uvc_dev() -> dict:
     uvc_path = '/dev/v4l/by-id/'
@@ -35,15 +22,14 @@ def get_avail_uvc_dev() -> dict:
     for cam_path in avail_uvc:
         cams[cam_path] = {}
         cams[cam_path]['realpath'] = os.path.realpath(cam_path)
-        ctl.init_device(cam_path)
-        cams[cam_path]['formats'] = ctl.get_formats(cam_path)
-        cams[cam_path]['v4l2ctrls'] = v4l2_qctl_to_dict(cam_path)
+        cams[cam_path]['formats'] = v4l2_ctl.get_formats(cam_path)
+        cams[cam_path]['v4l2ctrls'] = v4l2_utils.get_dev_ctl_parsed_dict(cam_path)
     avail_cams['uvc'].update(cams)
     return cams
 
 def has_device_mjpg_hw(cam_path: str) -> bool:
     global avail_cams
-    for key in ctl.get_formats(cam_path).keys():
+    for key in v4l2_ctl.get_formats(cam_path).keys():
         if 'Motion-JPEG, compressed' in key:
             return True
     return False
@@ -121,17 +107,22 @@ def get_avail_legacy() -> dict:
     count = count.split('=')[2].split(',')[0]
     if count == '0':
         return legacy
-    v4l2_cmd = 'v4l2-ctl --list-devices'
-    v4l2 = utils.execute_shell_command(v4l2_cmd) 
-    legacy_path = ''
-    lines = v4l2.split('\n')
-    for i in range(len(lines)):
-        if 'mmal' in lines[i]:
-            legacy_path = lines[i+1].strip()
-            break
+    # v4l2_cmd = 'v4l2-ctl --list-devices'
+    # v4l2 = utils.execute_shell_command(v4l2_cmd) 
+    # legacy_path = ''
+    # lines = v4l2.split('\n')
+    # for i in range(len(lines)):
+    #     if 'mmal' in lines[i]:
+    #         legacy_path = lines[i+1].strip()
+    #         break
+    legacy_path = v4l2_ctl.get_dev_path_by_name('mmal')
+    if not legacy_path:
+        return legacy
     legacy[legacy_path] = {}
-    legacy[legacy_path]['formats'] = v4l2_ctl.get_uvc_formats(legacy_path)
-    legacy[legacy_path]['v4l2ctrls'] = v4l2_ctl.get_uvc_v4l2ctrls(legacy_path)
+    # legacy[legacy_path]['formats'] = v4l2_ctl.get_uvc_formats(legacy_path)
+    # legacy[legacy_path]['v4l2ctrls'] = v4l2_ctl.get_uvc_v4l2ctrls(legacy_path)
+    legacy[legacy_path]['formats'] = v4l2_ctl.get_formats(legacy_path)
+    legacy[legacy_path]['v4l2ctrls'] = v4l2_utils.get_dev_ctl_parsed_dict(legacy_path)
     avail_cams['legacy'].update(legacy)
     return legacy
 

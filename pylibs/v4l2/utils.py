@@ -155,3 +155,15 @@ def frmival_to_str(frmival: raw.v4l2_frmivalenum) -> str:
             fract2fps(frmival.stepwise.min)
         )
     return string
+
+def ctl_to_parsed_dict(dev_ctl: raw.v4l2_ext_control) -> dict:
+    values = {}
+    cur_sec = ''
+    for control in dev_ctl:
+        cur_ctl = dev_ctl[control]
+        if not cur_ctl['values']:
+            cur_sec = control
+            values[cur_sec] = {}
+            continue
+        values[cur_sec][control] = cur_ctl['values']
+    return values

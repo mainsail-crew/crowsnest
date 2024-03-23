@@ -7,7 +7,7 @@ import copy
 
 from pylibs.v4l2 import raw, constants, utils
 
-qctrls: dict[str, raw.v4l2_ext_control] = {}
+dev_ctls: dict[str, dict[str, dict[str, (raw.v4l2_ext_control, str)]]] = {}
 
 def parse_qc(fd: int, qc: raw.v4l2_query_ext_ctrl) -> dict:
     """
@@ -33,7 +33,11 @@ def parse_qc(fd: int, qc: raw.v4l2_query_ext_ctrl) -> dict:
         controls['flags'] = utils.ctrlflags2str(qc.flags)
     if qc.type in (constants.V4L2_CTRL_TYPE_MENU, constants.V4L2_CTRL_TYPE_INTEGER_MENU):
         controls['menu'] = {}
-        for menu in utils.ioctl_iter(fd, raw.VIDIOC_QUERYMENU, raw.v4l2_querymenu(id=qc.id), qc.minimum, qc.maximum + 1, qc.step, True):
+        for menu in utils.ioctl_iter(
+            fd,
+            raw.VIDIOC_QUERYMENU,
+            raw.v4l2_querymenu(id=qc.id), qc.minimum, qc.maximum + 1, qc.step, True
+        ):
             if qc.type == constants.V4L2_CTRL_TYPE_MENU:
                 controls['menu'][menu.index] = menu.name.decode()
             else:
@@ -47,19 +51,41 @@ def init_device(device_path: str) -> None:
     fd = os.open(device_path, os.O_RDWR)
     next_fl = constants.V4L2_CTRL_FLAG_NEXT_CTRL | constants.V4L2_CTRL_FLAG_NEXT_COMPOUND
     qctrl = raw.v4l2_query_ext_ctrl(id=next_fl)
-    qctrls[device_path] = {}
+    dev_ctls[device_path] = {}
     for qc in utils.ioctl_iter(fd, raw.VIDIOC_QUERY_EXT_CTRL, qctrl):
         if qc.type == constants.V4L2_CTRL_TYPE_CTRL_CLASS:
             name = qc.name.decode()
         else:
             name = utils.name2var(qc.name.decode())
-        qctrls[device_path][name] = {}
-        qctrls[device_path][name]['qc'] = copy.deepcopy(qc)
-        qctrls[device_path][name]['values'] = parse_qc(fd, qc)
+        dev_ctls[device_path][name] = {}
+        dev_ctls[device_path][name]['qc'] = copy.deepcopy(qc)
+        dev_ctls[device_path][name]['values'] = parse_qc(fd, qc)
         # print_qctrl(fd, qc)
         qc.id |= next_fl
     # print(qctrls)
     os.close(fd)
+
+def get_dev_ctl(device_path: str):
+    if device_path not in dev_ctls:
+        init_device(device_path)
+    return dev_ctls[device_path]
+
+def get_dev_ctl_parsed_dict(device_path: str) -> dict:
+    if device_path not in dev_ctls:
+        init_device(device_path)
+    return utils.ctl_to_parsed_dict(dev_ctls[device_path])
+
+def get_dev_path_by_name(name: str) -> str:
+    """
+    Get the device path by its name
+    """
+    prefix = 'video'
+    for dev in os.listdir('/dev'):
+        if dev.startswith(prefix) and dev[len(prefix):].isdigit():
+            path = f'/dev/{dev}'
+            if get_camera_capabilities(path)['card'].contains(name):
+                return path
+    return ''
 
 def get_camera_capabilities(device_path: str) -> dict:
     """
@@ -77,13 +103,13 @@ def get_camera_capabilities(device_path: str) -> dict:
     os.close(fd)
     return cap_dict
 
-def get_control(device_path: str, control: str) -> int:
+def get_control_cur_value(device_path: str, control: str) -> int:
     """
     Get the current value of a control of a given device
     """
     fd = os.open(device_path, os.O_RDWR)
     ctrl = raw.v4l2_control()
-    qc: raw.v4l2_query_ext_ctrl = qctrls[device_path][utils.name2var(control)]['qc']
+    qc: raw.v4l2_query_ext_ctrl = dev_ctls[device_path][utils.name2var(control)]['qc']
     ctrl.id = qc.id
     utils.ioctl_safe(fd, raw.VIDIOC_G_CTRL, ctrl)
     os.close(fd)
@@ -95,7 +121,7 @@ def set_control(device_path: str, control: str, value: int) -> None:
     """
     fd = os.open(device_path, os.O_RDWR)
     ctrl = raw.v4l2_control()
-    qc: raw.v4l2_query_ext_ctrl = qctrls[device_path][control]['qc']
+    qc: raw.v4l2_query_ext_ctrl = dev_ctls[device_path][control]['qc']
     ctrl.id = qc.id
     ctrl.value = value
     utils.ioctl_safe(fd, raw.VIDIOC_S_CTRL, ctrl)

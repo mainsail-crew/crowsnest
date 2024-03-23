@@ -144,7 +144,7 @@ def log_uvc_v4l2ctrls(device_path: str, properties: dict) -> None:
             if data['type'] in ('int'):
                 line += f"min={data['min']} max={data['max']} step={data['step']}"
             line += f" default={data['default']}"
-            line += f" value={ctl.get_control(device_path, control)}"
+            line += f" value={ctl.get_control_cur_value(device_path, control)}"
             if 'flags' in data:
                 line += f" flags={data['flags']}"
             logger.log_info(line, logger.indentation*2)

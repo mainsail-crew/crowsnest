@@ -1,5 +1,7 @@
 from pylibs import logger, utils
 
+from pylibs.v4l2 import ctl as v4l2_ctl
+
 def get_uvc_formats(cam_path: str) -> str:
     command = f'v4l2-ctl -d {cam_path} --list-formats-ext'
     formats = utils.execute_shell_command(command)
@@ -38,11 +40,11 @@ def set_v4l2ctrls(section: str, cam_path: str, ctrls: list[str] = None) -> str:
     logger.log_multiline(get_uvc_v4l2ctrls(cam_path), logger.log_debug)
 
 def get_cur_v4l2_value(cam_path: str, ctrl: str) -> str:
-    command = f'v4l2-ctl -d {cam_path} -C {ctrl}'
-    value = utils.execute_shell_command(command)
-    if value:
-        return value.split(':')[1].strip()
-    return value
+    # command = f'v4l2-ctl -d {cam_path} -C {ctrl}'
+    # value = utils.execute_shell_command(command)
+    # if value:
+        # return value.split(':')[1].strip()
+    return v4l2_ctl.get_control_cur_value(cam_path, ctrl)
 
 def brokenfocus(cam_path: str, focus_absolute_conf: str) -> str:
     cur_val = get_cur_v4l2_value(cam_path, 'focus_absolute')
