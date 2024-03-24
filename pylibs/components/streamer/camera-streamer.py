@@ -1,8 +1,8 @@
 import asyncio
 
-from pylibs.components.streamer.streamer import Streamer
-from pylibs.parameter import Parameter
-from pylibs import logger, utils, hwhandler
+from .streamer import Streamer
+from ...parameter import Parameter
+from ... import logger, utils, hwhandler
 
 class Camera_Streamer(Streamer):
     keyword = 'camera-streamer'

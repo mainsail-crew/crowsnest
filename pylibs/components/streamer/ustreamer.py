@@ -1,8 +1,8 @@
 import re
 import asyncio
 
-from pylibs.components.streamer.streamer import Streamer
-from pylibs import logger, utils, hwhandler, v4l2_control as v4l2_ctl
+from .streamer import Streamer
+from ... import logger, utils, hwhandler, v4l2_control as v4l2_ctl
 
 class Ustreamer(Streamer):
     keyword = 'ustreamer'

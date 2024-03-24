@@ -1,8 +1,8 @@
 import asyncio
 from configparser import SectionProxy
 
-from pylibs.parameter import Parameter
-from pylibs import logger
+from ..parameter import Parameter
+from .. import logger
 
 class Section:
     section_name = 'section'

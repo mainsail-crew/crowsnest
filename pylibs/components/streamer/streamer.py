@@ -1,9 +1,9 @@
 import textwrap
 from configparser import SectionProxy
 
-from pylibs.components.section import Section
-from pylibs.parameter import Parameter
-from pylibs import logger, utils
+from ..section import Section
+from ...parameter import Parameter
+from ... import logger, utils
 
 class Streamer(Section):
     binaries = {}

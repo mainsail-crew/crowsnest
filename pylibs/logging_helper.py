@@ -3,8 +3,8 @@ import os
 import sys
 import shutil
 
-from pylibs import utils, logger, hwhandler
-from pylibs.v4l2 import ctl
+from . import utils, logger, hwhandler
+from .v4l2 import ctl
 
 def log_initial():
     logger.log_quiet('crowsnest - A webcam Service for multiple Cams and Stream Services.')

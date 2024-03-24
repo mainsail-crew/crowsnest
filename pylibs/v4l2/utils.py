@@ -3,7 +3,7 @@ import ctypes
 import re
 from typing import Generator
 
-from pylibs.v4l2 import raw, constants
+from . import raw, constants
 
 
 def ioctl_safe(fd: int, request: int, arg: ctypes.Structure) -> int:

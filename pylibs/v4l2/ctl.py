@@ -5,7 +5,7 @@ Python implementation of v4l2-ctl
 import os
 import copy
 
-from pylibs.v4l2 import raw, constants, utils
+from . import raw, constants, utils
 
 dev_ctls: dict[str, dict[str, dict[str, (raw.v4l2_ext_control, str)]]] = {}
 

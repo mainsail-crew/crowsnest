@@ -1,6 +1,6 @@
-from pylibs import logger, utils
+from . import logger, utils
 
-from pylibs.v4l2 import ctl as v4l2_ctl
+from .v4l2 import ctl as v4l2_ctl
 
 def get_uvc_formats(cam_path: str) -> str:
     command = f'v4l2-ctl -d {cam_path} --list-formats-ext'

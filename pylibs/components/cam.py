@@ -1,10 +1,10 @@
 import asyncio
 
 from configparser import SectionProxy
-from pylibs.components.section import Section
-from pylibs.components.streamer.streamer import Streamer
-from pylibs.parameter import Parameter
-from pylibs import logger, utils, watchdog
+from .section import Section
+from .streamer.streamer import Streamer
+from ..parameter import Parameter
+from .. import logger, utils, watchdog
 
 class Cam(Section):
     section_name = 'cam'
@@ -46,7 +46,7 @@ class Cam(Section):
         except Exception as e:
             pass
         finally:
-            logger.log_error(f'Start of {self.parameters["mode"].value} [cam {self.name}] failed!')
+            logger.log_error(f"Start of {self.parameters['mode'].value} [cam {self.name}] failed!")
             watchdog.configured_devices.remove(self.streamer.parameters['device'].value)
             if lock.locked():
                 lock.release()

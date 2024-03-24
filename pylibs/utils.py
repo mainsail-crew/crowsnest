@@ -4,7 +4,7 @@ import subprocess
 import shutil
 import os
 
-from pylibs import logger
+from . import logger
 
 # Dynamically import component
 # Requires module to have a load_component() function,

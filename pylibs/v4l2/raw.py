@@ -1,8 +1,8 @@
 import ctypes
 
-from pylibs.v4l2 import ioctl_macros
+from . import ioctl_macros
 
-from pylibs.v4l2 import constants
+from . import constants
 
 class v4l2_capability(ctypes.Structure):
     _fields_ = [

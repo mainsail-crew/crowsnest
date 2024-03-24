@@ -1,6 +1,6 @@
 import os
 import asyncio
-from pylibs import logger
+from . import logger
 
 configured_devices: list[str] = []
 lost_devices: list[str] = []

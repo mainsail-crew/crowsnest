@@ -2,8 +2,8 @@ import os
 import shutil
 import re
 
-from pylibs import utils
-from pylibs.v4l2 import ctl as v4l2_ctl, utils as v4l2_utils
+from . import utils
+from .v4l2 import ctl as v4l2_ctl, utils as v4l2_utils
 
 avail_cams = {
     'uvc': {},

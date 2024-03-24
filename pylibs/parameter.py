@@ -1,4 +1,4 @@
-from pylibs import logger
+from . import logger
 
 class Parameter:
     def __init__(self, type=str, default=None) -> None:
