@@ -98,7 +98,7 @@ def get_camera_capabilities(device_path: str) -> dict:
         'card': cap.card.decode(),
         'bus': cap.bus_info.decode(),
         'version': cap.version,
-        'capabilities': utils.capabilities2str(cap.capabilities)
+        'capabilities': cap.capabilities
     }
     os.close(fd)
     return cap_dict

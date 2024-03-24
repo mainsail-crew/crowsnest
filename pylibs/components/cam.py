@@ -21,9 +21,9 @@ class Cam(Section):
 
     def parse_config_section(self, config_section: SectionProxy, *args, **kwargs) -> bool:
         # Dynamically import module
-        if not super().parse_config_section(config_section, *args, **kwargs):
-            return False
-        self.streamer = utils.load_component(self.parameters['mode'].value,
+        mode = config_section["mode"].split()[0]
+        self.parameters["mode"].set_value(mode)
+        self.streamer = utils.load_component(mode,
                                              self.name,
                                              path='pylibs.components.streamer')
         if self.streamer is None:
