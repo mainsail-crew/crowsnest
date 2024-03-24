@@ -19,17 +19,16 @@ class Section:
     # Parse config according to the needs of the section
     def parse_config_section(self, config_section: SectionProxy, *args, **kwargs) -> bool:
         success = True
-        for parameter in config_section:
-            value = config_section[parameter]
+        for parameter, value in config_section.items():
             if parameter not in self.parameters:
-                print(f"Warning: Parameter '{parameter}' is not supported by {self.keyword}")
+                logger.log_warning(f"Parameter '{parameter}' is not supported by {self.keyword}!")
                 continue
             value = value.split('#')[0].strip()
             self.parameters[parameter].set_value(value)
-        for parameter in self.parameters:
-            if self.parameters[parameter].value is None:
+        for parameter, value in self.parameters.items():
+            if value is None:
                 logger.log_error(f"Parameter '{parameter}' not found in section "
-                                  "[{self.section_name} {self.name}]")
+                                  "[{self.section_name} {self.name}] but is required!")
                 success = False
         return success
 

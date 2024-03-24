@@ -25,8 +25,9 @@ def initial_parse_config():
     config_path = args.config
     config.read(config_path)
     crowsnest = Crowsnest('crowsnest')
-    crowsnest.parse_config_section(config['crowsnest'])
-    logger.set_log_level(crowsnest.parameters['log_level'].value)
+    if 'crowsnest' not in config or not crowsnest.parse_config_section(config['crowsnest']):
+        logger.log_error("Failed to parse config for '[crowsnest]' section! Exiting...")
+        exit(1)
 
 async def start_sections():
     global config, sect_exec_tasks
@@ -57,12 +58,12 @@ async def start_sections():
             task = asyncio.create_task(section_object.execute(lock))
             sect_exec_tasks.add(task)
 
-        # Let sec_exec_tasks finish first
+        # Lets sec_exec_tasks finish first
         await asyncio.sleep(0)
         async with lock:
             logger.log_quiet("... Done!")
 
-        # Catch SIGINT and SIGTERM to exit gracefully and cancel all tasks
+        # Catches SIGINT and SIGTERM to exit gracefully and cancel all tasks
         signal.signal(signal.SIGINT, exit_gracefully)
         signal.signal(signal.SIGTERM, exit_gracefully)
 
@@ -92,8 +93,10 @@ async def main():
 
     if crowsnest.parameters['delete_log'].value:
         logger.logger.handlers.clear()
-        logger.setup_logging(args.log_path, 'w', crowsnest.parameters['log_level'].value)
+        logger.setup_logging(args.log_path, 'w')
         logging_helper.log_initial()
+
+    logger.set_log_level(crowsnest.parameters['log_level'].value)
 
     logging_helper.log_host_info()
     logging_helper.log_config(args.config)

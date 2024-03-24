@@ -31,24 +31,18 @@ def ioctl_iter(fd: int, cmd: int, struct: ctypes.Structure,
                 raise
 
 def v4l2_ctrl_type_to_string(ctrl_type: int) -> str:
-    if ctrl_type == constants.V4L2_CTRL_TYPE_INTEGER:
-        return "int"
-    elif ctrl_type == constants.V4L2_CTRL_TYPE_BOOLEAN:
-        return "bool"
-    elif ctrl_type == constants.V4L2_CTRL_TYPE_MENU:
-        return "menu"
-    elif ctrl_type == constants.V4L2_CTRL_TYPE_BUTTON:
-        return "button"
-    elif ctrl_type == constants.V4L2_CTRL_TYPE_INTEGER64:
-        return "int64"
-    elif ctrl_type == constants.V4L2_CTRL_TYPE_CTRL_CLASS:
-        return "ctrl_class"
-    elif ctrl_type == constants.V4L2_CTRL_TYPE_STRING:
-        return "str"
-    elif ctrl_type == constants.V4L2_CTRL_TYPE_BITMASK:
-        return "bitmask"
-    elif ctrl_type == constants.V4L2_CTRL_TYPE_INTEGER_MENU:
-        return "intmenu"
+    dict_ctrl_type = {
+        constants.V4L2_CTRL_TYPE_INTEGER: "int",
+        constants.V4L2_CTRL_TYPE_BOOLEAN: "bool",
+        constants.V4L2_CTRL_TYPE_MENU: "menu",
+        constants.V4L2_CTRL_TYPE_BUTTON: "button",
+        constants.V4L2_CTRL_TYPE_INTEGER64: "int64",
+        constants.V4L2_CTRL_TYPE_CTRL_CLASS: "ctrl_class",
+        constants.V4L2_CTRL_TYPE_STRING: "str",
+        constants.V4L2_CTRL_TYPE_BITMASK: "bitmask",
+        constants.V4L2_CTRL_TYPE_INTEGER_MENU: "intmenu"
+    }
+    return dict_ctrl_type.get(ctrl_type, "unknown") 
 
 def name2var(name: str) -> str:
     return re.sub('[^0-9a-zA-Z]+', '_', name).lower()
@@ -69,7 +63,7 @@ def ctrlflags2str(flags: int) -> str:
         constants.V4L2_CTRL_FLAG_DYNAMIC_ARRAY: "dynamic-array",
         0: None
     }
-    return dict_flags[flags]
+    return dict_flags.get(flags)
 
 def fmtflags2str(flags: int) -> str:
     dict_flags = {
@@ -83,7 +77,7 @@ def fmtflags2str(flags: int) -> str:
         constants.V4L2_FMT_FLAG_CSC_QUANTIZATION: "csc-quantization",
         constants.V4L2_FMT_FLAG_CSC_XFER_FUNC: "csc-xfer-func"
     }
-    return dict_flags[flags]
+    return dict_flags.get(flags)
 
 def fcc2s(val: int) -> str:
     s = ''
@@ -159,8 +153,8 @@ def frmival_to_str(frmival: raw.v4l2_frmivalenum) -> str:
 def ctl_to_parsed_dict(dev_ctl: raw.v4l2_ext_control) -> dict:
     values = {}
     cur_sec = ''
-    for control in dev_ctl:
-        cur_ctl = dev_ctl[control]
+    for control, cur_ctl in dev_ctl.items():
+        # cur_ctl = dev_ctl[control]
         if not cur_ctl['values']:
             cur_sec = control
             values[cur_sec] = {}

@@ -14,8 +14,9 @@ class Crowsnest(Section):
             'no_proxy': Parameter(bool, 'False')
         })
 
-    def parse_config_section(self, section: SectionProxy):
-        super().parse_config_section(section)
+    def parse_config_section(self, section: SectionProxy) -> bool:
+        if not super().parse_config_section(section):
+            return False
         log_level = self.parameters['log_level'].value.lower()
         if log_level == 'quiet':
             self.parameters['log_level'].value = 'QUIET'
@@ -25,6 +26,7 @@ class Crowsnest(Section):
             self.parameters['log_level'].value = 'DEV'
         else:
             self.parameters['log_level'].value = 'INFO'
+        return True
 
 
 def load_component(name: str, config_section: SectionProxy, *args, **kwargs):

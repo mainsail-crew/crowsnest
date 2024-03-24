@@ -57,12 +57,11 @@ def init_device(device_path: str) -> None:
             name = qc.name.decode()
         else:
             name = utils.name2var(qc.name.decode())
-        dev_ctls[device_path][name] = {}
-        dev_ctls[device_path][name]['qc'] = copy.deepcopy(qc)
-        dev_ctls[device_path][name]['values'] = parse_qc(fd, qc)
-        # print_qctrl(fd, qc)
+        dev_ctls[device_path][name] = {
+            'qc': copy.deepcopy(qc),
+            'values': parse_qc(fd, qc)
+        }
         qc.id |= next_fl
-    # print(qctrls)
     os.close(fd)
 
 def get_dev_ctl(device_path: str):
@@ -83,7 +82,7 @@ def get_dev_path_by_name(name: str) -> str:
     for dev in os.listdir('/dev'):
         if dev.startswith(prefix) and dev[len(prefix):].isdigit():
             path = f'/dev/{dev}'
-            if get_camera_capabilities(path)['card'].contains(name):
+            if name in get_camera_capabilities(path).get('card'):
                 return path
     return ''
 
@@ -94,12 +93,13 @@ def get_camera_capabilities(device_path: str) -> dict:
     fd = os.open(device_path, os.O_RDWR)
     cap = raw.v4l2_capability()
     utils.ioctl_safe(fd, raw.VIDIOC_QUERYCAP, cap)
-    cap_dict = {}
-    cap_dict['driver'] = cap.driver.decode()
-    cap_dict['card'] = cap.card.decode()
-    cap_dict['bus'] = cap.bus_info.decode()
-    cap_dict['version'] = cap.version
-    cap_dict['capabilities'] = cap.capabilities
+    cap_dict = {
+        'driver': cap.driver.decode(),
+        'card': cap.card.decode(),
+        'bus': cap.bus_info.decode(),
+        'version': cap.version,
+        'capabilities': utils.capabilities2str(cap.capabilities)
+    }
     os.close(fd)
     return cap_dict
 

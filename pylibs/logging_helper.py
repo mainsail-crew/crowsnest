@@ -129,10 +129,10 @@ def log_uvc_formats(properties: dict) -> None:
     indent = ' '*8
     for fmt, data in properties['formats'].items():
         logger.log_info(f"{fmt}:", logger.indentation)
-        for res, fps in data.items():
+        for res, fps_list in data.items():
             logger.log_info(f"{res}", logger.indentation+indent)
-            for f in fps:
-                logger.log_info(f"{f}", logger.indentation+indent*2)
+            for fps in fps_list:
+                logger.log_info(f"{fps}", logger.indentation+indent*2)
 
 def log_uvc_v4l2ctrls(device_path: str, properties: dict) -> None:
     logger.log_info(f"Supported Controls:", '')
