@@ -103,6 +103,7 @@ async def main():
     logging_helper.log_cams()
 
     task1 = asyncio.create_task(start_sections())
+    await asyncio.sleep(0)
     task2 = asyncio.create_task(watchdog.run_watchdog())
 
     await task1
