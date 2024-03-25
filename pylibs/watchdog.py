@@ -23,5 +23,5 @@ def crowsnest_watchdog():
 async def run_watchdog():
     global running
     while running:
-        await asyncio.sleep(120)
         crowsnest_watchdog()
+        await asyncio.sleep(120)
