@@ -26,8 +26,10 @@ set -Ee
 # Base Path
 BASE_CN_BIN_PATH="$(dirname "$(readlink -f "${0}")")"
 
+. "${BASE_CN_BIN_PATH%%/bin}/resources/backend_versions.txt"
+
 # Clone Flags
-CLONE_FLAGS=(--depth=1 --single-branch)
+CLONE_FLAGS=(--single-branch)
 
 # Ustreamer repo
 USTREAMER_PATH="ustreamer"
@@ -53,6 +55,34 @@ ALL_PATHS=(
     "${BASE_CN_BIN_PATH}"/"${USTREAMER_PATH}"
     "${BASE_CN_BIN_PATH}"/"${CSTREAMER_PATH}"
 )
+
+### Messages
+error_msg_build() {
+    printf "Something went wrong!\nPlease copy the latest output, head over to\n"
+    printf "\thttps://discord.gg/mainsail\n"
+    printf "and open a ticket in #supportforum..."
+}
+
+status_msg_build() {
+    local msg status
+    msg="${1}"
+    status="${2}"
+    printf "%s\r" "${msg}"
+    if [[ "${status}" == "0" ]]; then
+        printf "%s [\e[32mOK\e[0m]\n" "${msg}"
+    fi
+    if [[ "${status}" == "1" ]]; then
+        printf "%s [\e[31mFAILED\e[0m]\n" "${msg}"
+        error_msg_build
+        exit 1
+    fi
+    if [[ "${status}" == "2" ]]; then
+        printf "%s [\e[33mSKIPPED\e[0m]\n" "${msg}"
+    fi
+    if [[ "${status}" == "3" ]]; then
+        printf "%s [\e[33mFAILED\e[0m]\n" "${msg}"
+    fi
+}
 
 # Helper messages
 show_help() {
@@ -124,10 +154,16 @@ clone_ustreamer() {
         printf "%s already exist ... [SKIPPED]\n" "${USTREAMER_PATH}"
         return
     fi
+
+    printf "\nCloning ustreamer ...\n"
     git clone "${CROWSNEST_USTREAMER_REPO_SHIP}" \
         -b "${CROWSNEST_USTREAMER_REPO_BRANCH}" \
         "${BASE_CN_BIN_PATH}"/"${USTREAMER_PATH}" \
         "${CLONE_FLAGS[@]}"
+
+    printf "\nReset to specified ustreamer commit ...\n"
+    git -C "${BASE_CN_BIN_PATH}"/"${USTREAMER_PATH}" \
+    reset --hard "${CROWSNEST_USTREAMER_REPO_COMMIT}"
 }
 
 ### Clone camera-streamer
@@ -141,19 +177,29 @@ clone_cstreamer() {
         printf "Device is not supported! Cloning camera-streamer ... [SKIPPED]\n"
         return
     fi
+
     if [[ -d "${BASE_CN_BIN_PATH}"/"${CSTREAMER_PATH}" ]]; then
         printf "%s already exist ... [SKIPPED]\n" "${CSTREAMER_PATH}"
         return
     fi
+
+    CROWSNEST_CAMERA_STREAMER_REPO_COMMIT="${CROWSNEST_CAMERA_STREAMER_REPO_COMMIT_MASTER}"
     if [[ "$(is_bookworm)" = "1" ]]; then
         printf "\nBookworm detected!\n"
-        printf "Using main branch of camera-streamer for Bookworm ...\n\n"
+        printf "Using main branch of camera-streamer for Bookworm ...\n"
         CROWSNEST_CAMERA_STREAMER_REPO_BRANCH="main"
+        CROWSNEST_CAMERA_STREAMER_REPO_COMMIT="${CROWSNEST_CAMERA_STREAMER_REPO_COMMIT_MAIN}"
     fi
+
+    printf "\nCloning camera-streamer ...\n"
     git clone "${CROWSNEST_CAMERA_STREAMER_REPO_SHIP}" \
         -b "${CROWSNEST_CAMERA_STREAMER_REPO_BRANCH}" \
         "${BASE_CN_BIN_PATH}"/"${CSTREAMER_PATH}" \
         "${CLONE_FLAGS[@]}" --recurse-submodules --shallow-submodules
+
+    printf "\nReset to specified camera-streamer commit ...\n"
+    git -C "${BASE_CN_BIN_PATH}"/"${CSTREAMER_PATH}" \
+    reset --hard "${CROWSNEST_CAMERA_STREAMER_REPO_COMMIT}"
 }
 
 ### Clone Apps

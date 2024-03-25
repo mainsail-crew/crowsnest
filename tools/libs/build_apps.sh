@@ -43,15 +43,7 @@ clone_cstreamer() {
 }
 
 build_apps() {
-    msg "Build dependend Stream Apps ..."
-    msg "Cloning ustreamer repository ..."
-    clone_ustreamer
-    ## Detect Image build for Raspberrys
-    if [[ "${CN_INSTALL_CS}" = "1" ]]; then
-        msg "Cloning camera-streamer repository ..."
-        clone_cstreamer
-    else
-        msg "Install of camera-streamer skipped, only supported on Raspberry SBC's! ... "
-    fi
+    export CN_INSTALL_CS
+    sudo -E -u "${BASE_USER}" "${PWD}"/bin/build.sh --reclone
     sudo -u "${BASE_USER}" "${PWD}"/bin/build.sh --build
 }
