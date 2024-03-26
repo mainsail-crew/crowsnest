@@ -1,4 +1,5 @@
 import asyncio
+import traceback
 
 from configparser import SectionProxy
 from .section import Section
@@ -37,14 +38,14 @@ class Cam(Section):
         try:
             await lock.acquire()
             logger.log_quiet(
-                f"Starting {self.streamer.keyword} with device "
+                f"Start {self.streamer.keyword} with device "
                 f"{self.streamer.parameters['device'].value} ..."
             )
             watchdog.configured_devices.append(self.streamer.parameters['device'].value)
             process = await self.streamer.execute(lock)
             await process.wait()
         except Exception as e:
-            pass
+            logger.log_multiline(traceback.format_exc().strip(), logger.log_error)
         finally:
             logger.log_error(f"Start of {self.parameters['mode'].value} [cam {self.name}] failed!")
             watchdog.configured_devices.remove(self.streamer.parameters['device'].value)

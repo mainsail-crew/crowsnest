@@ -1,11 +1,11 @@
 import argparse
 import configparser
+import asyncio
+import signal
+import traceback
 
 from pylibs.components.crowsnest import Crowsnest
 from pylibs import utils, watchdog, logger, logging_helper
-
-import asyncio
-import signal
 
 parser = argparse.ArgumentParser(
     prog='Crowsnest',
@@ -34,8 +34,8 @@ async def start_sections():
     sect_objs = []
     sect_exec_tasks = set()
 
-    logger.log_quiet("Try to start configured Cams / Services...")
     try:
+        logger.log_quiet("Try to parse configured Cams / Services...")
         for section in config.sections():
             section_header = section.split(' ')
             section_object = None
@@ -47,12 +47,14 @@ async def start_sections():
 
             section_name = ' '.join(section_header[1:])
             component = utils.load_component(section_keyword, section_name)
+            logger.log_quiet(f"Parse configuration of section [{section}] ...")
             if component.parse_config_section(config[section]):
                 sect_objs.append(component)
-                logger.log_info(f"Configuration of section [{section}] looks good. Continue ...")
+                logger.log_quiet(f"Configuration of section [{section}] looks good. Continue ...")
             else:
                 logger.log_error(f"Failed to parse config for section [{section}]!")
 
+        logger.log_quiet("Try to start configured Cams / Services...")
         lock = asyncio.Lock()
         for section_object in sect_objs:
             task = asyncio.create_task(section_object.execute(lock))
@@ -71,7 +73,7 @@ async def start_sections():
             if task is not None:
                 await task
     except Exception as e:
-        logger.log_error(e)
+        logger.log_multiline(traceback.format_exc().strip(), logger.log_error)
     finally:
         for task in sect_exec_tasks:
             if task is not None:

@@ -50,7 +50,7 @@ def brokenfocus(cam_path: str, focus_absolute_conf: str) -> str:
     cur_val = get_cur_v4l2_value(cam_path, 'focus_absolute')
     if cur_val and cur_val != focus_absolute_conf:
         logger.log_warning(f"Detected 'brokenfocus' device.")
-        logger.log_info(f"Trying to set to configured Value.")
+        logger.log_info(f"Try to set to configured Value.")
         set_v4l2_ctrl(cam_path, f'focus_absolute={focus_absolute_conf}')
         logger.log_debug(f"Value is now: {get_cur_v4l2_value(cam_path, 'focus_absolute')}")
 
