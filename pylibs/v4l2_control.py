@@ -30,7 +30,7 @@ def set_v4l2ctrls(section: str, cam_path: str, ctrls: list[str] = None) -> str:
     for ctrl in ctrls:
         if ctrl.split('=')[0].strip().lower() not in avail_ctrls:
             logger.log_quiet(
-                f"Parameter '{ctrl}' not available for '{cam_path}'. Skipped.",
+                f"Parameter '{ctrl.strip()}' not available for '{cam_path}'. Skipped.",
                 prefix
             )
             continue
