@@ -26,9 +26,9 @@ class Section:
             value = value.split('#')[0].strip()
             self.parameters[parameter].set_value(value)
         for parameter, value in self.parameters.items():
-            if value is None:
-                logger.log_error(f"Parameter '{parameter}' not found in section "
-                                  "[{self.section_name} {self.name}] but is required!")
+            if value.value is None:
+                logger.log_error(f"Parameter '{parameter}' incorrectly set or missing in section "
+                                 f"[{self.section_name} {self.name}] but is required!")
                 success = False
         return success
 

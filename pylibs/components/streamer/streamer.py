@@ -1,6 +1,7 @@
 import textwrap
 from configparser import SectionProxy
 
+from .resolution import Resolution
 from ..section import Section
 from ...parameter import Parameter
 from ... import logger, utils
@@ -15,7 +16,7 @@ class Streamer(Section):
             'mode': Parameter(str),
             'port': Parameter(int),
             'device': Parameter(str),
-            'resolution': Parameter(str),
+            'resolution': Parameter(Resolution),
             'max_fps': Parameter(int),
             'no_proxy': Parameter(bool, 'False'),
             'custom_flags': Parameter(str, ''),

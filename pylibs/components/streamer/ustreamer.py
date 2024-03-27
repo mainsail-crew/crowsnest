@@ -27,7 +27,7 @@ class Ustreamer(Streamer):
         streamer_args = [
             '--host', host,
             '--port', str(port),
-            '--resolution', res,
+            '--resolution', str(res),
             '--desired-fps', str(fps),
             # webroot & allow crossdomain requests
             '--allow-origin', '\*',

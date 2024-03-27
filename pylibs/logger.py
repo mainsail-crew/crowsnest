@@ -6,7 +6,7 @@ import sys
 
 DEV = 10
 DEBUG = 15
-QUIET = 25
+QUIET = 35
 
 indentation = 6*' '
 

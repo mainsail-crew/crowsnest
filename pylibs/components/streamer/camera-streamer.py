@@ -25,9 +25,7 @@ class Camera_Streamer(Streamer):
         else:
             host = '127.0.0.1'
         port = self.parameters['port'].value
-        res = self.parameters['resolution'].value.split('x')
-        width = res[0]
-        height = res[1]
+        width, height = str(self.parameters['resolution'].value).split('x')
 
         fps = self.parameters['max_fps'].value
         device = self.parameters['device'].value
