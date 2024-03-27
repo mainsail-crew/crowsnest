@@ -1,12 +1,23 @@
 import textwrap
 from configparser import SectionProxy
 
-from .resolution import Resolution
 from ..section import Section
 from ...parameter import Parameter
 from ... import logger, utils
 
+class Resolution():
+    def __init__(self, value:str) -> None:
+        try:
+            self.width, self.height = value.split('x')
+        except ValueError:
+            raise ValueError("Custom Error", f"'{value}' is not of format '<width>x<height>'! "
+                             "Parameter ignored!")
+
+    def __str__(self) -> str:
+        return 'x'.join([self.width, self.height])
+
 class Streamer(Section):
+    section_name = 'cam'
     binaries = {}
 
     def __init__(self, name: str) -> None:

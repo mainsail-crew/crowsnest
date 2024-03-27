@@ -23,7 +23,12 @@ watchdog_running = True
 def initial_parse_config():
     global crowsnest, config, args
     config_path = args.config
-    config.read(config_path)
+    try:
+        config.read(config_path)
+    except configparser.ParsingError as e:
+        logger.log_multiline(e.message, logger.log_error)
+        logger.log_error("Failed to parse config! Exiting...")
+        exit(1)
     crowsnest = Crowsnest('crowsnest')
     if 'crowsnest' not in config or not crowsnest.parse_config_section(config['crowsnest']):
         logger.log_error("Failed to parse config for '[crowsnest]' section! Exiting...")
@@ -33,6 +38,10 @@ async def start_sections():
     global config, sect_exec_tasks
     sect_objs = []
     sect_exec_tasks = set()
+
+    # Catches SIGINT and SIGTERM to exit gracefully and cancel all tasks
+    signal.signal(signal.SIGINT, exit_gracefully)
+    signal.signal(signal.SIGTERM, exit_gracefully)
 
     try:
         logger.log_quiet("Try to parse configured Cams / Services...")
@@ -52,22 +61,21 @@ async def start_sections():
                 sect_objs.append(component)
                 logger.log_quiet(f"Configuration of section [{section}] looks good. Continue ...")
             else:
-                logger.log_error(f"Failed to parse config for section [{section}]!")
+                logger.log_error(f"Failed to parse config for section [{section}]! Skipping ...")
 
-        logger.log_quiet("Try to start configured Cams / Services...")
-        lock = asyncio.Lock()
-        for section_object in sect_objs:
-            task = asyncio.create_task(section_object.execute(lock))
-            sect_exec_tasks.add(task)
+        logger.log_quiet("Try to start configured Cams / Services ...")
+        if sect_objs:
+            lock = asyncio.Lock()
+            for section_object in sect_objs:
+                task = asyncio.create_task(section_object.execute(lock))
+                sect_exec_tasks.add(task)
 
-        # Lets sec_exec_tasks finish first
-        await asyncio.sleep(0)
-        async with lock:
-            logger.log_quiet("... Done!")
-
-        # Catches SIGINT and SIGTERM to exit gracefully and cancel all tasks
-        signal.signal(signal.SIGINT, exit_gracefully)
-        signal.signal(signal.SIGTERM, exit_gracefully)
+            # Lets sec_exec_tasks finish first
+            await asyncio.sleep(0)
+            async with lock:
+                logger.log_quiet("... Done!")
+        else:
+            logger.log_quiet("No Cams / Services to start! Exiting ...")
 
         for task in sect_exec_tasks:
             if task is not None:
