@@ -19,7 +19,8 @@ class Parameter:
             else:
                 self.value = self.type(value)
         except ValueError as e:
-            message = f"'{value}' is not of type '{self.type.__name__}'! Parameter ignored!"
+            message = f"'{value}' is not of type '{self.type.__name__}'!"
             if len(e.args) > 1 and e.args[0] == "Custom Error":
                 message = e.args[1]
+            message += " Parameter ignored!"
             logger.log_error(message)

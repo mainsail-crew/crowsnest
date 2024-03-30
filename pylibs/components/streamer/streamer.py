@@ -10,8 +10,7 @@ class Resolution():
         try:
             self.width, self.height = value.split('x')
         except ValueError:
-            raise ValueError("Custom Error", f"'{value}' is not of format '<width>x<height>'! "
-                             "Parameter ignored!")
+            raise ValueError("Custom Error", f"'{value}' is not of format '<width>x<height>'!")
 
     def __str__(self) -> str:
         return 'x'.join([self.width, self.height])

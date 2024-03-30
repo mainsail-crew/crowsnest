@@ -93,14 +93,12 @@ def log_cams():
     if legacy:
         for path, properties in legacy.items():
             logger.log_info(f"Detected 'Raspicam' Device -> {path}")
-            log_uvc_formats(properties)
-            log_uvc_v4l2ctrls(path, properties)
+            log_uvc_dev(path, properties)
     if uvc:
         logger.log_info(f"Found {len(uvc.keys())} available v4l2 (UVC) camera(s)")
         for path, properties in uvc.items():
             logger.log_info(f"{path} -> {properties['realpath']}", '')
-            log_uvc_formats(properties)
-            log_uvc_v4l2ctrls(path, properties)
+            log_uvc_dev(path, properties)
 
 def log_libcamera_dev(path: str, properties: dict) -> str:
     logger.log_info(f"Detected 'libcamera' device -> {path}")
@@ -115,7 +113,7 @@ def log_libcamera_dev(path: str, properties: dict) -> str:
             min, max, default = value.values()
             str_first = f"{name} ({get_type_str(min)})"
             str_second = f"min={min} max={max} default={default}"
-            str_indent = (35 - len(str_first)) * ' ' + ': '
+            str_indent = (30 - len(str_first)) * ' ' + ': '
             logger.log_info(str_first + str_indent + str_second, logger.indentation)
     else:
         logger.log_info("apt package 'python3-libcamera' is not installed! "
@@ -123,6 +121,10 @@ def log_libcamera_dev(path: str, properties: dict) -> str:
 
 def get_type_str(obj) -> str:
     return str(type(obj)).split('\'')[1]
+
+def log_uvc_dev(path: str, properties: dict) -> str:
+    log_uvc_formats(properties)
+    log_uvc_v4l2ctrls(path, properties)
 
 def log_uvc_formats(properties: dict) -> None:
     logger.log_info(f"Supported Formats:", '')
@@ -140,9 +142,9 @@ def log_uvc_v4l2ctrls(device_path: str, properties: dict) -> None:
         logger.log_info(f"{section}:", logger.indentation)
         for control, data in controls.items():
             line = f"{control} ({data['type']})"
-            line += (35 - len(line)) * ' ' + ': '
+            line += (35 - len(line)) * ' ' + ':'
             if data['type'] in ('int'):
-                line += f"min={data['min']} max={data['max']} step={data['step']}"
+                line += f" min={data['min']} max={data['max']} step={data['step']}"
             line += f" default={data['default']}"
             line += f" value={ctl.get_control_cur_value(device_path, control)}"
             if 'flags' in data:
