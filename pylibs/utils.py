@@ -5,6 +5,7 @@ import shutil
 import os
 
 from . import logger
+from .v4l2 import ctl as v4l2_ctl
 
 # Dynamically import component
 # Requires module to have a load_component() function,
@@ -100,3 +101,24 @@ def grep(path: str, search: str) -> str:
     except FileNotFoundError:
         logger.log_error(f"File '{path}' not found!")    
     return ''
+
+def get_v4l2_ctl_str(cam_path: str) -> str:
+    ctrls = v4l2_ctl.get_dev_ctl_parsed_dict(cam_path)
+    message = ''
+    for section, controls in ctrls.items():
+        message += f"{section}:\n"
+        for control, data in controls.items():
+            line = f"{control} ({data['type']})"
+            line += (35 - len(line)) * ' ' + ':'
+            if data['type'] in ('int'):
+                line += f" min={data['min']} max={data['max']} step={data['step']}"
+            line += f" default={data['default']}"
+            line += f" value={v4l2_ctl.get_control_cur_value(cam_path, control)}"
+            if 'flags' in data:
+                line += f" flags={data['flags']}"
+            message += logger.indentation + line + '\n'
+            if 'menu' in data:
+                for value, name in data['menu'].items():
+                    message += logger.indentation*2 + f"{value}: {name}\n"
+        message += '\n'
+    return message[:-1]

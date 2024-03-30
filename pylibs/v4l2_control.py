@@ -14,10 +14,14 @@ def get_uvc_v4l2ctrls(cam_path: str) -> str:
     v4l2ctrls = utils.execute_shell_command(command)
     return v4l2ctrls
 
-def set_v4l2_ctrl(cam_path: str, ctrl: str) -> str:
-    command = f'v4l2-ctl -d {cam_path} -c {ctrl}'
-    v4l2ctrl = utils.execute_shell_command(command)
-    return v4l2ctrl
+def set_v4l2_ctrl(cam_path: str, ctrl: str, prefix='') -> str:
+    try:
+        c = ctrl.split('=')[0].strip().lower()
+        v = int(ctrl.split('=')[1].strip())
+        if not v4l2_ctl.set_control(cam_path, c, v):
+            raise ValueError
+    except (ValueError, IndexError):
+        logger.log_quiet(f"Failed to set parameter: '{ctrl.strip()}'", prefix)
 
 def set_v4l2ctrls(section: str, cam_path: str, ctrls: list[str] = None) -> str:
     prefix = "V4L2 Control: "
@@ -26,24 +30,19 @@ def set_v4l2ctrls(section: str, cam_path: str, ctrls: list[str] = None) -> str:
         return
     logger.log_quiet(f"Device: {section}", prefix)
     logger.log_quiet(f"Options: {', '.join(ctrls)}", prefix)
-    avail_ctrls = get_uvc_v4l2ctrls(cam_path)
+    avail_ctrls = utils.get_v4l2_ctl_str(cam_path)
     for ctrl in ctrls:
-        if ctrl.split('=')[0].strip().lower() not in avail_ctrls:
+        c = ctrl.split('=')[0].strip().lower()
+        if c not in avail_ctrls:
             logger.log_quiet(
                 f"Parameter '{ctrl.strip()}' not available for '{cam_path}'. Skipped.",
                 prefix
             )
             continue
-        v4l2ctrl = set_v4l2_ctrl(cam_path, ctrl.strip())
-        if not v4l2ctrl:
-            logger.log_quiet(f"Failed to set parameter: '{ctrl.strip()}'", prefix)
-    logger.log_multiline(get_uvc_v4l2ctrls(cam_path), logger.log_debug)
+        set_v4l2_ctrl(cam_path, ctrl, prefix)
+    logger.log_multiline(utils.get_v4l2_ctl_str(cam_path), logger.log_debug)
 
 def get_cur_v4l2_value(cam_path: str, ctrl: str) -> str:
-    # command = f'v4l2-ctl -d {cam_path} -C {ctrl}'
-    # value = utils.execute_shell_command(command)
-    # if value:
-        # return value.split(':')[1].strip()
     return v4l2_ctl.get_control_cur_value(cam_path, ctrl)
 
 def brokenfocus(cam_path: str, focus_absolute_conf: str) -> str:

@@ -154,7 +154,6 @@ def ctl_to_parsed_dict(dev_ctl: raw.v4l2_ext_control) -> dict:
     values = {}
     cur_sec = ''
     for control, cur_ctl in dev_ctl.items():
-        # cur_ctl = dev_ctl[control]
         if not cur_ctl['values']:
             cur_sec = control
             values[cur_sec] = {}

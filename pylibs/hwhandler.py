@@ -62,7 +62,6 @@ def get_libcamera_resolutions(libcamera_output: str, camera_path: str) -> list:
     )
     res = []
     if resolutions:
-        # Maybe cut out fps? re.sub('\[.*? - ', '[', r.strip())
         res = [r.strip() for r in resolutions[0].split('\n')]
     return res
 
@@ -97,25 +96,6 @@ def get_libcamera_controls(camera_path: str) -> list:
 
 def get_avail_legacy() -> dict:
     legacy = {}
-    # cmd = shutil.which('vcgencmd')
-    # if not cmd:
-    #     return legacy
-    # count_cmd = f'{cmd} get_camera'
-    # count = utils.execute_shell_command(count_cmd)
-    # Gets the number behind detected: "supported=1 detected=1, libcamera interfaces=0"
-    # if not count:
-        # return legacy
-    # count = count.split('=')[2].split(',')[0]
-    # if count == '0':
-        # return legacy
-    # v4l2_cmd = 'v4l2-ctl --list-devices'
-    # v4l2 = utils.execute_shell_command(v4l2_cmd) 
-    # legacy_path = ''
-    # lines = v4l2.split('\n')
-    # for i in range(len(lines)):
-    #     if 'mmal' in lines[i]:
-    #         legacy_path = lines[i+1].strip()
-    #         break
     legacy_path = v4l2_ctl.get_dev_path_by_name('mmal')
     if not legacy_path:
         return legacy
@@ -123,8 +103,6 @@ def get_avail_legacy() -> dict:
         'formats': v4l2_ctl.get_formats(legacy_path),
         'v4l2ctrls': v4l2_ctl.get_dev_ctl_parsed_dict(legacy_path)
     }
-    # legacy[legacy_path]['formats'] = v4l2_ctl.get_uvc_formats(legacy_path)
-    # legacy[legacy_path]['v4l2ctrls'] = v4l2_ctl.get_uvc_v4l2ctrls(legacy_path)
     avail_cams['legacy'].update(legacy)
     return legacy
 

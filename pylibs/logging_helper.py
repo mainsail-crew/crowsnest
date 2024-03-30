@@ -4,7 +4,6 @@ import sys
 import shutil
 
 from . import utils, logger, hwhandler
-from .v4l2 import ctl
 
 def log_initial():
     logger.log_quiet('crowsnest - A webcam Service for multiple Cams and Stream Services.')
@@ -124,7 +123,7 @@ def get_type_str(obj) -> str:
 
 def log_uvc_dev(path: str, properties: dict) -> str:
     log_uvc_formats(properties)
-    log_uvc_v4l2ctrls(path, properties)
+    log_uvc_v4l2ctrls(path)
 
 def log_uvc_formats(properties: dict) -> None:
     logger.log_info(f"Supported Formats:", '')
@@ -136,21 +135,6 @@ def log_uvc_formats(properties: dict) -> None:
             for fps in fps_list:
                 logger.log_info(f"{fps}", logger.indentation+indent*2)
 
-def log_uvc_v4l2ctrls(device_path: str, properties: dict) -> None:
+def log_uvc_v4l2ctrls(device_path: str) -> None:
     logger.log_info(f"Supported Controls:", '')
-    for section, controls in properties['v4l2ctrls'].items():
-        logger.log_info(f"{section}:", logger.indentation)
-        for control, data in controls.items():
-            line = f"{control} ({data['type']})"
-            line += (35 - len(line)) * ' ' + ':'
-            if data['type'] in ('int'):
-                line += f" min={data['min']} max={data['max']} step={data['step']}"
-            line += f" default={data['default']}"
-            line += f" value={ctl.get_control_cur_value(device_path, control)}"
-            if 'flags' in data:
-                line += f" flags={data['flags']}"
-            logger.log_info(line, logger.indentation*2)
-            if 'menu' in data:
-                for value, name in data['menu'].items():
-                    logger.log_info(f"{value}: {name}", logger.indentation*3)
-        logger.log_info('', '')
+    logger.log_multiline(utils.get_v4l2_ctl_str(device_path), logger.log_info, logger.indentation)
