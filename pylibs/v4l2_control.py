@@ -2,18 +2,6 @@ from . import logger, utils
 
 from .v4l2 import ctl as v4l2_ctl
 
-def get_uvc_formats(cam_path: str) -> str:
-    command = f'v4l2-ctl -d {cam_path} --list-formats-ext'
-    formats = utils.execute_shell_command(command)
-    # Remove first 3 lines
-    formats = '\n'.join(formats.split('\n')[3:])
-    return formats
-
-def get_uvc_v4l2ctrls(cam_path: str) -> str:
-    command = f'v4l2-ctl -d {cam_path} --list-ctrls-menus'
-    v4l2ctrls = utils.execute_shell_command(command)
-    return v4l2ctrls
-
 def set_v4l2_ctrl(cam_path: str, ctrl: str, prefix='') -> str:
     try:
         c = ctrl.split('=')[0].strip().lower()
