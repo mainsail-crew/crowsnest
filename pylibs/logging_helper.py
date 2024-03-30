@@ -117,7 +117,7 @@ def log_libcamera_dev(path: str, properties: dict) -> str:
             logger.log_info(str_first + str_indent + str_second, logger.indentation)
     else:
         logger.log_info("apt package 'python3-libcamera' is not installed! "
-                 "Make sure to install it to log the controls!", logger.indentation)
+                        "Make sure to install it to log the controls!", logger.indentation)
 
 def get_type_str(obj) -> str:
     return str(type(obj)).split('\'')[1]
