@@ -140,7 +140,7 @@ def set_control(device_path: str, control: str, value: int) -> bool:
         if utils.ioctl_safe(fd, raw.VIDIOC_S_CTRL, ctrl) != -1:
             success = True
         os.close(fd)
-        return True
+        return success
     except FileNotFoundError:
         pass
     return success
