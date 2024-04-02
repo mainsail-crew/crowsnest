@@ -2,6 +2,11 @@
 # Changelog
 All notable changes to Crowsnest will be documented in this file.
 
+## [4.1.8](https://github.com/mainsail-crew/crowsnest/releases/tag/v4.1.8) - 2024-04-02
+### Bug Fixes and Improvements
+
+- Fix crash of detect_libcamera without CSI cam ([#256](https://github.com/mainsail-crew/crowsnest/pull/256))
+
 ## [4.1.7](https://github.com/mainsail-crew/crowsnest/releases/tag/v4.1.7) - 2024-04-02
 ### Features
 
