@@ -2,6 +2,19 @@
 # Changelog
 All notable changes to Crowsnest will be documented in this file.
 
+## [4.1.7](https://github.com/mainsail-crew/crowsnest/releases/tag/v4.1.7) - 2024-04-02
+### Features
+
+- Log libamera device resolutions and controls ([#240](https://github.com/mainsail-crew/crowsnest/pull/240))
+
+### Bug Fixes and Improvements
+
+- Fix empty string if ustreamer not found ([#253](https://github.com/mainsail-crew/crowsnest/pull/253))
+
+### Other
+
+- Revert #249 and update ustreamer version to v6.9 ([#254](https://github.com/mainsail-crew/crowsnest/pull/254))
+
 ## [4.1.6](https://github.com/mainsail-crew/crowsnest/releases/tag/v4.1.6) - 2024-03-03
 ### Bug Fixes and Improvements
 
