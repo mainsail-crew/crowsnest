@@ -62,7 +62,7 @@ detect_libcamera() {
     local avail
     if [[ "$(is_raspberry_pi)" = "1" ]] &&
     [[ -x "$(command -v libcamera-hello)" ]]; then
-        avail="$(libcamera-hello --list-cameras | grep -c "Available")"
+        avail="$(libcamera-hello --list-cameras | grep -c "Available" || echo "0")"
         if [[ "${avail}" = "1" ]]; then
             get_libcamera_path | wc -l
         else
