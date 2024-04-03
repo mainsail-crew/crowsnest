@@ -1,10 +1,11 @@
 import asyncio
 from configparser import SectionProxy
+from abc import ABC, abstractmethod
 
 from ..parameter import Parameter
 from .. import logger
 
-class Section:
+class Section(ABC):
     section_name = 'section'
     keyword = 'section'
     available_sections = {}
@@ -32,10 +33,12 @@ class Section:
                 success = False
         return success
 
-    # Execute section specific stuff, e.g. starting cam
+    @abstractmethod
     async def execute(self, lock: asyncio.Lock):
-        raise NotImplementedError("If you see this, a componenent is implemented wrong!!!")
-
+        """
+        Execute section specific stuff, e.g. starting cam
+        """
+        ...
 
 def load_component(*args, **kwargs):
     raise NotImplementedError("If you see this, something went wrong!!!")

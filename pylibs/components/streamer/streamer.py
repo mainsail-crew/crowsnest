@@ -1,5 +1,6 @@
 import textwrap
 from configparser import SectionProxy
+from abc import ABC
 
 from ..section import Section
 from ...parameter import Parameter
@@ -15,7 +16,7 @@ class Resolution():
     def __str__(self) -> str:
         return 'x'.join([self.width, self.height])
 
-class Streamer(Section):
+class Streamer(Section, ABC):
     section_name = 'cam'
     binaries = {}
 
