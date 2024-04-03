@@ -3,7 +3,7 @@ import shutil, re
 from ... import utils
 from .. import camera
 
-class LibcameraCamera(camera.Camera):
+class Libcamera(camera.Camera):
     def __init__(self, path) -> None:
         self.path = path
         self.control_values = self._get_controls()
@@ -77,7 +77,7 @@ class LibcameraCamera(camera.Camera):
             return {}
         libcam_cmd =f'{cmd} --list-cameras'
         libcam = utils.execute_shell_command(libcam_cmd, strip=False)
-        cams = [LibcameraCamera(path) for path in re.findall(r'\((/base.*?)\)', libcam)]
+        cams = [Libcamera(path) for path in re.findall(r'\((/base.*?)\)', libcam)]
         for cam in cams:
             cam.formats = cam._get_formats(libcam)
         return cams

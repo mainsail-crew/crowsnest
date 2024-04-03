@@ -3,7 +3,7 @@ import os
 from .. import camera
 from ... import v4l2, logger
 
-class UVCCamera(camera.Camera):
+class UVC(camera.Camera):
     def __init__(self, path: str) -> None:
         if path.startswith('/dev/video'):
             self.path = path
@@ -79,4 +79,4 @@ class UVCCamera(camera.Camera):
             return avail_uvc
         avail_by_id = get_avail_uvc('/dev/v4l/by-id/')
         by_path_path = get_avail_uvc('/dev/v4l/by-path/')
-        return [UVCCamera(by_id_path) for by_id_path,_ in avail_by_id]
+        return [UVC(by_id_path) for by_id_path,_ in avail_by_id]
