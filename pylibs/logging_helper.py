@@ -3,7 +3,7 @@ import os
 import sys
 import shutil
 
-from . import utils, logger, hwhandler
+from . import utils, logger, camera
 
 def log_initial():
     logger.log_quiet('crowsnest - A webcam Service for multiple Cams and Stream Services.')
@@ -75,10 +75,10 @@ def log_host_info():
 
 def log_cams():
     logger.log_info("Detect available Devices")
-    libcamera = hwhandler.get_avail_libcamera()
-    uvc = hwhandler.get_avail_uvc_dev()
-    legacy = hwhandler.get_avail_legacy()
-    total = len(libcamera.keys()) + len(legacy.keys()) + len(uvc.keys())
+    libcamera = camera.camera_manager.init_camera_type(camera.Libcamera)
+    uvc = camera.camera_manager.init_camera_type(camera.UVC)
+    legacy = camera.camera_manager.init_camera_type(camera.Legacy)
+    total = len(libcamera) + len(legacy) + len(uvc)
 
     if total == 0:
         logger.log_error("No usable Devices Found. Stopping ")
@@ -86,55 +86,41 @@ def log_cams():
 
     logger.log_info(f"Found {total} total available Device(s)")
     if libcamera:
-        logger.log_info(f"Found {len(libcamera.keys())} available 'libcamera' device(s)")
-        for path, properties in libcamera.items():
-            log_libcamera_dev(path, properties)
+        logger.log_info(f"Found {len(libcamera)} available 'libcamera' device(s)")
+        for cam in libcamera:
+            log_libcam(cam)
     if legacy:
-        for path, properties in legacy.items():
-            logger.log_info(f"Detected 'Raspicam' Device -> {path}")
-            log_uvc_dev(path, properties)
+        for cam in legacy:
+            log_legacy_cam(cam)
     if uvc:
-        logger.log_info(f"Found {len(uvc.keys())} available v4l2 (UVC) camera(s)")
-        for path, properties in uvc.items():
-            logger.log_info(f"{path} -> {properties['realpath']}", '')
-            log_uvc_dev(path, properties)
+        logger.log_info(f"Found {len(uvc)} available v4l2 (UVC) camera(s)")
+        for cam in uvc:
+            log_uvc_cam(cam)
 
-def log_libcamera_dev(path: str, properties: dict) -> str:
-    logger.log_info(f"Detected 'libcamera' device -> {path}")
+def log_libcam(cam: camera.Libcamera) -> None:
+    logger.log_info(f"Detected 'libcamera' device -> {cam.path}")
     logger.log_info(f"Advertised Formats:", '')
-    resolutions = properties['resolutions']
-    for res in resolutions:
-        logger.log_info(f"{res}", logger.indentation)
+    log_camera_formats(cam)
     logger.log_info(f"Supported Controls:", '')
-    controls = properties['controls']
-    if controls:
-        for name, value in controls.items():
-            min, max, default = value.values()
-            str_first = f"{name} ({get_type_str(min)})"
-            str_second = f"min={min} max={max} default={default}"
-            str_indent = (30 - len(str_first)) * ' ' + ': '
-            logger.log_info(str_first + str_indent + str_second, logger.indentation)
-    else:
-        logger.log_info("apt package 'python3-libcamera' is not installed! "
-                        "Make sure to install it to log the controls!", logger.indentation)
+    log_camera_ctrls(cam)
 
-def get_type_str(obj) -> str:
-    return str(type(obj)).split('\'')[1]
-
-def log_uvc_dev(path: str, properties: dict) -> str:
-    log_uvc_formats(properties)
-    log_uvc_v4l2ctrls(path)
-
-def log_uvc_formats(properties: dict) -> None:
+def log_uvc_cam(cam: camera.UVC) -> None:
+    logger.log_info(f"{cam.path_by_id} -> {cam.path}", '')
     logger.log_info(f"Supported Formats:", '')
-    indent = ' '*8
-    for fmt, data in properties['formats'].items():
-        logger.log_info(f"{fmt}:", logger.indentation)
-        for res, fps_list in data.items():
-            logger.log_info(f"{res}", logger.indentation+indent)
-            for fps in fps_list:
-                logger.log_info(f"{fps}", logger.indentation+indent*2)
-
-def log_uvc_v4l2ctrls(device_path: str) -> None:
+    log_camera_formats(cam)
     logger.log_info(f"Supported Controls:", '')
-    logger.log_multiline(utils.get_v4l2_ctl_str(device_path), logger.log_info, logger.indentation)
+    log_camera_ctrls(cam)
+
+def log_legacy_cam(camera_path: str) -> None:
+    cam: camera.UVC = camera.camera_manager.get_cam_by_path(camera_path)
+    logger.log_info(f"Detected 'Raspicam' Device -> {camera_path}")
+    logger.log_info(f"Supported Formats:", '')
+    log_camera_formats(cam)
+    logger.log_info(f"Supported Controls:", '')
+    log_camera_ctrls(cam)
+
+def log_camera_formats(cam: camera.Camera) -> None:
+    logger.log_multiline(cam.get_formats_string(), logger.log_info, logger.indentation)
+
+def log_camera_ctrls(cam: camera.Camera) -> None:
+    logger.log_multiline(cam.get_controls_string(), logger.log_info, logger.indentation)

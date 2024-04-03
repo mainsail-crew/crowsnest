@@ -2,7 +2,7 @@ import re
 import asyncio
 
 from .streamer import Streamer
-from ... import logger, utils, hwhandler, v4l2_control as v4l2_ctl
+from ... import logger, utils, camera
 
 class Ustreamer(Streamer):
     keyword = 'ustreamer'
@@ -23,6 +23,7 @@ class Ustreamer(Streamer):
         res = self.parameters['resolution'].value
         fps = self.parameters['max_fps'].value
         device = self.parameters['device'].value
+        cam = camera.camera_manager.get_cam_by_path(device)
 
         streamer_args = [
             '--host', host,
@@ -34,19 +35,19 @@ class Ustreamer(Streamer):
             '--static', '"ustreamer-www"'
         ]
 
-        if hwhandler.is_device_legacy(device):
+        if self._is_device_legacy():
             streamer_args += [
                 '--format', 'MJPEG',
                 '--device-timeout', '5',
                 '--buffers', '3'
             ]
-            v4l2_ctl.blockyfix(device)
+            self._blockyfix()
         else:
             streamer_args += [
                 '--device', device,
                 '--device-timeout', '2'
             ]
-            if hwhandler.has_device_mjpg_hw(device):
+            if cam.has_mjpg_hw_encoder():
                 streamer_args += [
                     '--format', 'MJPEG',
                     '--encoder', 'HW'
@@ -54,7 +55,7 @@ class Ustreamer(Streamer):
 
         v4l2ctl = self.parameters['v4l2ctl'].value
         if v4l2ctl:
-            v4l2_ctl.set_v4l2ctrls(f'[cam {self.name}]', device, v4l2ctl.split(','))
+            self._set_v4l2ctrls(v4l2ctl.split(','))
 
         # custom flags
         streamer_args += self.parameters['custom_flags'].value.split()
@@ -68,7 +69,7 @@ class Ustreamer(Streamer):
             info_log_pre=log_pre,
             info_log_func=logger.log_debug,
             error_log_pre=log_pre,
-            error_log_func=self.custom_log
+            error_log_func=self._custom_log
         )
         if lock.locked():
             lock.release()
@@ -77,17 +78,62 @@ class Ustreamer(Streamer):
         for ctl in v4l2ctl.split(','):
             if 'focus_absolute' in ctl:
                 focus_absolute = ctl.split('=')[1].strip()
-                v4l2_ctl.brokenfocus(device, focus_absolute)
+                self._brokenfocus(focus_absolute)
                 break
 
         return process
 
-    def custom_log(self, msg: str):
+    def _custom_log(self, msg: str):
         if msg.endswith('==='):
             msg = msg[:-28]
         else:
             msg = re.sub(r'-- (.*?) \[.*?\] --', r'\1', msg)
         logger.log_debug(msg)
+
+    def _set_v4l2_ctrl(self, cam: camera.UVC, ctrl: str, prefix='') -> str:
+        try:
+            c = ctrl.split('=')[0].strip().lower()
+            v = int(ctrl.split('=')[1].strip())
+            if not cam.set_control(c, v):
+                raise ValueError
+        except (ValueError, IndexError):
+            logger.log_quiet(f"Failed to set parameter: '{ctrl.strip()}'", prefix)
+
+    def _set_v4l2ctrls(self, ctrls: list[str] = None) -> str:
+        section = f'[cam {self.name}]'
+        prefix = "V4L2 Control: "
+        if not ctrls:
+            logger.log_quiet(f"No parameters set for {section}. Skipped.", prefix)
+            return
+        logger.log_quiet(f"Device: {section}", prefix)
+        logger.log_quiet(f"Options: {', '.join(ctrls)}", prefix)
+        cam_path = self.parameters['device'].value
+        cam = camera.camera_manager.get_cam_by_path(cam_path)
+        avail_ctrls = cam.get_controls_string()
+        for ctrl in ctrls:
+            c = ctrl.split('=')[0].strip().lower()
+            if c not in avail_ctrls:
+                logger.log_quiet(
+                    f"Parameter '{ctrl.strip()}' not available for '{cam_path}'. Skipped.",
+                    prefix
+                )
+                continue
+            self._set_v4l2_ctrl(cam, ctrl, prefix)
+        # Repulls the string to print current values
+        logger.log_multiline(cam.get_controls_string(), logger.log_debug, 'DEBUG: v4l2ctl: ')
+
+    def _brokenfocus(self, focus_absolute_conf: str) -> str:
+        cam = camera.camera_manager.get_cam_by_path(self.parameters['device'].value)
+        cur_val = cam.get_current_control_value('focus_absolute')
+        if cur_val and cur_val != focus_absolute_conf:
+            logger.log_warning(f"Detected 'brokenfocus' device.")
+            logger.log_info(f"Try to set to configured Value.")
+            self.set_v4l2_ctrl(cam, f'focus_absolute={focus_absolute_conf}')
+            logger.log_debug(f"Value is now: {cam.get_current_control_value('focus_absolute')}")
+
+    def _is_device_legacy(self) -> bool:
+        cam = camera.camera_manager.get_cam_by_path(self.parameters['device'].value)
+        return isinstance(cam, camera.Legacy)
 
 
 def load_component(name: str):

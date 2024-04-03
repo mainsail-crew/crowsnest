@@ -44,6 +44,18 @@ def parse_qc(fd: int, qc: raw.v4l2_query_ext_ctrl) -> dict:
                 controls['menu'][menu.index] = menu.value
     return controls
 
+def parse_qc_of_path(device_path: str, qc: raw.v4l2_query_ext_ctrl) -> dict:
+    """
+    Parses the query control to an easy to use dictionary
+    """
+    try:
+        fd = os.open(device_path, os.O_RDWR)
+        controls = parse_qc(fd, qc)
+        os.close(fd)
+        return controls
+    except FileNotFoundError:
+        return {}
+
 def init_device(device_path: str) -> bool:
     """
     Initialize a given device
@@ -67,6 +79,27 @@ def init_device(device_path: str) -> bool:
         return True
     except FileNotFoundError:
         return False
+
+def get_query_controls(device_path: str) -> dict[str, raw.v4l2_ext_control]:
+    """
+    Initialize a given device
+    """
+    try:
+        fd = os.open(device_path, os.O_RDWR)
+        next_fl = constants.V4L2_CTRL_FLAG_NEXT_CTRL | constants.V4L2_CTRL_FLAG_NEXT_COMPOUND
+        qctrl = raw.v4l2_query_ext_ctrl(id=next_fl)
+        query_controls: dict[str, raw.v4l2_query_ext_ctrl] = {}
+        for qc in utils.ioctl_iter(fd, raw.VIDIOC_QUERY_EXT_CTRL, qctrl):
+            if qc.type == constants.V4L2_CTRL_TYPE_CTRL_CLASS:
+                name = qc.name.decode()
+            else:
+                name = utils.name2var(qc.name.decode())
+            query_controls[name] = copy.deepcopy(qc)
+            qc.id |= next_fl
+        os.close(fd)
+        return query_controls
+    except FileNotFoundError:
+        return {}
 
 def get_dev_ctl(device_path: str) -> dict:
     if device_path not in dev_ctls:
@@ -115,10 +148,16 @@ def get_control_cur_value(device_path: str, control: str) -> int:
     """
     Get the current value of a control of a given device
     """
+    qc: raw.v4l2_query_ext_ctrl = dev_ctls[device_path][utils.name2var(control)]['qc']
+    return get_control_cur_value_with_qc(device_path, qc, control)
+
+def get_control_cur_value_with_qc(device_path: str, qc: raw.v4l2_query_ext_ctrl) -> int:
+    """
+    Get the current value of a control of a given device
+    """
     try:
         fd = os.open(device_path, os.O_RDWR)
         ctrl = raw.v4l2_control()
-        qc: raw.v4l2_query_ext_ctrl = dev_ctls[device_path][utils.name2var(control)]['qc']
         ctrl.id = qc.id
         utils.ioctl_safe(fd, raw.VIDIOC_G_CTRL, ctrl)
         os.close(fd)
@@ -130,11 +169,14 @@ def set_control(device_path: str, control: str, value: int) -> bool:
     """
     Set the value of a control of a given device
     """
+    qc: raw.v4l2_query_ext_ctrl = dev_ctls[device_path][control]['qc']
+    return set_control_with_qc(device_path, qc, value)
+
+def set_control_with_qc(device_path: str, qc: raw.v4l2_query_ext_ctrl, value: int) -> bool:
     success = False
     try:
         fd = os.open(device_path, os.O_RDWR)
         ctrl = raw.v4l2_control()
-        qc: raw.v4l2_query_ext_ctrl = dev_ctls[device_path][control]['qc']
         ctrl.id = qc.id
         ctrl.value = value
         if utils.ioctl_safe(fd, raw.VIDIOC_S_CTRL, ctrl) != -1:
