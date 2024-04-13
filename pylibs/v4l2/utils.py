@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import fcntl
 import ctypes
 import re

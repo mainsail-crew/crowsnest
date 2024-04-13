@@ -1,6 +1,4 @@
-"""
-Python implementation of v4l2-ctl
-"""
+#!/usr/bin/python3
 
 import os
 import copy

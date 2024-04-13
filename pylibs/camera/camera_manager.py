@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 from .camera import Camera
 
 def get_all_cameras() -> list:

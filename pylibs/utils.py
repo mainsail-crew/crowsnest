@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import importlib
 import asyncio
 import subprocess

@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 from .types.uvc import UVC
 from .types.legacy import Legacy
 from .types.libcamera import Libcamera

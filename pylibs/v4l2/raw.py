@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import ctypes
 
 from . import ioctl_macros

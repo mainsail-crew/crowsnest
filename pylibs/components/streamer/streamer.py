@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import textwrap
 from configparser import SectionProxy
 from abc import ABC

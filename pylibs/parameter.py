@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 from . import logger
 
 class Parameter:
