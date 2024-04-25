@@ -14,14 +14,14 @@ class Libcamera(camera.Camera):
         try:
             from libcamera import CameraManager, Rectangle
 
+            def rectangle_to_tuple(rectangle):
+                return (rectangle.x, rectangle.y, rectangle.width, rectangle.height)
+
             libcam_cm = CameraManager.singleton()
             for cam in libcam_cm.cameras:
                 if cam.id != self.path:
                     continue
                 for k, v in cam.controls.items():
-                    def rectangle_to_tuple(rectangle):
-                        return (rectangle.x, rectangle.y, rectangle.width, rectangle.height)
-
                     if isinstance(v.min, Rectangle):
                         ctrls[k.name] = {
                             'min': rectangle_to_tuple(v.min),
