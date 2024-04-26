@@ -2,6 +2,11 @@
 # Changelog
 All notable changes to Crowsnest will be documented in this file.
 
+## [4.1.9](https://github.com/mainsail-crew/crowsnest/releases/tag/v4.1.9) - 2024-04-26
+### Bug Fixes and Improvements
+
+- Fix libcamera resolution and controls logging ([#260](https://github.com/mainsail-crew/crowsnest/pull/260))
+
 ## [4.1.8](https://github.com/mainsail-crew/crowsnest/releases/tag/v4.1.8) - 2024-04-02
 ### Bug Fixes and Improvements
 
