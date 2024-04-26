@@ -114,7 +114,7 @@ list_picam_controls() {
     local prefix
     prefix="$(date +'[%D %T]') crowsnest:"
     log_msg "'libcamera' device controls :"
-    while read -r i; do
+    while IFS= read -r i; do
         if [[ ! "${i}" =~ "INFO" ]]; then
             printf "%s\t\t%s\n" "${prefix}" "${i}" >>"${CROWSNEST_LOG_PATH}"
         fi
