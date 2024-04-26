@@ -87,7 +87,7 @@ list_picam_resolution() {
     local prefix
     prefix="$(date +'[%D %T]') crowsnest:"
     log_msg "'libcamera' device(s) resolution(s) :"
-    while read -r i; do
+    while IFS= read -r i; do
         printf "%s\t\t%s\n" "${prefix}" "${i}" >> "${CROWSNEST_LOG_PATH}"
     done < <(libcamera-hello --list-cameras | sed '1,2d;s/Modes:/Colorspace:/')
 }
