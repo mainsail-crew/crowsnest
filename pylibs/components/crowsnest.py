@@ -4,6 +4,7 @@ from .section import Section
 from ..parameter import Parameter
 
 from configparser import SectionProxy
+import asyncio
 
 class Crowsnest(Section):
     def __init__(self, name: str = '') -> None:
@@ -12,7 +13,7 @@ class Crowsnest(Section):
         self.parameters.update({
             'log_path': Parameter(),
             'log_level': Parameter(str, 'verbose'),
-            'delete_log': Parameter(bool, 'True'),
+            'delete_log': Parameter(bool, 'True'),  
             'no_proxy': Parameter(bool, 'False')
         })
 
@@ -29,6 +30,9 @@ class Crowsnest(Section):
         else:
             self.parameters['log_level'].value = 'INFO'
         return True
+
+    async def execute(self, lock: asyncio.Lock):
+        pass
 
 
 def load_component(name: str, config_section: SectionProxy, *args, **kwargs):

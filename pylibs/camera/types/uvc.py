@@ -4,10 +4,14 @@ from .. import camera
 from ... import v4l2, logger
 
 class UVC(camera.Camera):
-    def __init__(self, path: str) -> None:
+    def __init__(self, path: str, *args, **kwargs) -> None:
+        self.path_by_path = None
+        self.path_by_id = None
         if path.startswith('/dev/video'):
             self.path = path
-            self.path_by_id = None
+            if kwargs.get('other'):
+                self.path_by_path = kwargs['other'][0]
+                self.path_by_id = kwargs['other'][1]
         else:
             self.path = os.path.realpath(path)
             self.path_by_id = path
@@ -70,13 +74,17 @@ class UVC(camera.Camera):
 
     @staticmethod
     def init_camera_type() -> list:
-        def get_avail_uvc(path):
-            avail_uvc = []
-            for file in os.listdir(path):
-                by_id = os.path.join(path, file)
-                if os.path.islink(by_id) and by_id.endswith("index0"):
-                    avail_uvc.append((by_id, os.path.realpath(by_id)))
+        def get_avail_uvc(search_path):
+            avail_uvc = {}
+            for file in os.listdir(search_path):
+                dev_path = os.path.join(search_path, file)
+                if os.path.islink(dev_path) and dev_path.endswith("index0"):
+                    avail_uvc[os.path.realpath(dev_path)] = dev_path
             return avail_uvc
+
         avail_by_id = get_avail_uvc('/dev/v4l/by-id/')
-        by_path_path = get_avail_uvc('/dev/v4l/by-path/')
-        return [UVC(by_id_path) for by_id_path,_ in avail_by_id]
+        avail_by_path = dict(filter(lambda pair: 'usb' in pair[1], get_avail_uvc('/dev/v4l/by-path/').items()))
+        avail_uvc_cameras = {}
+        for dev_path, by_path in avail_by_path.items():
+            avail_uvc_cameras[dev_path] = (by_path, avail_by_id.get(dev_path))
+        return [UVC(dev_path, other=other_paths) for dev_path,other_paths in avail_uvc_cameras.items()]

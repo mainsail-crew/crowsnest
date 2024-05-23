@@ -4,7 +4,7 @@ from ... import utils
 from .. import camera
 
 class Libcamera(camera.Camera):
-    def __init__(self, path) -> None:
+    def __init__(self, path, *args, **kwargs) -> None:
         self.path = path
         self.control_values = self._get_controls()
         self.formats = []
