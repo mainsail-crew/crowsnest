@@ -30,9 +30,6 @@ class Crowsnest(Section):
             self.parameters['log_level'].value = 'INFO'
         return True
 
-    def execute(self) -> None:
-        ...
-
 
 def load_component(name: str, config_section: SectionProxy, *args, **kwargs):
     cn = Crowsnest(name)

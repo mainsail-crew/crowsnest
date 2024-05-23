@@ -14,13 +14,13 @@ class Camera(ABC):
 
     @abstractmethod
     def get_formats_string(self) -> str:
-        ...
+        pass
 
     @abstractmethod
     def get_controls_string(self) -> str:
-        ...
+        pass
 
     @staticmethod
     @abstractmethod
     def init_camera_type() -> list:
-        ...
+        pass

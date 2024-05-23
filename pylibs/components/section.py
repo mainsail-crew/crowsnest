@@ -37,10 +37,7 @@ class Section(ABC):
 
     @abstractmethod
     async def execute(self, lock: asyncio.Lock):
-        """
-        Execute section specific stuff, e.g. starting cam
-        """
-        ...
+        pass
 
 def load_component(*args, **kwargs):
     raise NotImplementedError("If you see this, something went wrong!!!")
