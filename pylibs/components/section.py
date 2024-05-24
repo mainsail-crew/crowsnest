@@ -26,7 +26,9 @@ class Section(ABC):
             if parameter not in self.parameters:
                 logger.log_warning(f"Parameter '{parameter}' is not supported by {self.keyword}!")
                 continue
-            value = value.split('#')[0].strip()
+            value = value.split('\n')
+            value = [v.split('#')[0].strip() for v in value]
+            value = ' '.join(value)
             self.parameters[parameter].set_value(value)
         for parameter, value in self.parameters.items():
             if value.value is None:
