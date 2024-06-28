@@ -22,17 +22,14 @@ class Section(ABC):
     # Parse config according to the needs of the section
     def parse_config_section(self, config_section: SectionProxy, *args, **kwargs) -> bool:
         success = True
-        for parameter, value in config_section.items():
-            if parameter not in self.parameters:
-                logger.log_warning(f"Parameter '{parameter}' is not supported by {self.keyword}!")
+        for option, value in config_section.items():
+            if option not in self.parameters:
+                logger.log_warning(f"Parameter '{option}' is not supported by {self.keyword}!")
                 continue
-            value = value.split('\n')
-            value = [v.split('#')[0].strip() for v in value]
-            value = ' '.join(value)
-            self.parameters[parameter].set_value(value)
-        for parameter, value in self.parameters.items():
+            self.parameters[option].set_value(value)
+        for option, value in self.parameters.items():
             if value.value is None:
-                logger.log_error(f"Parameter '{parameter}' incorrectly set or missing in section "
+                logger.log_error(f"Parameter '{option}' incorrectly set or missing in section "
                                  f"[{self.section_name} {self.name}] but is required!")
                 success = False
         return success

@@ -13,7 +13,7 @@ parser = argparse.ArgumentParser(
     prog='Crowsnest',
     description='Crowsnest - A webcam daemon for Raspberry Pi OS distributions like MainsailOS'
 )
-config = configparser.ConfigParser()
+config = configparser.ConfigParser(inline_comment_prefixes='#')
 
 parser.add_argument('-c', '--config', help='Path to config file', required=True)
 parser.add_argument('-l', '--log_path', help='Path to log file', required=True)
@@ -32,7 +32,7 @@ def initial_parse_config():
         logger.log_error("Failed to parse config! Exiting...")
         exit(1)
     crowsnest = Crowsnest('crowsnest')
-    if 'crowsnest' not in config or not crowsnest.parse_config_section(config['crowsnest']):
+    if not config.has_section('crowsnest') or not crowsnest.parse_config_section(config['crowsnest']):
         logger.log_error("Failed to parse config for '[crowsnest]' section! Exiting...")
         exit(1)
 
