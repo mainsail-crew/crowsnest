@@ -11,7 +11,7 @@ class Crowsnest(Section):
         super().__init__(name)
 
         self.parameters.update({
-            'log_path': Parameter(),
+            'log_path': Parameter(str),
             'log_level': Parameter(str, 'verbose'),
             'delete_log': Parameter(bool, 'True'),  
             'no_proxy': Parameter(bool, 'False')

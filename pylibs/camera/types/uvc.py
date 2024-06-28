@@ -83,7 +83,11 @@ class UVC(camera.Camera):
             return avail_uvc
 
         avail_by_id = get_avail_uvc('/dev/v4l/by-id/')
-        avail_by_path = dict(filter(lambda pair: 'usb' in pair[1], get_avail_uvc('/dev/v4l/by-path/').items()))
+        avail_by_path = dict(filter(
+                lambda key_value_pair: 'usb' in key_value_pair[1],
+                get_avail_uvc('/dev/v4l/by-path/').items()
+            )
+        )
         avail_uvc_cameras = {}
         for dev_path, by_path in avail_by_path.items():
             avail_uvc_cameras[dev_path] = (by_path, avail_by_id.get(dev_path))
