@@ -48,43 +48,43 @@ async def start_sections():
     try:
         if not len(config.sections()) > 1:
             logger.log_quiet("No Cams / Services to start! Exiting ...")
-        else:
-            logger.log_quiet("Try to parse configured Cams / Services...")
-            for section in config.sections():
-                section_header = section.split(' ')
-                section_object = None
-                section_keyword = section_header[0]
+            return
+        logger.log_quiet("Try to parse configured Cams / Services...")
+        for section in config.sections():
+            section_header = section.split(' ')
+            section_object = None
+            section_keyword = section_header[0]
 
-                # Skip crowsnest section
-                if section_keyword == 'crowsnest':
-                    continue
+            # Skip crowsnest section
+            if section_keyword == 'crowsnest':
+                continue
 
-                section_name = ' '.join(section_header[1:])
-                component = utils.load_component(section_keyword, section_name)
-                logger.log_quiet(f"Parse configuration of section [{section}] ...")
-                if component.parse_config_section(config[section]):
-                    sect_objs.append(component)
-                    logger.log_quiet(f"Configuration of section [{section}] looks good. Continue ...")
-                else:
-                    logger.log_error(f"Failed to parse config for section [{section}]! Skipping ...")
-
-            logger.log_quiet("Try to start configured Cams / Services ...")
-            if sect_objs:
-                lock = asyncio.Lock()
-                for section_object in sect_objs:
-                    task = asyncio.create_task(section_object.execute(lock))
-                    sect_exec_tasks.add(task)
-
-                # Lets sec_exec_tasks finish first
-                await asyncio.sleep(0)
-                async with lock:
-                    logger.log_quiet("... Done!")
+            section_name = ' '.join(section_header[1:])
+            component = utils.load_component(section_keyword, section_name)
+            logger.log_quiet(f"Parse configuration of section [{section}] ...")
+            if component.parse_config_section(config[section]):
+                sect_objs.append(component)
+                logger.log_quiet(f"Configuration of section [{section}] looks good. Continue ...")
             else:
-                logger.log_quiet("No Service started! Exiting ...")
+                logger.log_error(f"Failed to parse config for section [{section}]! Skipping ...")
 
-            for task in sect_exec_tasks:
-                if task is not None:
-                    await task
+        logger.log_quiet("Try to start configured Cams / Services ...")
+        if sect_objs:
+            lock = asyncio.Lock()
+            for section_object in sect_objs:
+                task = asyncio.create_task(section_object.execute(lock))
+                sect_exec_tasks.add(task)
+
+            # Lets sect_exec_tasks finish first
+            await asyncio.sleep(0)
+            async with lock:
+                logger.log_quiet("... Done!")
+        else:
+            logger.log_quiet("No Service started! Exiting ...")
+
+        for task in sect_exec_tasks:
+            if task is not None:
+                await task
     except Exception as e:
         logger.log_multiline(traceback.format_exc().strip(), logger.log_error)
     finally:
