@@ -19,20 +19,6 @@ set -Ee
 # Base Path
 BASE_CN_PATH="$(dirname "$(readlink -f "${0}")")"
 
-# ## Import Librarys
-# # shellcheck source-path=SCRIPTDIR/../libs/
-# . "${BASE_CN_PATH}/libs/camera-streamer.sh"
-# . "${BASE_CN_PATH}/libs/configparser.sh"
-# . "${BASE_CN_PATH}/libs/core.sh"
-# . "${BASE_CN_PATH}/libs/hwhandler.sh"
-# . "${BASE_CN_PATH}/libs/init_stream.sh"
-# . "${BASE_CN_PATH}/libs/logging.sh"
-# . "${BASE_CN_PATH}/libs/messages.sh"
-# . "${BASE_CN_PATH}/libs/ustreamer.sh"
-# . "${BASE_CN_PATH}/libs/v4l2_control.sh"
-# . "${BASE_CN_PATH}/libs/versioncontrol.sh"
-# . "${BASE_CN_PATH}/libs/watchdog.sh"
-
 function missing_args_msg {
     echo -e "crowsnest: Missing Arguments!"
     echo -e "\n\tTry: crowsnest -h\n"
@@ -87,20 +73,6 @@ while getopts ":vhc:s:d" arg; do
         ;;
     esac
 done
-
-# init_logging
-# initial_check
-# construct_streamer
-
-# ## Loop and Watchdog
-# ## In this case watchdog acts more like a "cable defect detector"
-# ## The User gets a message if Device is lost.
-# clean_watchdog
-# while true ; do
-#     crowsnest_watchdog
-#     sleep 120 & sleep_pid="$!"
-#     wait "${sleep_pid}"
-# done
 
 function set_log_path {
     #Workaround sed ~ to BASH VAR $HOME
