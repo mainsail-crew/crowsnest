@@ -14,6 +14,7 @@ class Ustreamer(Streamer):
 
         self.binary_names = ['ustreamer.bin', 'ustreamer']
         self.binary_paths = ['bin/ustreamer']
+        self.cam = None
 
     async def execute(self, lock: asyncio.Lock):
         if self.parameters['no_proxy'].value:
@@ -25,7 +26,7 @@ class Ustreamer(Streamer):
         res = self.parameters['resolution'].value
         fps = self.parameters['max_fps'].value
         device = self.parameters['device'].value
-        cam = camera.camera_manager.get_cam_by_path(device)
+        self.cam = camera.camera_manager.get_cam_by_path(device)
 
         streamer_args = [
             '--host', host,
@@ -49,7 +50,7 @@ class Ustreamer(Streamer):
                 '--device', device,
                 '--device-timeout', '2'
             ]
-            if cam.has_mjpg_hw_encoder():
+            if self.cam and self.cam.has_mjpg_hw_encoder():
                 streamer_args += [
                     '--format', 'MJPEG',
                     '--encoder', 'HW'
@@ -57,7 +58,7 @@ class Ustreamer(Streamer):
 
         v4l2ctl = self.parameters['v4l2ctl'].value
         if v4l2ctl:
-            self._set_v4l2ctrls(v4l2ctl.split(','))
+            self._set_v4l2ctrls(self.cam, v4l2ctl.split(','))
 
         # custom flags
         streamer_args += self.parameters['custom_flags'].value.split()
@@ -92,11 +93,11 @@ class Ustreamer(Streamer):
             msg = re.sub(r'-- (.*?) \[.*?\] --', r'\1', msg)
         logger.log_debug(msg)
 
-    def _set_v4l2_ctrl(self, cam: camera.UVC, ctrl: str, prefix='') -> str:
+    def _set_v4l2_ctrl(self, ctrl: str, prefix='') -> str:
         try:
             c = ctrl.split('=')[0].strip().lower()
             v = int(ctrl.split('=')[1].strip())
-            if not cam.set_control(c, v):
+            if not self.cam or not self.cam.set_control(c, v):
                 raise ValueError
         except (ValueError, IndexError):
             logger.log_quiet(f"Failed to set parameter: '{ctrl.strip()}'", prefix)
@@ -109,33 +110,29 @@ class Ustreamer(Streamer):
             return
         logger.log_quiet(f"Device: {section}", prefix)
         logger.log_quiet(f"Options: {', '.join(ctrls)}", prefix)
-        cam_path = self.parameters['device'].value
-        cam = camera.camera_manager.get_cam_by_path(cam_path)
-        avail_ctrls = cam.get_controls_string()
+        avail_ctrls = self.cam.get_controls_string()
         for ctrl in ctrls:
             c = ctrl.split('=')[0].strip().lower()
             if c not in avail_ctrls:
                 logger.log_quiet(
-                    f"Parameter '{ctrl.strip()}' not available for '{cam_path}'. Skipped.",
+                    f"Parameter '{ctrl.strip()}' not available for '{self.parameters['device'].value}'. Skipped.",
                     prefix
                 )
                 continue
-            self._set_v4l2_ctrl(cam, ctrl, prefix)
+            self._set_v4l2_ctrl(self.cam, ctrl, prefix)
         # Repulls the string to print current values
-        logger.log_multiline(cam.get_controls_string(), logger.log_debug, 'DEBUG: v4l2ctl: ')
+        logger.log_multiline(self.cam.get_controls_string(), logger.log_debug, 'DEBUG: v4l2ctl: ')
 
     def _brokenfocus(self, focus_absolute_conf: str) -> str:
-        cam = camera.camera_manager.get_cam_by_path(self.parameters['device'].value)
-        cur_val = cam.get_current_control_value('focus_absolute')
+        cur_val = self.cam.get_current_control_value('focus_absolute')
         if cur_val and cur_val != focus_absolute_conf:
             logger.log_warning(f"Detected 'brokenfocus' device.")
             logger.log_info(f"Try to set to configured Value.")
-            self.set_v4l2_ctrl(cam, f'focus_absolute={focus_absolute_conf}')
-            logger.log_debug(f"Value is now: {cam.get_current_control_value('focus_absolute')}")
+            self.set_v4l2_ctrl(self.cam, f'focus_absolute={focus_absolute_conf}')
+            logger.log_debug(f"Value is now: {self.cam.get_current_control_value('focus_absolute')}")
 
     def _is_device_legacy(self) -> bool:
-        cam = camera.camera_manager.get_cam_by_path(self.parameters['device'].value)
-        return isinstance(cam, camera.Legacy)
+        return isinstance(self.cam, camera.Legacy)
 
 
 def load_component(name: str):
