@@ -76,6 +76,8 @@ class UVC(camera.Camera):
     def init_camera_type() -> list:
         def get_avail_uvc(search_path):
             avail_uvc = {}
+            if not os.path.exists(search_path):
+                return avail_uvc
             for file in os.listdir(search_path):
                 dev_path = os.path.join(search_path, file)
                 if os.path.islink(dev_path) and dev_path.endswith("index0"):
