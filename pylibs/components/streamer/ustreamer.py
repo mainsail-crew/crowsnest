@@ -64,7 +64,7 @@ class Ustreamer(Streamer):
         streamer_args += self.parameters['custom_flags'].value.split()
 
         cmd = self.binary_path + ' ' + ' '.join(streamer_args)
-        log_pre = f'ustreamer [cam {self.name}]: '
+        log_pre = f'{self.keyword} [cam {self.name}]: '
 
         logger.log_debug(log_pre + f"Parameters: {' '.join(streamer_args)}")
         process,_,_ = await utils.execute_command(

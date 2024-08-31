@@ -49,7 +49,7 @@ class Camera_Streamer(Streamer):
         v4l2ctl = self.parameters['v4l2ctl'].value
         if v4l2ctl:
             prefix = "V4L2 Control: "
-            logger.log_quiet(f"Handling done by camera-streamer", prefix)
+            logger.log_quiet(f"Handling done by {self.keyword}", prefix)
             logger.log_quiet(f"Trying to set: {v4l2ctl}", prefix)
             for ctrl in v4l2ctl.split(','):
                 streamer_args += [f'--camera-options={ctrl.strip()}']
@@ -79,7 +79,7 @@ class Camera_Streamer(Streamer):
         streamer_args += self.parameters['custom_flags'].value.split()
 
         cmd = self.binary_path + ' ' + ' '.join(streamer_args)
-        log_pre = f'camera-streamer [cam {self.name}]: '
+        log_pre = f'{self.keyword} [cam {self.name}]: '
 
         logger.log_debug(log_pre + f"Parameters: {' '.join(streamer_args)}")
         process,_,_ = await utils.execute_command(
