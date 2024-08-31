@@ -3,6 +3,7 @@
 import fcntl
 import ctypes
 import re
+import errno
 from typing import Generator
 
 from . import raw, constants
@@ -23,14 +24,14 @@ def ioctl_iter(fd: int, cmd: int, struct: ctypes.Structure,
             fcntl.ioctl(fd, cmd, struct)
             yield struct
         except OSError as e:
-            if e.errno == constants.EINVAL:
+            if e.errno == errno.EINVAL:
                 if ignore_einval:
                     continue
                 break
-            elif e.errno == constants.ENOTTY:
+            elif e.errno in (errno.ENOTTY, errno.ENODATA, errno.EIO):
                 break
             else:
-                raise
+                break
 
 def v4l2_ctrl_type_to_string(ctrl_type: int) -> str:
     dict_ctrl_type = {

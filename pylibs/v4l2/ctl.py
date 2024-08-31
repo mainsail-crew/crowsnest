@@ -87,6 +87,7 @@ def get_query_controls(device_path: str) -> dict[str, raw.v4l2_ext_control]:
         next_fl = constants.V4L2_CTRL_FLAG_NEXT_CTRL | constants.V4L2_CTRL_FLAG_NEXT_COMPOUND
         qctrl = raw.v4l2_query_ext_ctrl(id=next_fl)
         query_controls: dict[str, raw.v4l2_query_ext_ctrl] = {}
+        utils.ioctl_safe(fd, raw.VIDIOC_G_EXT_CTRLS, qctrl)
         for qc in utils.ioctl_iter(fd, raw.VIDIOC_QUERY_EXT_CTRL, qctrl):
             if qc.type == constants.V4L2_CTRL_TYPE_CTRL_CLASS:
                 name = qc.name.decode()

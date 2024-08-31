@@ -1,8 +1,6 @@
 #!/usr/bin/python3
 
 V4L2_CTRL_MAX_DIMS                  = 4
-EINVAL                              = 22
-ENOTTY                              = 25
 
 V4L2_CTRL_TYPE_INTEGER              = 1
 V4L2_CTRL_TYPE_BOOLEAN              = 2
