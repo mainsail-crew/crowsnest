@@ -83,13 +83,15 @@ def get_executable(names: list[str], paths: list[str]) -> str:
     if names is None or paths is None:
         return None
     for name in names:
-        exec = shutil.which(name)
-        if exec:
-            return exec
         for path in paths:
             found = find_file(name, path)
             if found:
                 return found
+    # Only search for installed packages, if there are no manually compiled binaries
+    for name in names:
+        exec = shutil.which(name)
+        if exec:
+            return exec
     return None
 
 def grep(path: str, search: str) -> str:
