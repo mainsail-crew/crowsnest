@@ -6,6 +6,7 @@ import sys
 import shutil
 
 from . import utils, logger, camera
+from .components.streamer.streamer import Streamer, load_all_streamers
 
 def log_initial():
     logger.log_quiet('crowsnest - A webcam Service for multiple Cams and Stream Services.')
@@ -13,21 +14,6 @@ def log_initial():
     version = utils.execute_shell_command(command)
     logger.log_quiet(f'Version: {version}')
     logger.log_quiet('Prepare Startup ...')
-
-def log_config(config_path):
-    logger.log_info("Print Configfile: '" + config_path + "'")
-    with open(config_path, 'r') as file:
-        config_txt = file.read()
-        # Remove comments
-        config_txt = re.sub(r'#.*$', "", config_txt, flags=re.MULTILINE)
-        # Remove multiple whitespaces next to each other at the end of a line
-        config_txt = re.sub(r'\s*$', "", config_txt, flags=re.MULTILINE)
-        # Add newlines before sections
-        config_txt = re.sub(r'(\[.*\])$', "\n\\1", config_txt, flags=re.MULTILINE)
-        # Remove leading and trailing whitespaces
-        config_txt = config_txt.strip()
-        # Split the config file into lines
-        logger.log_multiline(config_txt, logger.log_info, logger.indentation)
 
 def log_host_info():
     logger.log_info("Host Information:")
@@ -74,6 +60,30 @@ def log_host_info():
     total = utils.bytes_to_gigabytes(total)
     free = utils.bytes_to_gigabytes(free)
     logger.log_info(f'Diskspace (avail. / total): {free}G / {total}G', log_pre)
+
+def log_streamer():
+    logger.log_info("Found Streamer:")
+    load_all_streamers()
+    log_pre = logger.indentation
+    for bin in Streamer.binaries:
+        if Streamer.binaries[bin] is None:
+            continue
+        logger.log_info(f'{bin}: {Streamer.binaries[bin]}', log_pre)
+
+def log_config(config_path):
+    logger.log_info("Print Configfile: '" + config_path + "'")
+    with open(config_path, 'r') as file:
+        config_txt = file.read()
+        # Remove comments
+        config_txt = re.sub(r'#.*$', "", config_txt, flags=re.MULTILINE)
+        # Remove multiple whitespaces next to each other at the end of a line
+        config_txt = re.sub(r'\s*$', "", config_txt, flags=re.MULTILINE)
+        # Add newlines before sections
+        config_txt = re.sub(r'(\[.*\])$', "\n\\1", config_txt, flags=re.MULTILINE)
+        # Remove leading and trailing whitespaces
+        config_txt = config_txt.strip()
+        # Split the config file into lines
+        logger.log_multiline(config_txt, logger.log_info, logger.indentation)
 
 def log_cams():
     logger.log_info("Detect available Devices")

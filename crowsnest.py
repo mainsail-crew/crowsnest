@@ -114,6 +114,7 @@ async def main():
     logger.set_log_level(crowsnest.parameters['log_level'].value)
 
     logging_helper.log_host_info()
+    logging_helper.log_streamer()
     logging_helper.log_config(args.config)
     logging_helper.log_cams()
 

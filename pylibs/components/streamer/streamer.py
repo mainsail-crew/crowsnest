@@ -3,6 +3,8 @@
 import textwrap
 from configparser import SectionProxy
 from abc import ABC
+from os import listdir
+from os.path import isfile, join
 
 from ..section import Section
 from ...parameter import Parameter
@@ -42,7 +44,8 @@ class Streamer(Section, ABC):
         self.missing_bin_txt = textwrap.dedent("""\
             '%s' executable not found!
             Please make sure everything is installed correctly and up to date!
-            Run 'make update' inside the crowsnest directory to install and update everything.""")
+            Run 'make update' inside the crowsnest directory to install and update everything."""
+        )
 
     def parse_config_section(self, config_section: SectionProxy, *args, **kwargs) -> bool:
         success = super().parse_config_section(config_section, *args, **kwargs)
@@ -61,6 +64,25 @@ class Streamer(Section, ABC):
                                  logger.log_error)
             return False
         return True
+
+def load_all_streamers():
+    streamer_path = 'pylibs/components/streamer'
+    streamer_files = [
+        f for f in listdir(streamer_path)
+        if isfile(join(streamer_path, f)) and f.endswith('.py')
+    ]
+    for streamer_file in streamer_files:
+        streamer_name = streamer_file[:-3]
+        try:
+            streamer = utils.load_component(streamer_name,
+                                            'temp',
+                                            path=streamer_path.replace('/', '.'))
+        except NotImplementedError:
+            continue
+        Streamer.binaries[streamer_name] = utils.get_executable(
+            streamer.binary_names,
+            streamer.binary_paths
+        )
 
 def load_component(name: str):
     raise NotImplementedError("If you see this, something went wrong!!!")
