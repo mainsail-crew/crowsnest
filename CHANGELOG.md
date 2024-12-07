@@ -2,6 +2,11 @@
 # Changelog
 All notable changes to Crowsnest will be documented in this file.
 
+## [4.1.10](https://github.com/mainsail-crew/crowsnest/releases/tag/v4.1.10) - 2024-12-07
+### Bug Fixes and Improvements
+
+- Change cs branch temporarily to fix compiling error ([#280](https://github.com/mainsail-crew/crowsnest/pull/280))
+
 ## [4.1.9](https://github.com/mainsail-crew/crowsnest/releases/tag/v4.1.9) - 2024-04-26
 ### Bug Fixes and Improvements
 
