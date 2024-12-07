@@ -41,7 +41,7 @@ fi
 # Camera-streamer repo
 CSTREAMER_PATH="camera-streamer"
 if [[ -z "${CROWSNEST_CAMERA_STREAMER_REPO_SHIP}" ]]; then
-    CROWSNEST_CAMERA_STREAMER_REPO_SHIP="https://github.com/ayufan/camera-streamer.git"
+    CROWSNEST_CAMERA_STREAMER_REPO_SHIP="https://github.com/mryel00/camera-streamer.git"
 fi
 if [[ -z "${CROWSNEST_CAMERA_STREAMER_REPO_BRANCH}" ]]; then
     CROWSNEST_CAMERA_STREAMER_REPO_BRANCH="master"
