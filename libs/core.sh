@@ -18,9 +18,9 @@ set -Ee
 
 ## Version of crowsnest
 function self_version {
-    pushd "${BASE_CN_PATH}" &> /dev/null
+    pushd "${BASE_CN_PATH}" &>/dev/null
     git describe --always --tags
-    popd &> /dev/null
+    popd &>/dev/null
 }
 
 # Init Traps
@@ -96,8 +96,9 @@ function check_apps {
 
     ## Avoid dependency check if non rpi sbc
     if [[ "$(is_raspberry_pi)" = "1" ]] &&
-    [[ "$(is_ubuntu_arm)" = "0" ]] &&
-    [[ "$(is_pi5)" = "0" ]]; then
+        [[ "$(is_ubuntu_arm)" = "0" ]] &&
+        [[ "$(is_armbian)" = "0" ]] &&
+        [[ "$(is_pi5)" = "0" ]]; then
         if [[ -x "${BASE_CN_PATH}/${cstreamer}" ]]; then
             log_msg "Dependency: '${cstreamer##*/}' found in ${cstreamer}."
         else

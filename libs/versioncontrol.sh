@@ -26,35 +26,35 @@ versioncontrol() {
 
     get_ustreamer_version() {
         local cur_ver avail_ver
-        pushd "${BASE_CN_PATH}"/bin/ustreamer &> /dev/null || exit 1
-            avail_ver="$(git describe --tags --always)"
-            cur_ver="v$(${UST_BIN} -v)"
-            if [[ "${cur_ver}" == "${avail_ver}" ]]; then
-                vc_log_msg "ustreamer is up to date. (${cur_ver})"
-            fi
-            if [[ "${cur_ver}" != "${avail_ver}" ]]; then
-                vc_log_msg "ustreamer new version available: ${avail_ver} (${cur_ver})."
-            fi
-        popd &> /dev/null || exit 1
+        pushd "${BASE_CN_PATH}"/bin/ustreamer &>/dev/null || exit 1
+        avail_ver="$(git describe --tags --always)"
+        cur_ver="v$(${UST_BIN} -v)"
+        if [[ "${cur_ver}" == "${avail_ver}" ]]; then
+            vc_log_msg "ustreamer is up to date. (${cur_ver})"
+        fi
+        if [[ "${cur_ver}" != "${avail_ver}" ]]; then
+            vc_log_msg "ustreamer new version available: ${avail_ver} (${cur_ver})."
+        fi
+        popd &>/dev/null || exit 1
     }
-
 
     # Camera Streamer has no version Output yet
     get_ayucamstream_version() {
         local cur_ver avail_ver
         if [[ "$(is_raspberry_pi)" = "1" ]] &&
-        [[ "$(is_ubuntu_arm)" = "0" ]] &&
-        [[ "$(is_pi5)" = "0" ]]; then
-            pushd "${BASE_CN_PATH}"/bin/camera-streamer &> /dev/null || exit 1
-                avail_ver="($(git describe --tags --always))"
-                cur_ver="$("${PWD}"/camera-streamer --version | tr -d " ")"
-                if [ "${cur_ver}" == "${avail_ver}" ]; then
-                    vc_log_msg "camera-streamer is up to date. (${cur_ver})"
-                fi
-                if [ "${cur_ver}" != "${avail_ver}" ]; then
-                    vc_log_msg "camera-streamer new version available: ${avail_ver} (${cur_ver})."
-                fi
-            popd &> /dev/null || exit 1
+            [[ "$(is_ubuntu_arm)" = "0" ]] &&
+            [[ "$(is_armbian)" = "0" ]] &&
+            [[ "$(is_pi5)" = "0" ]]; then
+            pushd "${BASE_CN_PATH}"/bin/camera-streamer &>/dev/null || exit 1
+            avail_ver="($(git describe --tags --always))"
+            cur_ver="$("${PWD}"/camera-streamer --version | tr -d " ")"
+            if [ "${cur_ver}" == "${avail_ver}" ]; then
+                vc_log_msg "camera-streamer is up to date. (${cur_ver})"
+            fi
+            if [ "${cur_ver}" != "${avail_ver}" ]; then
+                vc_log_msg "camera-streamer new version available: ${avail_ver} (${cur_ver})."
+            fi
+            popd &>/dev/null || exit 1
         fi
     }
 

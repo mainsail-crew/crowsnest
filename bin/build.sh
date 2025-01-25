@@ -47,7 +47,6 @@ if [[ -z "${CROWSNEST_CAMERA_STREAMER_REPO_BRANCH}" ]]; then
     CROWSNEST_CAMERA_STREAMER_REPO_BRANCH="master"
 fi
 
-
 # Paths of repos
 ALL_PATHS=(
     "${BASE_CN_BIN_PATH}"/"${USTREAMER_PATH}"
@@ -68,7 +67,7 @@ show_help() {
 ### Check if device is Raspberry Pi
 is_raspberry_pi() {
     if [[ -f /proc/device-tree/model ]] &&
-    grep -q "Raspberry" /proc/device-tree/model; then
+        grep -q "Raspberry" /proc/device-tree/model; then
         echo "1"
     else
         echo "0"
@@ -77,13 +76,13 @@ is_raspberry_pi() {
 
 is_bookworm() {
     if [[ -f /etc/os-release ]]; then
-        grep -cq "bookworm" /etc/os-release &> /dev/null && echo "1" || echo "0"
+        grep -cq "bookworm" /etc/os-release &>/dev/null && echo "1" || echo "0"
     fi
 }
 
 is_pi5() {
     if [[ -f /proc/device-tree/model ]] &&
-    grep -q "Raspberry Pi 5" /proc/device-tree/model; then
+        grep -q "Raspberry Pi 5" /proc/device-tree/model; then
         echo "1"
     else
         echo "0"
@@ -92,7 +91,15 @@ is_pi5() {
 
 is_ubuntu_arm() {
     if [[ "$(is_raspberry_pi)" = "1" ]] &&
-    grep -q "ubuntu" /etc/os-release; then
+        grep -q "ubuntu" /etc/os-release; then
+        echo "1"
+    else
+        echo "0"
+    fi
+}
+
+is_armbian() {
+    if grep -q "Armbian" /etc/os-release; then
         echo "1"
     else
         echo "0"
@@ -135,9 +142,10 @@ clone_cstreamer() {
     ## Special handling because only supported on Raspberry Pi
     [[ -n "${CROWSNEST_UNATTENDED}" ]] || CROWSNEST_UNATTENDED="0"
     if { [[ "$(is_raspberry_pi)" = "0" ]] ||
-    [[ "$(is_pi5)" = "1" ]] ||
-    [[ "$(is_ubuntu_arm)" = "1" ]]; } &&
-    [[ "${CROWSNEST_UNATTENDED}" = "0" ]]; then
+        [[ "$(is_pi5)" = "1" ]] ||
+        [[ "$(is_ubuntu_arm)" = "1" ]] ||
+        [[ "$(is_armbian)" = "1" ]]; } &&
+        [[ "${CROWSNEST_UNATTENDED}" = "0" ]]; then
         printf "Device is not supported! Cloning camera-streamer ... [SKIPPED]\n"
         return
     fi
@@ -170,11 +178,11 @@ clean_apps() {
     for app in "${ALL_PATHS[@]}"; do
         if [[ ! -d "${app}" ]]; then
             printf "'%s' does not exist! Clean ... [SKIPPED]\n" "${app}"
-        else 
+        else
             printf "\nRunning 'make clean' in %s ... \n" "${app}"
-            pushd "${app}" &> /dev/null || exit 1
+            pushd "${app}" &>/dev/null || exit 1
             make clean
-            popd &> /dev/null || exit 1
+            popd &>/dev/null || exit 1
         fi
     done
     printf "\nRunning 'make clean' ... [DONE]\n"
@@ -196,9 +204,9 @@ build_apps() {
         fi
         if [[ -d "${path}" ]]; then
             printf "Build '%s' using ${USE_PROCS##-j} Cores ... \n" "${path##*/}"
-            pushd "${path}" &> /dev/null || exit 1
+            pushd "${path}" &>/dev/null || exit 1
             make "${USE_PROCS}"
-            popd &> /dev/null || exit 1
+            popd &>/dev/null || exit 1
             printf "Build '%s' ... [SUCCESS]\n" "${path##*/}"
         fi
     done
@@ -221,31 +229,31 @@ main() {
     ## Get opts
     while true; do
         case "${1}" in
-            -b|--build)
-                build_apps
-                break
+        -b | --build)
+            build_apps
+            break
             ;;
-            -c|--clean)
-                clean_apps
-                break
+        -c | --clean)
+            clean_apps
+            break
             ;;
-            -d|--delete)
-                delete_apps
-                break
+        -d | --delete)
+            delete_apps
+            break
             ;;
-            -h|--help)
-                show_help
-                break
+        -h | --help)
+            show_help
+            break
             ;;
-            -r|--reclone)
-                delete_apps
-                clone_apps
-                break
+        -r | --reclone)
+            delete_apps
+            clone_apps
+            break
             ;;
-            *)
-                printf "Unknown option: %s" "${1}"
-                show_help
-                break
+        *)
+            printf "Unknown option: %s" "${1}"
+            show_help
+            break
             ;;
         esac
     done

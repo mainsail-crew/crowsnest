@@ -22,7 +22,7 @@ set -Ee
 ## Funcs
 get_os_version() {
     if [[ -n "${1}" ]]; then
-        grep -c "${1}" /etc/os-release &> /dev/null && echo "1" || echo "0"
+        grep -c "${1}" /etc/os-release &>/dev/null && echo "1" || echo "0"
     fi
 }
 
@@ -32,13 +32,13 @@ get_host_arch() {
 
 is_buster() {
     if [[ -f /etc/os-release ]]; then
-        grep -cq "buster" /etc/os-release &> /dev/null && echo "1" || echo "0"
+        grep -cq "buster" /etc/os-release &>/dev/null && echo "1" || echo "0"
     fi
 }
 
 is_bookworm() {
     if [[ -f /etc/os-release ]]; then
-        grep -cq "bookworm" /etc/os-release &> /dev/null && echo "1" || echo "0"
+        grep -cq "bookworm" /etc/os-release &>/dev/null && echo "1" || echo "0"
     fi
 }
 
@@ -60,7 +60,7 @@ is_dietpi() {
 
 is_raspberry_pi() {
     if [[ -f /proc/device-tree/model ]] &&
-    grep -q "Raspberry" /proc/device-tree/model; then
+        grep -q "Raspberry" /proc/device-tree/model; then
         echo "1"
     else
         echo "0"
@@ -69,7 +69,7 @@ is_raspberry_pi() {
 
 is_pi5() {
     if [[ -f /proc/device-tree/model ]] &&
-    grep -q "Raspberry Pi 5" /proc/device-tree/model; then
+        grep -q "Raspberry Pi 5" /proc/device-tree/model; then
         echo "1"
     else
         echo "0"
@@ -78,7 +78,15 @@ is_pi5() {
 
 is_ubuntu_arm() {
     if [[ "$(is_raspberry_pi)" = "1" ]] &&
-    grep -q "ubuntu" /etc/os-release; then
+        grep -q "ubuntu" /etc/os-release; then
+        echo "1"
+    else
+        echo "0"
+    fi
+}
+
+is_armbian() {
+    if grep -q "Armbian" /etc/os-release; then
         echo "1"
     else
         echo "0"
@@ -87,7 +95,7 @@ is_ubuntu_arm() {
 
 is_speederpad() {
     if grep -q "Ubuntu 20.04." /etc/os-release &&
-    [[ "$(uname -rm)" = "4.9.191 aarch64" ]]; then
+        [[ "$(uname -rm)" = "4.9.191 aarch64" ]]; then
         echo "1"
     else
         echo "0"
@@ -95,7 +103,7 @@ is_speederpad() {
 }
 
 test_load_module() {
-    if modprobe -n "${1}" &> /dev/null; then
+    if modprobe -n "${1}" &>/dev/null; then
         echo 1
     else
         echo 0
@@ -129,6 +137,14 @@ shallow_cs_dependencies_check() {
     fi
     status_msg "Checking if device is not running Ubuntu ..." "0"
 
+    msg "Checking if device is not running Armbian ...\n"
+    if [[ "$(is_armbian)" = "1" ]]; then
+        status_msg "Checking if device is not running Armbian ..." "3"
+        msg "This device is running Armbian therefore camera-streeamer cannot be installed ..."
+        return 1
+    fi
+    status_msg "Checking if device is not running Armbian ..." "0"
+
     msg "Checking for required kernel module ...\n"
     SHALLOW_CHECK_MODULESLIST="bcm2835_codec"
     if [[ "$(test_load_module ${SHALLOW_CHECK_MODULESLIST})" = "0" ]]; then
@@ -153,11 +169,11 @@ shallow_cs_dependencies_check() {
 }
 
 link_pkglist_rpi() {
-    sudo -u "${BASE_USER}" ln -sf "${SRC_DIR}/libs/pkglist-rpi.sh" "${SRC_DIR}/pkglist.sh" &> /dev/null || return 1
+    sudo -u "${BASE_USER}" ln -sf "${SRC_DIR}/libs/pkglist-rpi.sh" "${SRC_DIR}/pkglist.sh" &>/dev/null || return 1
 }
 
 link_pkglist_generic() {
-    sudo -u "${BASE_USER}" ln -sf "${SRC_DIR}/libs/pkglist-generic.sh" "${SRC_DIR}/pkglist.sh" &> /dev/null || return 1
+    sudo -u "${BASE_USER}" ln -sf "${SRC_DIR}/libs/pkglist-generic.sh" "${SRC_DIR}/pkglist.sh" &>/dev/null || return 1
 }
 
 run_apt_update() {
@@ -220,9 +236,9 @@ install_service_file() {
     fi
     cp -f "${service_file}" "${target_dir}"
     sed -i 's|%USER%|'"${BASE_USER}"'|g;s|%ENV%|'"${CROWSNEST_ENV_PATH}/crowsnest.env"'|g' \
-    "${target_dir}/crowsnest.service"
+        "${target_dir}/crowsnest.service"
     [[ -f "${target_dir}/crowsnest.service" ]] &&
-    grep -q "${BASE_USER}" "${target_dir}/crowsnest.service" || return 1
+        grep -q "${BASE_USER}" "${target_dir}/crowsnest.service" || return 1
 }
 
 add_sleep_to_crowsnest_env() {
@@ -241,7 +257,7 @@ install_env_file() {
     sudo -u "${BASE_USER}" cp -f "${env_file}" "${env_target}"
     sed -i "s|%CONFPATH%|${CROWSNEST_CONFIG_PATH}|" "${env_target}"
     [[ -f "${env_target}" ]] &&
-    grep -q "${CROWSNEST_CONFIG_PATH}" "${env_target}" || return 1
+        grep -q "${CROWSNEST_CONFIG_PATH}" "${env_target}" || return 1
 }
 
 install_logrotate_conf() {
@@ -251,7 +267,7 @@ install_logrotate_conf() {
     cp -rf "${logrotatefile}" /etc/logrotate.d/crowsnest
     sed -i "s|%LOGPATH%|${logpath}|g" /etc/logrotate.d/crowsnest
     [[ -f "/etc/logrotate.d/crowsnest" ]] &&
-    grep -q "${logpath}" "/etc/logrotate.d/crowsnest" || return 1
+        grep -q "${logpath}" "/etc/logrotate.d/crowsnest" || return 1
 }
 
 backup_crowsnest_conf() {
@@ -272,16 +288,16 @@ install_crowsnest_conf() {
     sudo -u "${BASE_USER}" cp -rf "${conf_template}" "${CROWSNEST_CONFIG_PATH}"
     sed -i "s|%LOGPATH%|${logpath}|g" "${CROWSNEST_CONFIG_PATH}/crowsnest.conf"
     [[ -f "${CROWSNEST_CONFIG_PATH}/crowsnest.conf" ]] &&
-    grep -q "${logpath}" "${CROWSNEST_CONFIG_PATH}/crowsnest.conf" || return 1
+        grep -q "${logpath}" "${CROWSNEST_CONFIG_PATH}/crowsnest.conf" || return 1
 }
 
 enable_service() {
-    sudo systemctl enable crowsnest.service &> /dev/null || return 1
+    sudo systemctl enable crowsnest.service &>/dev/null || return 1
 }
 
 add_group_video() {
     if [[ "$(groups "${BASE_USER}" | grep -c video)" == "0" ]]; then
-        if usermod -aG video "${BASE_USER}" > /dev/null; then
+        if usermod -aG video "${BASE_USER}" >/dev/null; then
             status_msg "Add User ${BASE_USER} to group 'video' ..." "0"
         fi
     else
@@ -297,7 +313,7 @@ dietpi_cs_settings() {
     if [[ "$(is_buster)" = "0" ]]; then
         if ! grep -q "camera_auto_detect=1" /boot/config.txt; then
             msg "\nAdd camera_auto_detect=1 to /boot/config.txt ...\n"
-            echo "camera_auto_detect=1" >> /boot/config.txt
+            echo "camera_auto_detect=1" >>/boot/config.txt
         fi
     fi
 }
@@ -306,29 +322,30 @@ dietpi_cs_settings() {
 detect_existing_webcamd() {
     local disable
     msg "Checking for mjpg-streamer ...\n"
-    if  [[ -x "/usr/local/bin/webcamd" ]] && [[ -d "/home/${BASE_USER}/mjpg-streamer" ]]; then
+    if [[ -x "/usr/local/bin/webcamd" ]] && [[ -d "/home/${BASE_USER}/mjpg-streamer" ]]; then
         msg "Found an existing mjpg-streamer installation!"
         msg "This should be stopped and disabled!"
         while true; do
             read -erp "Do you want to stop and disable existing 'webcamd'? (Y/n) " -i "Y" disable
             case "${disable}" in
-                y|Y|yes|Yes|YES)
-                    msg "Stopping webcamd.service ..."
-                    sudo systemctl stop webcamd.service &> /dev/null
-                    status_msg "Stopping webcamd.service ..." "0"
-                    
-                    msg "\nDisabling webcamd.service ...\r"
-                    sudo systemctl disable webcamd.service &> /dev/null
-                    status_msg "Disabling webcamd.service ..." "0"
-                    return
+            y | Y | yes | Yes | YES)
+                msg "Stopping webcamd.service ..."
+                sudo systemctl stop webcamd.service &>/dev/null
+                status_msg "Stopping webcamd.service ..." "0"
+
+                msg "\nDisabling webcamd.service ...\r"
+                sudo systemctl disable webcamd.service &>/dev/null
+                status_msg "Disabling webcamd.service ..." "0"
+                return
                 ;;
 
-                n|N|no|No|NO)
-                    msg "\nYou should disable and stop webcamd to use crowsnest without problems!\n"
-                    return
+            n | N | no | No | NO)
+                msg "\nYou should disable and stop webcamd to use crowsnest without problems!\n"
+                return
                 ;;
-                *)
-                    msg "You answered '${disable}'! Invalid input ..."                ;;
+            *)
+                msg "You answered '${disable}'! Invalid input ..."
+                ;;
             esac
         done
     fi
