@@ -85,6 +85,14 @@ is_ubuntu_arm() {
     fi
 }
 
+is_armbian() {
+    if grep -q "Armbian" /etc/os-release; then
+        echo "1"
+    else
+        echo "0"
+    fi
+}
+
 is_speederpad() {
     if grep -q "Ubuntu 20.04." /etc/os-release &&
     [[ "$(uname -rm)" = "4.9.191 aarch64" ]]; then
@@ -128,6 +136,14 @@ shallow_cs_dependencies_check() {
         return 1
     fi
     status_msg "Checking if device is not running Ubuntu ..." "0"
+
+    msg "Checking if device is not running Armbian ...\n"
+    if [[ "$(is_armbian)" = "1" ]]; then
+        status_msg "Checking if device is not running Armbian ..." "3"
+        msg "This device is running Armbian therefore camera-streeamer cannot be installed ..."
+        return 1
+    fi
+    status_msg "Checking if device is not running Armbian ..." "0"
 
     msg "Checking for required kernel module ...\n"
     SHALLOW_CHECK_MODULESLIST="bcm2835_codec"

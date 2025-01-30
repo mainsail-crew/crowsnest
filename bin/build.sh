@@ -99,6 +99,14 @@ is_ubuntu_arm() {
     fi
 }
 
+is_armbian() {
+    if grep -q "Armbian" /etc/os-release; then
+        echo "1"
+    else
+        echo "0"
+    fi
+}
+
 ### Get avail mem
 get_avail_mem() {
     grep "MemTotal" /proc/meminfo | awk '{print $2}'
@@ -136,7 +144,8 @@ clone_cstreamer() {
     [[ -n "${CROWSNEST_UNATTENDED}" ]] || CROWSNEST_UNATTENDED="0"
     if { [[ "$(is_raspberry_pi)" = "0" ]] ||
     [[ "$(is_pi5)" = "1" ]] ||
-    [[ "$(is_ubuntu_arm)" = "1" ]]; } &&
+    [[ "$(is_ubuntu_arm)" = "1" ]] ||
+    [[ "$(is_armbian)" = "1" ]]; } &&
     [[ "${CROWSNEST_UNATTENDED}" = "0" ]]; then
         printf "Device is not supported! Cloning camera-streamer ... [SKIPPED]\n"
         return
