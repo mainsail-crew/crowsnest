@@ -26,24 +26,24 @@ function construct_streamer {
         mode="$(get_param "cam ${cams}" mode)"
         check_section "${cams}"
         case ${mode} in
-        [mM]ulti | camera-streamer)
-            if [[ "$(is_raspberry_pi)" = "1" ]] &&
+            [mM]ulti | camera-streamer)
+                if [[ "$(is_raspberry_pi)" = "1" ]] &&
                 [[ "$(is_ubuntu_arm)" = "0" ]] &&
                 [[ "$(is_armbian)" = "0" ]] &&
                 [[ "$(is_pi5)" = "0" ]]; then
-                MULTI_INSTANCES+=("${cams}")
-            else
-                log_msg "WARN: Mode 'camera-streamer' is not supported on your device!"
-                log_msg "WARN: Falling back to Mode 'ustreamer'"
-                MJPG_INSTANCES+=("${cams}")
-            fi
+                    MULTI_INSTANCES+=( "${cams}" )
+                else
+                    log_msg "WARN: Mode 'camera-streamer' is not supported on your device!"
+                    log_msg "WARN: Falling back to Mode 'ustreamer'"
+                    MJPG_INSTANCES+=( "${cams}" )
+                fi
             ;;
-        mjpg | mjpeg | ustreamer)
-            MJPG_INSTANCES+=("${cams}")
+            mjpg | mjpeg | ustreamer)
+                MJPG_INSTANCES+=( "${cams}" )
             ;;
-        ? | *)
-            unknown_mode_msg
-            MJPG_INSTANCES+=("${cams}")
+            ?|*)
+                unknown_mode_msg
+                MJPG_INSTANCES+=( "${cams}" )
 
             ;;
         esac
@@ -54,8 +54,6 @@ function construct_streamer {
     if [ "${#MJPG_INSTANCES[@]}" != "0" ]; then
         run_mjpg "${MJPG_INSTANCES[*]}"
     fi
-    sleep 2 &
-    sleep_pid="$!"
-    wait "${sleep_pid}"
+    sleep 2 & sleep_pid="$!" ; wait "${sleep_pid}"
     log_msg " ... Done!"
 }
