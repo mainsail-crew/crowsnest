@@ -29,7 +29,7 @@ CN_MOONRAKER_CONFIG_PATH="${CN_CONFIG_CONFIGPATH}/moonraker.conf"
 CN_USTREAMER_REPO="https://github.com/pikvm/ustreamer.git"
 CN_USTREAMER_BRANCH="v6.10"
 CN_CAMERA_STREAMER_REPO="https://github.com/mryel00/camera-streamer.git"
-CN_CAMERA_STREAMER_BRANCH="master"
+CN_CAMERA_STREAMER_BRANCH="main"
 
 ### Messages
 header_msg() {
