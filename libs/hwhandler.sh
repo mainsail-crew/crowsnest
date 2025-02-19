@@ -185,3 +185,11 @@ is_ubuntu_arm() {
         echo "0"
     fi
 }
+
+is_armbian() {
+    if grep -q "Armbian" /etc/os-release; then
+        echo "1"
+    else
+        echo "0"
+    fi
+}

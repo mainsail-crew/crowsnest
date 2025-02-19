@@ -29,6 +29,7 @@ function construct_streamer {
             [mM]ulti | camera-streamer)
                 if [[ "$(is_raspberry_pi)" = "1" ]] &&
                 [[ "$(is_ubuntu_arm)" = "0" ]] &&
+                [[ "$(is_armbian)" = "0" ]] &&
                 [[ "$(is_pi5)" = "0" ]]; then
                     MULTI_INSTANCES+=( "${cams}" )
                 else
