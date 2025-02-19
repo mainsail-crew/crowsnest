@@ -2,6 +2,19 @@
 # Changelog
 All notable changes to Crowsnest will be documented in this file.
 
+## [4.1.11](https://github.com/mainsail-crew/crowsnest/releases/tag/v4.1.11) - 2025-02-19
+### Bug Fixes and Improvements
+
+- Cs cannot be built on Armbian, so let's not depend on it ([#288](https://github.com/mainsail-crew/crowsnest/pull/288))
+
+### Documentation
+
+- Improve grammar and style, including capitalization and phrasing ([#285](https://github.com/mainsail-crew/crowsnest/pull/285))
+
+### Other
+
+- Update ustreamer to v6.31 ([#292](https://github.com/mainsail-crew/crowsnest/pull/292))
+
 ## [4.1.10](https://github.com/mainsail-crew/crowsnest/releases/tag/v4.1.10) - 2024-12-07
 ### Bug Fixes and Improvements
 
