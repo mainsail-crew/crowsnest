@@ -20,4 +20,4 @@ set -Ee
 ### Crowsnest Dependencies
 PKGLIST="git crudini bsdutils findutils v4l-utils curl"
 ### Ustreamer Dependencies
-PKGLIST="${PKGLIST} build-essential libevent-dev libjpeg-dev libbsd-dev"
+PKGLIST="${PKGLIST} build-essential libevent-dev libjpeg-dev libbsd-dev pkg-config"
