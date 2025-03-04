@@ -108,9 +108,13 @@ function print_cams {
         for device in $(get_libcamera_path); do
             log_msg "Detected 'libcamera' device -> ${device}"
         done
+        if [[ "$(is_pi5)" = "0" ]]; then
+            list_picam_resolution
+            list_picam_controls
+        fi
     fi
     if [[ "${legacy}" -ne 0 ]]; then
-        raspicam="$(v4l2-ctl --list-devices |  grep -A1 -e 'mmal' | \
+        raspicam="$(v4l2-ctl --list-devices | grep -A1 -e 'mmal' | \
         awk 'NR==2 {print $1}')"
         log_msg "Detected 'Raspicam' Device -> ${raspicam}"
         if [[ ! "${CROWSNEST_LOG_LEVEL}" = "quiet" ]]; then

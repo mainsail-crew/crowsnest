@@ -28,7 +28,7 @@ versioncontrol() {
         local cur_ver avail_ver
         pushd "${BASE_CN_PATH}"/bin/ustreamer &> /dev/null || exit 1
             avail_ver="$(git describe --tags --always)"
-            cur_ver="v$("${PWD}"/ustreamer -v)"
+            cur_ver="v$(${UST_BIN} -v)"
             if [[ "${cur_ver}" == "${avail_ver}" ]]; then
                 vc_log_msg "ustreamer is up to date. (${cur_ver})"
             fi
@@ -44,6 +44,7 @@ versioncontrol() {
         local cur_ver avail_ver
         if [[ "$(is_raspberry_pi)" = "1" ]] &&
         [[ "$(is_ubuntu_arm)" = "0" ]] &&
+        [[ "$(is_armbian)" = "0" ]] &&
         [[ "$(is_pi5)" = "0" ]]; then
             pushd "${BASE_CN_PATH}"/bin/camera-streamer &> /dev/null || exit 1
                 avail_ver="($(git describe --tags --always))"

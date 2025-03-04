@@ -2,6 +2,62 @@
 # Changelog
 All notable changes to Crowsnest will be documented in this file.
 
+## [4.1.12](https://github.com/mainsail-crew/crowsnest/releases/tag/v4.1.12) - 2025-02-27
+### Bug Fixes and Improvements
+
+- Fix ustreamer dependencies ([#294](https://github.com/mainsail-crew/crowsnest/pull/294))
+
+## [4.1.11](https://github.com/mainsail-crew/crowsnest/releases/tag/v4.1.11) - 2025-02-19
+### Bug Fixes and Improvements
+
+- Cs cannot be built on Armbian, so let's not depend on it ([#288](https://github.com/mainsail-crew/crowsnest/pull/288))
+
+### Documentation
+
+- Improve grammar and style, including capitalization and phrasing ([#285](https://github.com/mainsail-crew/crowsnest/pull/285))
+
+### Other
+
+- Update ustreamer to v6.31 ([#292](https://github.com/mainsail-crew/crowsnest/pull/292))
+
+## [4.1.10](https://github.com/mainsail-crew/crowsnest/releases/tag/v4.1.10) - 2024-12-07
+### Bug Fixes and Improvements
+
+- Change cs branch temporarily to fix compiling error ([#280](https://github.com/mainsail-crew/crowsnest/pull/280))
+
+## [4.1.9](https://github.com/mainsail-crew/crowsnest/releases/tag/v4.1.9) - 2024-04-26
+### Bug Fixes and Improvements
+
+- Fix libcamera resolution and controls logging ([#260](https://github.com/mainsail-crew/crowsnest/pull/260))
+
+## [4.1.8](https://github.com/mainsail-crew/crowsnest/releases/tag/v4.1.8) - 2024-04-02
+### Bug Fixes and Improvements
+
+- Fix crash of detect_libcamera without CSI cam ([#256](https://github.com/mainsail-crew/crowsnest/pull/256))
+
+## [4.1.7](https://github.com/mainsail-crew/crowsnest/releases/tag/v4.1.7) - 2024-04-02
+### Features
+
+- Log libamera device resolutions and controls ([#240](https://github.com/mainsail-crew/crowsnest/pull/240))
+
+### Bug Fixes and Improvements
+
+- Fix empty string if ustreamer not found ([#253](https://github.com/mainsail-crew/crowsnest/pull/253))
+
+### Other
+
+- Revert #249 and update ustreamer version to v6.9 ([#254](https://github.com/mainsail-crew/crowsnest/pull/254))
+
+## [4.1.6](https://github.com/mainsail-crew/crowsnest/releases/tag/v4.1.6) - 2024-03-03
+### Bug Fixes and Improvements
+
+- Change ustreamer repo to own fork as workaround for #247 ([#249](https://github.com/mainsail-crew/crowsnest/pull/249))
+
+## [4.1.5](https://github.com/mainsail-crew/crowsnest/releases/tag/v4.1.5) - 2024-02-28
+### Bug Fixes and Improvements
+
+- Fix ustreamer binary path for v5.52 changes ([#245](https://github.com/mainsail-crew/crowsnest/pull/245))
+
 ## [4.1.4](https://github.com/mainsail-crew/crowsnest/releases/tag/v4.1.4) - 2024-02-17
 ### Bug Fixes and Improvements
 
