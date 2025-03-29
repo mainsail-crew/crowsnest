@@ -7,8 +7,8 @@ from configparser import SectionProxy
 import asyncio
 
 class Crowsnest(Section):
-    def __init__(self, name: str = '') -> None:
-        super().__init__(name)
+    def __init__(self) -> None:
+        super().__init__('crowsnest')
 
         self.parameters.update({
             'log_path': Parameter(str),

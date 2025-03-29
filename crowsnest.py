@@ -29,7 +29,7 @@ def initial_parse_config():
         logger.log_multiline(e.message, logger.log_error)
         logger.log_error("Failed to parse config! Exiting...")
         exit(1)
-    crowsnest = Crowsnest('crowsnest')
+    crowsnest = Crowsnest()
     if not config.has_section('crowsnest') or not crowsnest.parse_config_section(config['crowsnest']):
         logger.log_error("Failed to parse config for '[crowsnest]' section! Exiting...")
         exit(1)
