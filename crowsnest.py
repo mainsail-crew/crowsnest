@@ -20,8 +20,6 @@ parser.add_argument('-l', '--log_path', help='Path to log file', required=True)
 
 args = parser.parse_args()
 
-watchdog_running = True
-
 def initial_parse_config():
     global crowsnest, config, args
     config_path = args.config
