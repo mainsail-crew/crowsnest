@@ -100,8 +100,8 @@ async def start_sections():
         logger.log_quiet("Please come again :)")
         logger.log_quiet("Goodbye...")
 
-async def exit_gracefully(signum, frame):
-    asyncio.sleep(1)
+def exit_gracefully(signum, frame):
+    pass
 
 async def main():
     global args, crowsnest
