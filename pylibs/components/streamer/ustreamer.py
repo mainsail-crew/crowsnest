@@ -55,7 +55,7 @@ class Ustreamer(Streamer):
 
         v4l2ctl = self.parameters['v4l2ctl']
         if v4l2ctl:
-            self._set_v4l2ctrls(self.cam, v4l2ctl.split(','))
+            self._set_v4l2_ctrls(self.cam, v4l2ctl.split(','))
 
         # custom flags
         streamer_args += self.parameters['custom_flags'].split()
@@ -99,7 +99,7 @@ class Ustreamer(Streamer):
         except (ValueError, IndexError):
             logger.log_quiet(f"Failed to set parameter: '{ctrl.strip()}'", prefix)
 
-    def _set_v4l2ctrls(self, ctrls: list[str] = None) -> str:
+    def _set_v4l2_ctrls(self, ctrls: list[str] = None) -> str:
         section = f'[cam {self.name}]'
         prefix = "V4L2 Control: "
         if not ctrls:
