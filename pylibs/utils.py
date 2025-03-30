@@ -6,21 +6,29 @@ import subprocess
 import shutil
 import os
 
+from configparser import SectionProxy
+
 from . import logger, v4l2
 
-# Dynamically import component
-# Requires module to have a load_component() function,
-# as well as the same name as the section keyword
-def load_component(component: str,
-                   name: str,
-                   path='pylibs.components'):
-    module_class = None
+# Dynamically import functions
+# Requires module to have a function with function_name
+def load_function(function_name: str, module_name: str, path='pylibs.components'):
+    module = importlib.import_module(f'{path}.{module_name}')
+    return getattr(module, function_name)
+
+def load_component(module_name: str, name: str, config_section: SectionProxy, path='pylibs.components'):
     try:
-        component = importlib.import_module(f'{path}.{component}')
-        module_class = getattr(component, 'load_component')(name)
+        return load_function('load_component', module_name, path)(name, config_section)
     except (ModuleNotFoundError, AttributeError) as e:
-        logger.log_error(f"Failed to load module '{component}' from '{path}'")
-    return module_class
+        logger.log_error(f"Failed to load module '{module_name}' from '{path}'")
+    return None
+
+def load_streamer(module_name: str, path='pylibs.components'):
+    try:
+        return load_function('load_streamer', module_name, path)()
+    except (ModuleNotFoundError, AttributeError) as e:
+        logger.log_error(f"Failed to load streamer '{module_name}' from '{path}'")
+    return None
 
 async def log_subprocess_output(stream, log_func, line_prefix = ''):
     line = await stream.readline()
@@ -104,3 +112,22 @@ def grep(path: str, search: str) -> str:
     except FileNotFoundError:
         logger.log_error(f"File '{path}' not found!")    
     return ''
+
+def log_level_converter(log_level: str) -> int:
+    log_level = log_level.lower()
+    if log_level == 'quiet':
+        return 'QUIET'
+    elif log_level == 'debug':
+        return 'DEBUG'
+    elif log_level == 'dev':
+        return 'DEV'
+    else:
+        return 'INFO'
+
+def resolution_converter(resolution: str) -> tuple[int, int]:
+    try:
+        width, height = resolution.split('x')
+        # Check if width and height are integers but return strings
+        return str(int(width)), str(int(height))
+    except ValueError:
+        raise ValueError("Custom Error", f"'{resolution}' is not of format '<width>x<height>'!")

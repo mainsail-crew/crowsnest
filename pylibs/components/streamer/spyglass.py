@@ -2,29 +2,26 @@
 
 import asyncio
 
+from configparser import SectionProxy
+
 from .streamer import Streamer
-from ...parameter import Parameter
 from ... import logger, utils, camera
 
 class Spyglass(Streamer):
     keyword = 'spyglass'
-
-    def __init__(self, name: str) -> None:
-        super().__init__(name)
-
-        self.binary_names = ['run.py']
-        self.binary_paths = ['bin/spyglass']
+    binary_names = ['run.py']
+    binary_paths = ['bin/spyglass']
 
     async def execute(self, lock: asyncio.Lock):
-        if self.parameters['no_proxy'].value:
+        if self.parameters['no_proxy']:
             host = '0.0.0.0'
             logger.log_info("Set to 'no_proxy' mode! Using 0.0.0.0!")
         else:
             host = '127.0.0.1'
-        port = self.parameters['port'].value
-        res = self.parameters['resolution'].value
-        fps = self.parameters['max_fps'].value
-        device = self.parameters['device'].value
+        port = self.parameters['port']
+        res = 'x'.join(self.parameters['resolution'])
+        fps = self.parameters['max_fps']
+        device = self.parameters['device']
         self.cam = camera.camera_manager.get_cam_by_path(device)
 
         streamer_args = [
@@ -37,7 +34,7 @@ class Spyglass(Streamer):
             '--snapshot_url=/?action=snapshot',
         ]
 
-        v4l2ctl = self.parameters['v4l2ctl'].value
+        v4l2ctl = self.parameters['v4l2ctl']
         if v4l2ctl:
             prefix = "V4L2 Control: "
             logger.log_quiet(f"Handling done by {self.keyword}", prefix)
@@ -46,9 +43,9 @@ class Spyglass(Streamer):
                 streamer_args += [f'--controls={ctrl.strip()}']
 
         # custom flags
-        streamer_args += self.parameters['custom_flags'].value.split()
+        streamer_args += self.parameters['custom_flags'].split()
 
-        venv_path = self.binary_paths[0]+'/.venv/bin/python3'
+        venv_path = Spyglass.binary_paths[0]+'/.venv/bin/python3'
         cmd = venv_path + ' ' + self.binary_path + ' ' + ' '.join(streamer_args)
         log_pre = f'{self.keyword} [cam {self.name}]: '
 
@@ -65,6 +62,8 @@ class Spyglass(Streamer):
 
         return process
 
+def load_streamer():
+    return Spyglass.binary_names, Spyglass.binary_paths
 
-def load_component(name: str):
-    return Spyglass(name)
+def load_component(name: str, config_section: SectionProxy):
+    return Spyglass(name, config_section)

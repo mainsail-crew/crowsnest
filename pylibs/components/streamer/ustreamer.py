@@ -3,29 +3,26 @@
 import re
 import asyncio
 
+from configparser import SectionProxy
+
 from .streamer import Streamer
 from ... import logger, utils, camera
 
 class Ustreamer(Streamer):
     keyword = 'ustreamer'
-
-    def __init__(self, name: str) -> None:
-        super().__init__(name)
-
-        self.binary_names = ['ustreamer.bin', 'ustreamer']
-        self.binary_paths = ['bin/ustreamer']
-        self.cam = None
+    binary_names = ['ustreamer.bin', 'ustreamer']
+    binary_paths = ['bin/ustreamer']
 
     async def execute(self, lock: asyncio.Lock):
-        if self.parameters['no_proxy'].value:
+        if self.parameters['no_proxy']:
             host = '0.0.0.0'
             logger.log_info("Set to 'no_proxy' mode! Using 0.0.0.0!")
         else:
             host = '127.0.0.1'
-        port = self.parameters['port'].value
-        res = self.parameters['resolution'].value
-        fps = self.parameters['max_fps'].value
-        device = self.parameters['device'].value
+        port = self.parameters['port']
+        res = 'x'.join(self.parameters['resolution'])
+        fps = self.parameters['max_fps']
+        device = self.parameters['device']
         self.cam = camera.camera_manager.get_cam_by_path(device)
 
         streamer_args = [
@@ -56,12 +53,12 @@ class Ustreamer(Streamer):
                     '--encoder', 'HW'
                 ]
 
-        v4l2ctl = self.parameters['v4l2ctl'].value
+        v4l2ctl = self.parameters['v4l2ctl']
         if v4l2ctl:
             self._set_v4l2ctrls(self.cam, v4l2ctl.split(','))
 
         # custom flags
-        streamer_args += self.parameters['custom_flags'].value.split()
+        streamer_args += self.parameters['custom_flags'].split()
 
         cmd = self.binary_path + ' ' + ' '.join(streamer_args)
         log_pre = f'{self.keyword} [cam {self.name}]: '
@@ -115,7 +112,7 @@ class Ustreamer(Streamer):
             c = ctrl.split('=')[0].strip().lower()
             if c not in avail_ctrls:
                 logger.log_quiet(
-                    f"Parameter '{ctrl.strip()}' not available for '{self.parameters['device'].value}'. Skipped.",
+                    f"Parameter '{ctrl.strip()}' not available for '{self.parameters['device']}'. Skipped.",
                     prefix
                 )
                 continue
@@ -134,6 +131,8 @@ class Ustreamer(Streamer):
     def _is_device_legacy(self) -> bool:
         return isinstance(self.cam, camera.Legacy)
 
+def load_streamer():
+    return Ustreamer.binary_names, Ustreamer.binary_paths
 
-def load_component(name: str):
+def load_component(name: str, config_section: SectionProxy):
     return Ustreamer(name)

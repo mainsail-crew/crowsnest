@@ -13,7 +13,13 @@ parser = argparse.ArgumentParser(
     prog='Crowsnest',
     description='Crowsnest - A webcam daemon for Raspberry Pi OS distributions like MainsailOS'
 )
-config = configparser.ConfigParser(inline_comment_prefixes='#')
+config = configparser.ConfigParser(
+    inline_comment_prefixes='#',
+    converters={
+        'loglevel': utils.log_level_converter,
+        'resolution': utils.resolution_converter
+    }
+)
 
 parser.add_argument('-c', '--config', help='Path to config file', required=True)
 parser.add_argument('-l', '--log_path', help='Path to log file', required=True)
@@ -29,8 +35,8 @@ def initial_parse_config():
         logger.log_multiline(e.message, logger.log_error)
         logger.log_error("Failed to parse config! Exiting...")
         exit(1)
-    crowsnest = Crowsnest()
-    if not config.has_section('crowsnest') or not crowsnest.parse_config_section(config['crowsnest']):
+    crowsnest = None if not config.has_section('crowsnest') else Crowsnest(config['crowsnest'])
+    if not (crowsnest and crowsnest.initialized):
         logger.log_error("Failed to parse config for '[crowsnest]' section! Exiting...")
         exit(1)
 
@@ -58,9 +64,9 @@ async def start_sections():
                 continue
 
             section_name = ' '.join(section_header[1:])
-            component = utils.load_component(section_keyword, section_name)
             logger.log_quiet(f"Parse configuration of section [{section}] ...")
-            if component.parse_config_section(config[section]):
+            component = utils.load_component(section_keyword, section_name, config[section])
+            if component.initialized:
                 sect_objs.append(component)
                 logger.log_quiet(f"Configuration of section [{section}] looks good. Continue ...")
             else:
@@ -104,12 +110,12 @@ async def main():
 
     initial_parse_config()
 
-    if crowsnest.parameters['delete_log'].value:
+    if crowsnest.parameters['delete_log']:
         logger.logger.handlers.clear()
         logger.setup_logging(args.log_path, 'w')
         logging_helper.log_initial()
 
-    logger.set_log_level(crowsnest.parameters['log_level'].value)
+    logger.set_log_level(crowsnest.parameters['log_level'])
 
     logging_helper.log_host_info()
     logging_helper.log_streamer()

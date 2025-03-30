@@ -7,7 +7,6 @@ from os import listdir
 from os.path import isfile, join
 
 from ..section import Section
-from ...parameter import Parameter
 from ... import logger, utils
 
 class Resolution():
@@ -23,47 +22,38 @@ class Resolution():
 class Streamer(Section, ABC):
     section_name = 'cam'
     binaries = {}
-
-    def __init__(self, name: str) -> None:
-        super().__init__(name)
-
-        self.parameters.update({
-            'mode': Parameter(str),
-            'port': Parameter(int),
-            'device': Parameter(str),
-            'resolution': Parameter(Resolution),
-            'max_fps': Parameter(int),
-            'no_proxy': Parameter(bool, 'False'),
-            'custom_flags': Parameter(str, ''),
-            'v4l2ctl': Parameter(str, '')
-        })
-        self.binary_names = []
-        self.binary_paths = []
-        self.binary_path = None
-
-        self.missing_bin_txt = textwrap.dedent("""\
-            '%s' executable not found!
-            Please make sure everything is installed correctly and up to date!
-            Run 'make update' inside the crowsnest directory to install and update everything."""
-        )
+    missing_bin_txt = textwrap.dedent("""\
+        '%s' executable not found!
+        Please make sure everything is installed correctly and up to date!
+        Run 'make update' inside the crowsnest directory to install and update everything."""
+    )
 
     def parse_config_section(self, config_section: SectionProxy, *args, **kwargs) -> bool:
-        success = super().parse_config_section(config_section, *args, **kwargs)
-        if not success:
-            return False
-        mode = self.parameters['mode'].value
+        super().parse_config_section(config_section, *args, **kwargs)
+        self.parameters.update({
+            'mode': config_section.get("mode", None),
+            'port': config_section.getint("port", None),
+            'device': config_section.get("device", None),
+            'resolution': config_section.getresolution("resolution", None),
+            'max_fps': config_section.getint("max_fps", None),
+            'no_proxy': config_section.getboolean("no_proxy", False),
+            'custom_flags': config_section.get("custom_flags", ''),
+            'v4l2ctl': config_section.get("v4l2ctl", '')
+        })
+        mode = self.parameters['mode']
         if mode not in Streamer.binaries:
             Streamer.binaries[mode] = utils.get_executable(
                 self.binary_names,
                 self.binary_paths
             )
         self.binary_path = Streamer.binaries[mode]
-    
+
+    def check_config_section(self, config_section):
+        success = super().check_config_section(config_section)
         if self.binary_path is None:
-            logger.log_multiline(self.missing_bin_txt % self.parameters['mode'].value,
-                                 logger.log_error)
-            return False
-        return True
+            logger.log_multiline(Streamer.missing_bin_txt % self.parameters['mode'], logger.log_error)
+            success = False
+        return success
 
 def load_all_streamers():
     streamer_path = 'pylibs/components/streamer'
@@ -74,15 +64,16 @@ def load_all_streamers():
     for streamer_file in streamer_files:
         streamer_name = streamer_file[:-3]
         try:
-            streamer = utils.load_component(streamer_name,
-                                            'temp',
-                                            path=streamer_path.replace('/', '.'))
+            binary_names, binary_paths = utils.load_streamer(
+                streamer_name,
+                path=streamer_path.replace('/', '.')
+            )
         except NotImplementedError:
             continue
-        Streamer.binaries[streamer_name] = utils.get_executable(
-            streamer.binary_names,
-            streamer.binary_paths
-        )
+        Streamer.binaries[streamer_name] = utils.get_executable(binary_names, binary_paths)
 
-def load_component(name: str):
+def load_streamer():
+    raise NotImplementedError("If you see this, something went wrong!!!")
+
+def load_component(name: str, config_section: SectionProxy):
     raise NotImplementedError("If you see this, something went wrong!!!")
