@@ -52,7 +52,7 @@ class UVC(camera.Camera):
             message += f"{section}:\n"
             for control, data in controls.items():
                 line = f"{control} ({data['type']})"
-                line += (35 - len(line)) * ' ' + ':'
+                line += max(0, 35 - len(line)) * ' ' + ':'
                 if data['type'] in ('int',):
                     line += f" min={data['min']} max={data['max']} step={data['step']}"
                 line += f" default={data['default']}"
