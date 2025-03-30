@@ -113,7 +113,7 @@ def grep(path: str, search: str) -> str:
         logger.log_error(f"File '{path}' not found!")    
     return ''
 
-def log_level_converter(log_level: str) -> int:
+def log_level_converter(log_level: str) -> str:
     log_level = log_level.lower()
     if log_level == 'quiet':
         return 'QUIET'
@@ -124,7 +124,7 @@ def log_level_converter(log_level: str) -> int:
     else:
         return 'INFO'
 
-def resolution_converter(resolution: str) -> tuple[int, int]:
+def resolution_converter(resolution: str) -> tuple[str, str]:
     try:
         width, height = resolution.split('x')
         # Check if width and height are integers but return strings
