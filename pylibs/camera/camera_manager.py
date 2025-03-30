@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+from typing import Optional
 from .camera import Camera
 
 def get_all_cameras() -> list:
@@ -10,7 +11,7 @@ def get_all_cameras() -> list:
         cameras = []
     return cameras
 
-def get_cam_by_path(path: str) -> Camera:
+def get_cam_by_path(path: str) -> Optional[Camera]:
     global cameras
     for camera in get_all_cameras():
         if camera.path_equals(path):

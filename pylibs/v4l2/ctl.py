@@ -3,6 +3,7 @@
 import os
 import copy
 
+from typing import Optional
 from . import raw, constants, utils
 
 dev_ctls: dict[str, dict[str, dict[str, (raw.v4l2_ext_control, str)]]] = {}
@@ -100,7 +101,7 @@ def get_query_controls(device_path: str) -> dict[str, raw.v4l2_ext_control]:
     except FileNotFoundError:
         return {}
 
-def get_dev_ctl(device_path: str) -> dict:
+def get_dev_ctl(device_path: str) -> Optional[dict]:
     if device_path not in dev_ctls:
         if not init_device(device_path):
             return None
@@ -150,7 +151,7 @@ def get_control_cur_value(device_path: str, control: str) -> int:
     qc: raw.v4l2_query_ext_ctrl = dev_ctls[device_path][utils.name2var(control)]['qc']
     return get_control_cur_value_with_qc(device_path, qc, control)
 
-def get_control_cur_value_with_qc(device_path: str, qc: raw.v4l2_query_ext_ctrl) -> int:
+def get_control_cur_value_with_qc(device_path: str, qc: raw.v4l2_query_ext_ctrl) -> Optional[int]:
     """
     Get the current value of a control of a given device
     """

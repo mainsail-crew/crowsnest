@@ -7,6 +7,7 @@ import shutil
 import os
 
 from configparser import SectionProxy
+from typing import Optional
 
 from . import logger, v4l2
 
@@ -80,14 +81,14 @@ def execute_shell_command(command: str, strip: bool = True) -> str:
 def bytes_to_gigabytes(value: int) -> int:
     return round(value / 1024**3)
 
-def find_file(name: str, path: str) -> str:
+def find_file(name: str, path: str) -> Optional[str]:
     for dpath, _, fnames in os.walk(path):
         for fname in fnames:
             if fname == name:
                 return os.path.join(dpath, fname)
     return None
 
-def get_executable(names: list[str], paths: list[str]) -> str:
+def get_executable(names: list[str], paths: list[str]) -> Optional[str]:
     if names is None or paths is None:
         return None
     for name in names:
