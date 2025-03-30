@@ -116,7 +116,7 @@ class Ustreamer(Streamer):
                     prefix
                 )
                 continue
-            self._set_v4l2_ctrl(self.cam, ctrl, prefix)
+            self._set_v4l2_ctrl(ctrl, prefix)
         # Repulls the string to print current values
         logger.log_multiline(self.cam.get_controls_string(), logger.log_debug, 'DEBUG: v4l2ctl: ')
 
@@ -125,7 +125,7 @@ class Ustreamer(Streamer):
         if cur_val and cur_val != focus_absolute_conf:
             logger.log_warning(f"Detected 'brokenfocus' device.")
             logger.log_info(f"Try to set to configured Value.")
-            self.set_v4l2_ctrl(self.cam, f'focus_absolute={focus_absolute_conf}')
+            self._set_v4l2_ctrl(f'focus_absolute={focus_absolute_conf}')
             logger.log_debug(f"Value is now: {self.cam.get_current_control_value('focus_absolute')}")
 
     def _is_device_legacy(self) -> bool:
