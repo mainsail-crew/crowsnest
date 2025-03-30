@@ -22,7 +22,4 @@ class Crowsnest(Section):
         pass
 
 def load_component(name: str, config_section: SectionProxy, *args, **kwargs):
-    cn = Crowsnest()
-    if cn.parse_config_section(config_section, *args, **kwargs):
-        return cn
-    return None
+    return Crowsnest(config_section)
