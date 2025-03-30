@@ -42,7 +42,7 @@ def log_host_info():
     # Host model
     model = utils.grep('/proc/cpuinfo', 'Model').split(':')[1].strip()
     if model == '':
-        model == utils.grep('/proc/cpuinfo', 'model name').split(':')[1].strip()
+        model = utils.grep('/proc/cpuinfo', 'model name').split(':')[1].strip()
     if model == '':
         model = 'Unknown'
     logger.log_info(f'Model: {model}', log_pre)
