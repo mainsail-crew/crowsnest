@@ -177,7 +177,7 @@ is_raspbian() {
 }
 
 is_dietpi() {
-    if [[ "$(is_raspberry_pi)" = "1"]] && [[ -d /boot/dietpi ]]; then
+    if [[ "$(is_raspberry_pi)" = "1" ]] && [[ -d /boot/dietpi ]]; then
         echo "1"
     else
         echo "0"
