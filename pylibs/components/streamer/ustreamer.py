@@ -135,4 +135,4 @@ def load_streamer():
     return Ustreamer.binary_names, Ustreamer.binary_paths
 
 def load_component(name: str, config_section: SectionProxy):
-    return Ustreamer(name)
+    return Ustreamer(name, config_section)
