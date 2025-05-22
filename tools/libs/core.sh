@@ -60,7 +60,7 @@ is_raspberry_pi() {
 }
 
 is_dietpi() {
-    if [[ "$(is_raspberry_pi)" = "1" ]] && [[ -d /boot/dietpi ]]; then
+    if [[ -f /boot/config.txt ]] && [[ -d /boot/dietpi ]]; then
         echo "1"
     else
         echo "0"
