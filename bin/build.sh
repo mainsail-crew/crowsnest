@@ -75,9 +75,19 @@ is_raspberry_pi() {
     fi
 }
 
-is_bookworm() {
-    if [[ -f /etc/os-release ]]; then
-        grep -cq "bookworm" /etc/os-release &> /dev/null && echo "1" || echo "0"
+is_raspbian() {
+    if [[ -f /etc/rpi-issue ]]; then
+        echo "1"
+    else
+        echo "0"
+    fi
+}
+
+is_dietpi() {
+    if [[ "$(is_raspberry_pi)" = "1"]] && [[ -d /boot/dietpi ]]; then
+        echo "1"
+    else
+        echo "0"
     fi
 }
 
@@ -90,20 +100,19 @@ is_pi5() {
     fi
 }
 
-is_ubuntu_arm() {
-    if [[ "$(is_raspberry_pi)" = "1" ]] &&
-    grep -q "ubuntu" /etc/os-release; then
+install_cs() {
+    if { [[ "$(is_raspbian)" = "1" ]] ||
+    [[ "$(is_dietpi)" = "1" ]]; } &&
+    [[ "$(is_pi5)" = "0" ]]; then
         echo "1"
     else
         echo "0"
     fi
 }
 
-is_armbian() {
-    if grep -q "Armbian" /etc/os-release; then
-        echo "1"
-    else
-        echo "0"
+is_bookworm() {
+    if [[ -f /etc/os-release ]]; then
+        grep -cq "bookworm" /etc/os-release &> /dev/null && echo "1" || echo "0"
     fi
 }
 
@@ -142,10 +151,7 @@ clone_ustreamer() {
 clone_cstreamer() {
     ## Special handling because only supported on Raspberry Pi
     [[ -n "${CROWSNEST_UNATTENDED}" ]] || CROWSNEST_UNATTENDED="0"
-    if { [[ "$(is_raspberry_pi)" = "0" ]] ||
-    [[ "$(is_pi5)" = "1" ]] ||
-    [[ "$(is_ubuntu_arm)" = "1" ]] ||
-    [[ "$(is_armbian)" = "1" ]]; } &&
+    if [[ "$(install_cs)" = "0" ]] &&
     [[ "${CROWSNEST_UNATTENDED}" = "0" ]]; then
         printf "Device is not supported! Cloning camera-streamer ... [SKIPPED]\n"
         return

@@ -168,6 +168,22 @@ is_raspberry_pi() {
     fi
 }
 
+is_raspbian() {
+    if [[ -f /etc/rpi-issue ]]; then
+        echo "1"
+    else
+        echo "0"
+    fi
+}
+
+is_dietpi() {
+    if [[ "$(is_raspberry_pi)" = "1"]] && [[ -d /boot/dietpi ]]; then
+        echo "1"
+    else
+        echo "0"
+    fi
+}
+
 is_pi5() {
     if [[ -f /proc/device-tree/model ]] &&
     grep -q "Raspberry Pi 5" /proc/device-tree/model; then
@@ -177,17 +193,10 @@ is_pi5() {
     fi
 }
 
-is_ubuntu_arm() {
-    if [[ "$(is_raspberry_pi)" = "1" ]] &&
-    grep -q "ubuntu" /etc/os-release; then
-        echo "1"
-    else
-        echo "0"
-    fi
-}
-
-is_armbian() {
-    if grep -q "Armbian" /etc/os-release; then
+use_cs() {
+    if { [[ "$(is_raspbian)" = "1" ]] ||
+    [[ "$(is_dietpi)" = "1" ]]; } &&
+    [[ "$(is_pi5)" = "0" ]]; then
         echo "1"
     else
         echo "0"

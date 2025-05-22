@@ -18,7 +18,7 @@ TEST_SERVICE_FILE="/etc/systemd/system/crowsnest.service"
 
 
 is_raspbian() {
-    if [[ -f /boot/config.txt ]] && [[ -f /etc/rpi-issue ]]; then
+    if [[ -f /etc/rpi-issue ]]; then
         echo "1"
     else
         echo "0"

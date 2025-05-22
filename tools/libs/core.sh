@@ -43,15 +43,7 @@ is_bookworm() {
 }
 
 is_raspbian() {
-    if [[ -f /boot/config.txt ]] && [[ -f /etc/rpi-issue ]]; then
-        echo "1"
-    else
-        echo "0"
-    fi
-}
-
-is_dietpi() {
-    if [[ -f /boot/config.txt ]] && [[ -d /boot/dietpi ]]; then
+    if [[ -f /etc/rpi-issue ]]; then
         echo "1"
     else
         echo "0"
@@ -67,26 +59,17 @@ is_raspberry_pi() {
     fi
 }
 
+is_dietpi() {
+    if [[ "$(is_raspberry_pi)" = "1" ]] && [[ -d /boot/dietpi ]]; then
+        echo "1"
+    else
+        echo "0"
+    fi
+}
+
 is_pi5() {
     if [[ -f /proc/device-tree/model ]] &&
     grep -q "Raspberry Pi 5" /proc/device-tree/model; then
-        echo "1"
-    else
-        echo "0"
-    fi
-}
-
-is_ubuntu_arm() {
-    if [[ "$(is_raspberry_pi)" = "1" ]] &&
-    grep -q "ubuntu" /etc/os-release; then
-        echo "1"
-    else
-        echo "0"
-    fi
-}
-
-is_armbian() {
-    if grep -q "Armbian" /etc/os-release; then
         echo "1"
     else
         echo "0"
@@ -128,22 +111,6 @@ shallow_cs_dependencies_check() {
         return 1
     fi
     status_msg "Checking if device is not a Raspberry Pi 5 ..." "0"
-
-    msg "Checking if device is not running Ubuntu ...\n"
-    if [[ "$(is_ubuntu_arm)" = "1" ]]; then
-        status_msg "Checking if device is not running Ubuntu ..." "3"
-        msg "This device is running Ubuntu therefore camera-streeamer cannot be installed ..."
-        return 1
-    fi
-    status_msg "Checking if device is not running Ubuntu ..." "0"
-
-    msg "Checking if device is not running Armbian ...\n"
-    if [[ "$(is_armbian)" = "1" ]]; then
-        status_msg "Checking if device is not running Armbian ..." "3"
-        msg "This device is running Armbian therefore camera-streeamer cannot be installed ..."
-        return 1
-    fi
-    status_msg "Checking if device is not running Armbian ..." "0"
 
     msg "Checking for required kernel module ...\n"
     SHALLOW_CHECK_MODULESLIST="bcm2835_codec"
