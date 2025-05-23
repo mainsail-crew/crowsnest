@@ -65,16 +65,6 @@ show_help() {
 }
 
 ## Helper funcs
-### Check if device is Raspberry Pi
-is_raspberry_pi() {
-    if [[ -f /proc/device-tree/model ]] &&
-    grep -q "Raspberry" /proc/device-tree/model; then
-        echo "1"
-    else
-        echo "0"
-    fi
-}
-
 is_raspbian() {
     if [[ -f /etc/rpi-issue ]]; then
         echo "1"
