@@ -1,3 +1,22 @@
+#!/usr/bin/env bash
+
+#### crowsnest - A webcam Service for multiple Cams and Stream Services.
+####
+#### Written by Patrick Gehrsitz aka mryel00 <mryel00.github@gmail.com>
+#### Copyright 2025 - till today
+#### https://github.com/mainsail-crew/crowsnest
+####
+#### This File is distributed under GPLv3
+####
+
+# shellcheck enable=require-variable-braces
+
+# Exit on errors
+set -Ee
+
+# Debug
+# set -x
+
 is_raspios() {
     if [[ -f /etc/rpi-issue ]]; then
         echo "1"
