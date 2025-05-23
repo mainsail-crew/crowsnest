@@ -102,7 +102,7 @@ clone_ustreamer() {
 clone_cstreamer() {
     ## Special handling because only supported on Raspberry Pi
     [[ -n "${CROWSNEST_UNATTENDED}" ]] || CROWSNEST_UNATTENDED="0"
-    if [[ "$(install_cs)" = "0" ]] &&
+    if [[ "$(use_cs)" = "0" ]] &&
     [[ "${CROWSNEST_UNATTENDED}" = "0" ]]; then
         printf "Device is not supported! Cloning camera-streamer ... [SKIPPED]\n"
         return
