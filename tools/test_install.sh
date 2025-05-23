@@ -17,7 +17,7 @@ set -eou pipefail
 TEST_SERVICE_FILE="/etc/systemd/system/crowsnest.service"
 
 
-is_raspbian() {
+is_raspios() {
     if [[ -f /etc/rpi-issue ]]; then
         echo "1"
     else
@@ -90,7 +90,7 @@ main() {
     [[ -x "${REPO_PATH}/bin/ustreamer/ustreamer" ]] && printf "[YES]\n" || printf "[NO]\n"
 
     printf "TEST: camera-streamer repo cloned? ..."
-    if [[ "$(is_raspbian)" = "1" ]]; then
+    if [[ "$(is_raspios)" = "1" ]]; then
         [[ -d "${REPO_PATH}/bin/camera-streamer" ]] && printf "[OK]\n" || printf "[NOT FOUND]\n"
         printf "TEST: camera-streamer binary build? ..."
         [[ -x "${REPO_PATH}/bin/camera-streamer/camera-streamer" ]] && printf "[YES]\n" || printf "[NO]\n"

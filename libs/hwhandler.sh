@@ -168,7 +168,7 @@ is_raspberry_pi() {
     fi
 }
 
-is_raspbian() {
+is_raspios() {
     if [[ -f /etc/rpi-issue ]]; then
         echo "1"
     else
@@ -194,7 +194,7 @@ is_pi5() {
 }
 
 use_cs() {
-    if { [[ "$(is_raspbian)" = "1" ]] ||
+    if { [[ "$(is_raspios)" = "1" ]] ||
     [[ "$(is_dietpi)" = "1" ]]; } &&
     [[ "$(is_pi5)" = "0" ]]; then
         echo "1"

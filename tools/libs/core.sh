@@ -42,7 +42,7 @@ is_bookworm() {
     fi
 }
 
-is_raspbian() {
+is_raspios() {
     if [[ -f /etc/rpi-issue ]]; then
         echo "1"
     else
