@@ -158,47 +158,5 @@ detect_mjpeg() {
     v4l2-ctl -d "${dev}" --list-formats-ext | grep -c "Motion-JPEG, compressed"
 }
 
-## Check if device is raspberry sbc
-is_raspberry_pi() {
-    if [[ -f /proc/device-tree/model ]] &&
-    grep -q "Raspberry" /proc/device-tree/model; then
-        echo "1"
-    else
-        echo "0"
-    fi
-}
-
-is_raspios() {
-    if [[ -f /etc/rpi-issue ]]; then
-        echo "1"
-    else
-        echo "0"
-    fi
-}
-
-is_dietpi() {
-    if [[ -f /boot/config.txt ]] && [[ -d /boot/dietpi ]]; then
-        echo "1"
-    else
-        echo "0"
-    fi
-}
-
-is_pi5() {
-    if [[ -f /proc/device-tree/model ]] &&
-    grep -q "Raspberry Pi 5" /proc/device-tree/model; then
-        echo "1"
-    else
-        echo "0"
-    fi
-}
-
-use_cs() {
-    if { [[ "$(is_raspios)" = "1" ]] ||
-    [[ "$(is_dietpi)" = "1" ]]; } &&
-    [[ "$(is_pi5)" = "0" ]]; then
-        echo "1"
-    else
-        echo "0"
-    fi
-}
+## Helper funcs
+. "${BASE_CN_PATH}/helper_fn.sh"

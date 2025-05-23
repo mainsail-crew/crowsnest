@@ -26,6 +26,7 @@ SRC_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd -P)"
 [[ -n "${CROWSNEST_UNATTENDED}" ]] || CROWSNEST_UNATTENDED="0"
 
 main() {
+    . "${SRC_DIR}/../helper_fn.sh"
     . "${SRC_DIR}/libs/build_apps.sh"
     . "${SRC_DIR}/libs/config.sh"
     . "${SRC_DIR}/libs/core.sh"

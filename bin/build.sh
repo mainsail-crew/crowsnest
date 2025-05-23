@@ -65,46 +65,7 @@ show_help() {
 }
 
 ## Helper funcs
-is_raspios() {
-    if [[ -f /etc/rpi-issue ]]; then
-        echo "1"
-    else
-        echo "0"
-    fi
-}
-
-is_dietpi() {
-    if [[ -f /boot/config.txt ]] && [[ -d /boot/dietpi ]]; then
-        echo "1"
-    else
-        echo "0"
-    fi
-}
-
-is_pi5() {
-    if [[ -f /proc/device-tree/model ]] &&
-    grep -q "Raspberry Pi 5" /proc/device-tree/model; then
-        echo "1"
-    else
-        echo "0"
-    fi
-}
-
-install_cs() {
-    if { [[ "$(is_raspios)" = "1" ]] ||
-    [[ "$(is_dietpi)" = "1" ]]; } &&
-    [[ "$(is_pi5)" = "0" ]]; then
-        echo "1"
-    else
-        echo "0"
-    fi
-}
-
-is_bookworm() {
-    if [[ -f /etc/os-release ]]; then
-        grep -cq "bookworm" /etc/os-release &> /dev/null && echo "1" || echo "0"
-    fi
-}
+. "${BASE_CN_BIN_PATH}/../helper_fn.sh"
 
 ### Get avail mem
 get_avail_mem() {

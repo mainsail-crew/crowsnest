@@ -30,61 +30,6 @@ get_host_arch() {
     uname -m
 }
 
-is_buster() {
-    if [[ -f /etc/os-release ]]; then
-        grep -cq "buster" /etc/os-release &> /dev/null && echo "1" || echo "0"
-    fi
-}
-
-is_bookworm() {
-    if [[ -f /etc/os-release ]]; then
-        grep -cq "bookworm" /etc/os-release &> /dev/null && echo "1" || echo "0"
-    fi
-}
-
-is_raspios() {
-    if [[ -f /etc/rpi-issue ]]; then
-        echo "1"
-    else
-        echo "0"
-    fi
-}
-
-is_raspberry_pi() {
-    if [[ -f /proc/device-tree/model ]] &&
-    grep -q "Raspberry" /proc/device-tree/model; then
-        echo "1"
-    else
-        echo "0"
-    fi
-}
-
-is_dietpi() {
-    if [[ -f /boot/config.txt ]] && [[ -d /boot/dietpi ]]; then
-        echo "1"
-    else
-        echo "0"
-    fi
-}
-
-is_pi5() {
-    if [[ -f /proc/device-tree/model ]] &&
-    grep -q "Raspberry Pi 5" /proc/device-tree/model; then
-        echo "1"
-    else
-        echo "0"
-    fi
-}
-
-is_speederpad() {
-    if grep -q "Ubuntu 20.04." /etc/os-release &&
-    [[ "$(uname -rm)" = "4.9.191 aarch64" ]]; then
-        echo "1"
-    else
-        echo "0"
-    fi
-}
-
 test_load_module() {
     if modprobe -n "${1}" &> /dev/null; then
         echo 1
