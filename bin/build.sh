@@ -65,8 +65,8 @@ show_help() {
 }
 
 ## Helper funcs
-# shellcheck source=./helper_fn.sh
-. "${BASE_CN_BIN_PATH}/../helper_fn.sh"
+# shellcheck source=./libs/helper_fn.sh
+. "${BASE_CN_BIN_PATH}/../libs/helper_fn.sh"
 
 ### Get avail mem
 get_avail_mem() {

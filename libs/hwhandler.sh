@@ -159,4 +159,4 @@ detect_mjpeg() {
 }
 
 ## Helper funcs
-. "${BASE_CN_PATH}/helper_fn.sh"
+. "${BASE_CN_PATH}/libs/helper_fn.sh"
