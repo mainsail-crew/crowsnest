@@ -34,7 +34,7 @@ set_gpu_mem() {
     else
         mem_split=256
     fi
-    if [[ "$(is_raspbian)" = "1" ]] &&
+    if [[ "$(is_raspios)" = "1" ]] &&
     [[ "$(is_bookworm)" = "0" ]] &&
     [[ -n "$(command -v raspi-config)" ]]; then
         if sudo raspi-config nonint do_memory_split "${mem_split}" ;then

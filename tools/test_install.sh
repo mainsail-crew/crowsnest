@@ -17,14 +17,6 @@ set -eou pipefail
 TEST_SERVICE_FILE="/etc/systemd/system/crowsnest.service"
 
 
-is_raspbian() {
-    if [[ -f /boot/config.txt ]] && [[ -f /etc/rpi-issue ]]; then
-        echo "1"
-    else
-        echo "0"
-    fi
-}
-
 get_vars() {
     INSTALLED_AS="$(grep "User" /etc/systemd/system/crowsnest.service | cut -f2 -d= | sed 's/^ //' | cut -f1 -d' ')"
     REPO_PATH="$(grep "WorkingDirectory" /etc/systemd/system/crowsnest.service | cut -f2 -d= | sed 's/^ //' | cut -f1 -d' ')"
@@ -89,8 +81,10 @@ main() {
     printf "TEST: ustreamer binary build? ..."
     [[ -x "${REPO_PATH}/bin/ustreamer/ustreamer" ]] && printf "[YES]\n" || printf "[NO]\n"
 
+    printf "TEST: Import helper functions ...\n"
+    . "${REPO_PATH}/libs/helper_fn.sh"
     printf "TEST: camera-streamer repo cloned? ..."
-    if [[ "$(is_raspbian)" = "1" ]]; then
+    if [[ "$(is_raspios)" = "1" ]]; then
         [[ -d "${REPO_PATH}/bin/camera-streamer" ]] && printf "[OK]\n" || printf "[NOT FOUND]\n"
         printf "TEST: camera-streamer binary build? ..."
         [[ -x "${REPO_PATH}/bin/camera-streamer/camera-streamer" ]] && printf "[YES]\n" || printf "[NO]\n"
