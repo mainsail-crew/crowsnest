@@ -44,7 +44,7 @@ shallow_cs_dependencies_check() {
     msg "Checking if device is a Raspberry Pi ...\n"
     if [[ "$(is_raspberry_pi)" = "0" ]]; then
         status_msg "Checking if device is a Raspberry Pi ..." "3"
-        msg "This device is not a Raspberry Pi therefore camera-streeamer cannot be installed ..."
+        msg "This device is not a Raspberry Pi therefore camera-streamer cannot be installed ..."
         return 1
     fi
     status_msg "Checking if device is a Raspberry Pi ..." "0"
@@ -52,7 +52,7 @@ shallow_cs_dependencies_check() {
     msg "Checking if device is not a Raspberry Pi 5 ...\n"
     if [[ "$(is_pi5)" = "1" ]]; then
         status_msg "Checking if device is not a Raspberry Pi 5 ..." "3"
-        msg "This device is a Raspberry Pi 5 therefore camera-streeamer cannot be installed ..."
+        msg "This device is a Raspberry Pi 5 therefore camera-streamer cannot be installed ..."
         return 1
     fi
     status_msg "Checking if device is not a Raspberry Pi 5 ..." "0"
