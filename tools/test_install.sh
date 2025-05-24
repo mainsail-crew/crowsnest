@@ -81,7 +81,7 @@ main() {
     printf "TEST: ustreamer binary build? ..."
     [[ -x "${REPO_PATH}/bin/ustreamer/ustreamer" ]] && printf "[YES]\n" || printf "[NO]\n"
 
-    printf "TEST: Import helper functions ..."
+    printf "TEST: Import helper functions ...\n"
     . "${REPO_PATH}/libs/helper_fn.sh"
     printf "TEST: camera-streamer repo cloned? ..."
     if [[ "$(is_raspios)" = "1" ]]; then
