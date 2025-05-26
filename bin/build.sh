@@ -35,7 +35,7 @@ if [[ -z "${CROWSNEST_USTREAMER_REPO_SHIP}" ]]; then
     CROWSNEST_USTREAMER_REPO_SHIP="https://github.com/pikvm/ustreamer.git"
 fi
 if [[ -z "${CROWSNEST_USTREAMER_REPO_BRANCH}" ]]; then
-    CROWSNEST_USTREAMER_REPO_BRANCH="v6.31"
+    CROWSNEST_USTREAMER_REPO_BRANCH="v6.36"
 fi
 
 # Camera-streamer repo
