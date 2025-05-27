@@ -2,6 +2,16 @@
 # Changelog
 All notable changes to Crowsnest will be documented in this file.
 
+## [4.1.13](https://github.com/mainsail-crew/crowsnest/releases/tag/v4.1.13) - 2025-05-27
+### Refactor
+
+- Refactor camera-streamer decision logic ([#300](https://github.com/mainsail-crew/crowsnest/pull/300))
+
+### Other
+
+- Remove custompios module ([#301](https://github.com/mainsail-crew/crowsnest/pull/301))
+- Update ustreamer to v6.36 ([#302](https://github.com/mainsail-crew/crowsnest/pull/302))
+
 ## [4.1.12](https://github.com/mainsail-crew/crowsnest/releases/tag/v4.1.12) - 2025-02-27
 ### Bug Fixes and Improvements
 
