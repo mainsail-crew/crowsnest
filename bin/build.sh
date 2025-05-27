@@ -35,7 +35,7 @@ if [[ -z "${CROWSNEST_USTREAMER_REPO_SHIP}" ]]; then
     CROWSNEST_USTREAMER_REPO_SHIP="https://github.com/pikvm/ustreamer.git"
 fi
 if [[ -z "${CROWSNEST_USTREAMER_REPO_BRANCH}" ]]; then
-    CROWSNEST_USTREAMER_REPO_BRANCH="v6.31"
+    CROWSNEST_USTREAMER_REPO_BRANCH="v6.36"
 fi
 
 # Camera-streamer repo
@@ -65,47 +65,8 @@ show_help() {
 }
 
 ## Helper funcs
-### Check if device is Raspberry Pi
-is_raspberry_pi() {
-    if [[ -f /proc/device-tree/model ]] &&
-    grep -q "Raspberry" /proc/device-tree/model; then
-        echo "1"
-    else
-        echo "0"
-    fi
-}
-
-is_bookworm() {
-    if [[ -f /etc/os-release ]]; then
-        grep -cq "bookworm" /etc/os-release &> /dev/null && echo "1" || echo "0"
-    fi
-}
-
-is_pi5() {
-    if [[ -f /proc/device-tree/model ]] &&
-    grep -q "Raspberry Pi 5" /proc/device-tree/model; then
-        echo "1"
-    else
-        echo "0"
-    fi
-}
-
-is_ubuntu_arm() {
-    if [[ "$(is_raspberry_pi)" = "1" ]] &&
-    grep -q "ubuntu" /etc/os-release; then
-        echo "1"
-    else
-        echo "0"
-    fi
-}
-
-is_armbian() {
-    if grep -q "Armbian" /etc/os-release; then
-        echo "1"
-    else
-        echo "0"
-    fi
-}
+# shellcheck source=./libs/helper_fn.sh
+. "${BASE_CN_BIN_PATH}/../libs/helper_fn.sh"
 
 ### Get avail mem
 get_avail_mem() {
@@ -142,10 +103,7 @@ clone_ustreamer() {
 clone_cstreamer() {
     ## Special handling because only supported on Raspberry Pi
     [[ -n "${CROWSNEST_UNATTENDED}" ]] || CROWSNEST_UNATTENDED="0"
-    if { [[ "$(is_raspberry_pi)" = "0" ]] ||
-    [[ "$(is_pi5)" = "1" ]] ||
-    [[ "$(is_ubuntu_arm)" = "1" ]] ||
-    [[ "$(is_armbian)" = "1" ]]; } &&
+    if [[ "$(use_cs)" = "0" ]] &&
     [[ "${CROWSNEST_UNATTENDED}" = "0" ]]; then
         printf "Device is not supported! Cloning camera-streamer ... [SKIPPED]\n"
         return

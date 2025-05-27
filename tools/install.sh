@@ -26,6 +26,7 @@ SRC_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd -P)"
 [[ -n "${CROWSNEST_UNATTENDED}" ]] || CROWSNEST_UNATTENDED="0"
 
 main() {
+    . "${SRC_DIR}/../libs/helper_fn.sh"
     . "${SRC_DIR}/libs/build_apps.sh"
     . "${SRC_DIR}/libs/config.sh"
     . "${SRC_DIR}/libs/core.sh"
@@ -75,7 +76,7 @@ main() {
         fi
         status_msg "Doing some tests ..." "0"
     else
-        if [[ "$(is_raspbian)" = "1" ]]; then
+        if [[ "$(is_raspios)" = "1" ]]; then
             CN_INSTALL_CS="1"
         else
             CN_INSTALL_CS="0"

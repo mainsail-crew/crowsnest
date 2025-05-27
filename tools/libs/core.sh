@@ -30,78 +30,6 @@ get_host_arch() {
     uname -m
 }
 
-is_buster() {
-    if [[ -f /etc/os-release ]]; then
-        grep -cq "buster" /etc/os-release &> /dev/null && echo "1" || echo "0"
-    fi
-}
-
-is_bookworm() {
-    if [[ -f /etc/os-release ]]; then
-        grep -cq "bookworm" /etc/os-release &> /dev/null && echo "1" || echo "0"
-    fi
-}
-
-is_raspbian() {
-    if [[ -f /boot/config.txt ]] && [[ -f /etc/rpi-issue ]]; then
-        echo "1"
-    else
-        echo "0"
-    fi
-}
-
-is_dietpi() {
-    if [[ -f /boot/config.txt ]] && [[ -d /boot/dietpi ]]; then
-        echo "1"
-    else
-        echo "0"
-    fi
-}
-
-is_raspberry_pi() {
-    if [[ -f /proc/device-tree/model ]] &&
-    grep -q "Raspberry" /proc/device-tree/model; then
-        echo "1"
-    else
-        echo "0"
-    fi
-}
-
-is_pi5() {
-    if [[ -f /proc/device-tree/model ]] &&
-    grep -q "Raspberry Pi 5" /proc/device-tree/model; then
-        echo "1"
-    else
-        echo "0"
-    fi
-}
-
-is_ubuntu_arm() {
-    if [[ "$(is_raspberry_pi)" = "1" ]] &&
-    grep -q "ubuntu" /etc/os-release; then
-        echo "1"
-    else
-        echo "0"
-    fi
-}
-
-is_armbian() {
-    if grep -q "Armbian" /etc/os-release; then
-        echo "1"
-    else
-        echo "0"
-    fi
-}
-
-is_speederpad() {
-    if grep -q "Ubuntu 20.04." /etc/os-release &&
-    [[ "$(uname -rm)" = "4.9.191 aarch64" ]]; then
-        echo "1"
-    else
-        echo "0"
-    fi
-}
-
 test_load_module() {
     if modprobe -n "${1}" &> /dev/null; then
         echo 1
@@ -116,7 +44,7 @@ shallow_cs_dependencies_check() {
     msg "Checking if device is a Raspberry Pi ...\n"
     if [[ "$(is_raspberry_pi)" = "0" ]]; then
         status_msg "Checking if device is a Raspberry Pi ..." "3"
-        msg "This device is not a Raspberry Pi therefore camera-streeamer cannot be installed ..."
+        msg "This device is not a Raspberry Pi therefore camera-streamer cannot be installed ..."
         return 1
     fi
     status_msg "Checking if device is a Raspberry Pi ..." "0"
@@ -124,26 +52,10 @@ shallow_cs_dependencies_check() {
     msg "Checking if device is not a Raspberry Pi 5 ...\n"
     if [[ "$(is_pi5)" = "1" ]]; then
         status_msg "Checking if device is not a Raspberry Pi 5 ..." "3"
-        msg "This device is a Raspberry Pi 5 therefore camera-streeamer cannot be installed ..."
+        msg "This device is a Raspberry Pi 5 therefore camera-streamer cannot be installed ..."
         return 1
     fi
     status_msg "Checking if device is not a Raspberry Pi 5 ..." "0"
-
-    msg "Checking if device is not running Ubuntu ...\n"
-    if [[ "$(is_ubuntu_arm)" = "1" ]]; then
-        status_msg "Checking if device is not running Ubuntu ..." "3"
-        msg "This device is running Ubuntu therefore camera-streeamer cannot be installed ..."
-        return 1
-    fi
-    status_msg "Checking if device is not running Ubuntu ..." "0"
-
-    msg "Checking if device is not running Armbian ...\n"
-    if [[ "$(is_armbian)" = "1" ]]; then
-        status_msg "Checking if device is not running Armbian ..." "3"
-        msg "This device is running Armbian therefore camera-streeamer cannot be installed ..."
-        return 1
-    fi
-    status_msg "Checking if device is not running Armbian ..." "0"
 
     msg "Checking for required kernel module ...\n"
     SHALLOW_CHECK_MODULESLIST="bcm2835_codec"

@@ -158,38 +158,5 @@ detect_mjpeg() {
     v4l2-ctl -d "${dev}" --list-formats-ext | grep -c "Motion-JPEG, compressed"
 }
 
-## Check if device is raspberry sbc
-is_raspberry_pi() {
-    if [[ -f /proc/device-tree/model ]] &&
-    grep -q "Raspberry" /proc/device-tree/model; then
-        echo "1"
-    else
-        echo "0"
-    fi
-}
-
-is_pi5() {
-    if [[ -f /proc/device-tree/model ]] &&
-    grep -q "Raspberry Pi 5" /proc/device-tree/model; then
-        echo "1"
-    else
-        echo "0"
-    fi
-}
-
-is_ubuntu_arm() {
-    if [[ "$(is_raspberry_pi)" = "1" ]] &&
-    grep -q "ubuntu" /etc/os-release; then
-        echo "1"
-    else
-        echo "0"
-    fi
-}
-
-is_armbian() {
-    if grep -q "Armbian" /etc/os-release; then
-        echo "1"
-    else
-        echo "0"
-    fi
-}
+## Helper funcs
+. "${BASE_CN_PATH}/libs/helper_fn.sh"
