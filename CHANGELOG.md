@@ -2,6 +2,11 @@
 # Changelog
 All notable changes to Crowsnest will be documented in this file.
 
+## [4.1.14](https://github.com/mainsail-crew/crowsnest/releases/tag/v4.1.14) - 2025-06-25
+### Other
+
+- Remove rtsp options from crowsnest.conf example ([#304](https://github.com/mainsail-crew/crowsnest/pull/304))
+
 ## [4.1.13](https://github.com/mainsail-crew/crowsnest/releases/tag/v4.1.13) - 2025-05-27
 ### Refactor
 
