@@ -57,12 +57,31 @@ list_cam_v4l2ctrls() {
     done < <(v4l2-ctl -d "${device}" --list-ctrls-menus)
 }
 
+## Detect libcamera package
+libcamera_installed() {
+    if [[ -x "$(command -v libcamera-hello)" ]] ||
+    [[ -x "$(command -v rpicam-hello)" ]]; then
+        echo "1"
+    else
+        echo "0"
+    fi
+}
+
+## List libcamera (CSI) device
+list_libcameras() {
+    if [[ -x "$(command -v libcamera-hello)" ]]; then
+        libcamera-hello --list-cameras
+    else
+        rpicam-hello --list-cameras
+    fi
+}
+
 ## Determine connected libcamera (CSI) device
 detect_libcamera() {
     local avail
     if [[ "$(is_raspberry_pi)" = "1" ]] &&
-    [[ -x "$(command -v libcamera-hello)" ]]; then
-        avail="$(libcamera-hello --list-cameras | grep -c "Available" || echo "0")"
+    [[ "$(libcamera_installed)" = "1" ]]; then
+        avail="$(list_libcameras | grep -c "Available" || echo "0")"
         if [[ "${avail}" = "1" ]]; then
             get_libcamera_path | wc -l
         else
@@ -73,13 +92,10 @@ detect_libcamera() {
     fi
 }
 
-## Spit /base/soc path for libcamera device
+## Split /base/soc path for libcamera device
 get_libcamera_path() {
-    if [[ "$(is_raspberry_pi)" = "1" ]] &&
-    [[ -x "$(command -v libcamera-hello)" ]]; then
-        libcamera-hello --list-cameras | sed '1,2d' \
-        | grep "\(/base/*\)" | cut -d"(" -f2 | tr -d '$)'
-    fi
+    list_libcameras | sed '1,2d' \
+    | grep "\(/base/*\)" | cut -d"(" -f2 | tr -d '$)'
 }
 
 # print libcamera resolutions
