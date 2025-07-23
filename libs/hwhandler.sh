@@ -72,7 +72,7 @@ list_libcameras() {
     if [[ -x "$(command -v libcamera-hello)" ]]; then
         libcamera-hello --list-cameras
     else
-        rpicam-hello --list-camera
+        rpicam-hello --list-cameras
     fi
 }
 
