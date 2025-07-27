@@ -2,6 +2,15 @@
 # Changelog
 All notable changes to Crowsnest will be documented in this file.
 
+## [4.1.15](https://github.com/mainsail-crew/crowsnest/releases/tag/v4.1.15) - 2025-07-27
+### Bug Fixes and Improvements
+
+- Fix libcamera device detection on bookworm ([#305](https://github.com/mainsail-crew/crowsnest/pull/305))
+
+### Other
+
+- Update git actions in release.yaml ([#307](https://github.com/mainsail-crew/crowsnest/pull/307))
+
 ## [4.1.14](https://github.com/mainsail-crew/crowsnest/releases/tag/v4.1.14) - 2025-06-25
 ### Other
 
@@ -136,6 +145,7 @@ All notable changes to Crowsnest will be documented in this file.
 ### Bug Fixes and Improvements
 
 - **camera-streamer.sh**: Force camera to be always active ([#197](https://github.com/mainsail-crew/crowsnest/pull/197))
+- **hwhandler.sh**: Fix error in device logging ([#169](https://github.com/mainsail-crew/crowsnest/pull/169))
 - Fix wrong gpumem calculation ([#176](https://github.com/mainsail-crew/crowsnest/pull/176))
 - Fix wrong syntax in gpumem ([#177](https://github.com/mainsail-crew/crowsnest/pull/177))
 - Fix wrong messages ([#183](https://github.com/mainsail-crew/crowsnest/pull/183))
@@ -150,7 +160,6 @@ All notable changes to Crowsnest will be documented in this file.
 ## [4.0.4](https://github.com/mainsail-crew/crowsnest/releases/tag/v4.0.4) - 2023-09-01
 ### Bug Fixes and Improvements
 
-- **hwhandler.sh**: Fix error in device logging ([#169](https://github.com/mainsail-crew/crowsnest/pull/169))
 - **hwhandler.sh**: Fix error in device logging ([#169](https://github.com/mainsail-crew/crowsnest/pull/169)) ([#170](https://github.com/mainsail-crew/crowsnest/pull/170))
 
 ## [4.0.3](https://github.com/mainsail-crew/crowsnest/releases/tag/v4.0.3) - 2023-08-11
@@ -421,4 +430,6 @@ All notable changes to Crowsnest will be documented in this file.
 ### Other
 
 - **update**: Removed message if RTSPtoWebRTC is not installed | [4170a25](https://github.com/mainsail-crew/crowsnest/commit/4170a25b640fe03ba1fe0c0c1c4451d693023092)
+
+## [0.0.0](https://github.com/mainsail-crew/crowsnest/releases/tag/v0.0.0) - 2021-10-27
 
