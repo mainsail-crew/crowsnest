@@ -19,19 +19,19 @@ set -Ee
 # Base Path
 BASE_CN_PATH="$(dirname "$(readlink -f "${0}")")"
 
-## Import Librarys
-# shellcheck source-path=SCRIPTDIR/../libs/
-. "${BASE_CN_PATH}/libs/camera-streamer.sh"
-. "${BASE_CN_PATH}/libs/configparser.sh"
-. "${BASE_CN_PATH}/libs/core.sh"
-. "${BASE_CN_PATH}/libs/hwhandler.sh"
-. "${BASE_CN_PATH}/libs/init_stream.sh"
-. "${BASE_CN_PATH}/libs/logging.sh"
-. "${BASE_CN_PATH}/libs/messages.sh"
-. "${BASE_CN_PATH}/libs/ustreamer.sh"
-. "${BASE_CN_PATH}/libs/v4l2_control.sh"
-. "${BASE_CN_PATH}/libs/versioncontrol.sh"
-. "${BASE_CN_PATH}/libs/watchdog.sh"
+function missing_args_msg {
+    echo -e "crowsnest: Missing Arguments!"
+    echo -e "\n\tTry: crowsnest -h\n"
+}
+
+function check_cfg {
+    if [ ! -r "${1}" ]; then
+        log_msg "ERROR: No Configuration File found. Exiting!"
+        exit 1
+    else
+        return 0
+    fi
+}
 
 #### MAIN
 ## Args given?
@@ -74,16 +74,25 @@ while getopts ":vhc:s:d" arg; do
     esac
 done
 
-init_logging
-initial_check
-construct_streamer
+function set_log_path {
+    #Workaround sed ~ to BASH VAR $HOME
+    CROWSNEST_LOG_PATH=$(get_param "crowsnest" log_path | sed "s#^~#${HOME}#gi")
+    declare -g CROWSNEST_LOG_PATH
+    #Workaround: Make Dir if not exist
+    if [ ! -d "$(dirname "${CROWSNEST_LOG_PATH}")" ]; then
+        mkdir -p "$(dirname "${CROWSNEST_LOG_PATH}")"
+    fi
+}
 
-## Loop and Watchdog
-## In this case watchdog acts more like a "cable defect detector"
-## The User gets a message if Device is lost.
-clean_watchdog
-while true ; do
-    crowsnest_watchdog
-    sleep 120 & sleep_pid="$!"
-    wait "${sleep_pid}"
-done
+function get_param {
+    local cfg section param
+    cfg="${CROWSNEST_CFG}"
+    section="${1}"
+    param="${2}"
+    crudini --get "${cfg}" "${section}" "${param}" 2> /dev/null | \
+    sed 's/\#.*//;s/[[:space:]]*$//'
+    return
+}
+
+set_log_path
+python3 "${BASE_CN_PATH}/crowsnest.py" -c "${CROWSNEST_CFG}" -l "${CROWSNEST_LOG_PATH}"
