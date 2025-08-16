@@ -105,7 +105,7 @@ list_picam_resolution() {
     log_msg "'libcamera' device(s) resolution(s) :"
     while IFS= read -r i; do
         printf "%s\t\t%s\n" "${prefix}" "${i}" >> "${CROWSNEST_LOG_PATH}"
-    done < <(libcamera-hello --list-cameras | sed '1,2d;s/Modes:/Colorspace:/')
+    done < <(list_libcameras | sed '1,2d;s/Modes:/Colorspace:/')
 }
 
 get_libcamera_controls() {
