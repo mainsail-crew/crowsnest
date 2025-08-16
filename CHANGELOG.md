@@ -2,6 +2,11 @@
 # Changelog
 All notable changes to Crowsnest will be documented in this file.
 
+## [4.1.16](https://github.com/mainsail-crew/crowsnest/releases/tag/v4.1.16) - 2025-08-16
+### Bug Fixes and Improvements
+
+- Fix picam resolution logging on latest Bookworm ([#310](https://github.com/mainsail-crew/crowsnest/pull/310))
+
 ## [4.1.15](https://github.com/mainsail-crew/crowsnest/releases/tag/v4.1.15) - 2025-07-27
 ### Bug Fixes and Improvements
 
@@ -431,5 +436,5 @@ All notable changes to Crowsnest will be documented in this file.
 
 - **update**: Removed message if RTSPtoWebRTC is not installed | [4170a25](https://github.com/mainsail-crew/crowsnest/commit/4170a25b640fe03ba1fe0c0c1c4451d693023092)
 
-## [0.0.0](https://github.com/mainsail-crew/crowsnest/releases/tag/v0.0.0) - 2021-10-27
+## [0.1.0](https://github.com/mainsail-crew/crowsnest/releases/tag/v0.1.0) - 2021-10-27
 
