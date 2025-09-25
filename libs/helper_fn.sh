@@ -55,9 +55,10 @@ is_raspberry_pi() {
 }
 
 is_pi5() {
-    if [[ -f /proc/device-tree/model ]] &&
-    { grep -q "Raspberry Pi 5" /proc/device-tree/model ||
-      grep -q "Raspberry Pi Compute Module 5" /proc/device-tree/model }; then
+    if [[ -f /proc/device-tree/model ]] && {
+    grep -q "Raspberry Pi 5" /proc/device-tree/model ||
+    grep -q "Raspberry Pi Compute Module 5" /proc/device-tree/model
+    }; then
         echo "1"
     else
         echo "0"
