@@ -49,6 +49,11 @@ status_msg() {
     if [[ "${status}" == "3" ]]; then
         echo -e "${msg} [\e[33mFAILED\e[0m]"
     fi
+    if [[ "${status}" == "4" ]]; then
+        echo -e "${msg} [\e[33mFAILED\e[0m]"
+        apt_failed_msg
+        exit 1
+    fi
 }
 
 not_as_root_msg() {
@@ -95,4 +100,9 @@ error_msg() {
     msg "Something went wrong!\nPlease copy the latest output, head over to\n"
     msg "\thttps://discord.gg/mainsail\n"
     msg "and open a ticket in #supportforum..."
+}
+
+apt_failed_msg() {
+    msg "There is a problem with your apt sources.\n"
+    msg "Please fix your sytem first and then try again."
 }
