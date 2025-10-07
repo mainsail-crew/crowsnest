@@ -222,11 +222,9 @@ dietpi_cs_settings() {
     sudo /boot/dietpi/func/dietpi-set_hardware rpi-codec enable
     sudo /boot/dietpi/func/dietpi-set_hardware rpi-camera enable
 
-    if [[ "$(is_buster)" = "0" ]]; then
-        if ! grep -q "camera_auto_detect=1" /boot/config.txt; then
-            msg "\nAdd camera_auto_detect=1 to /boot/config.txt ...\n"
-            echo "camera_auto_detect=1" >> /boot/config.txt
-        fi
+    if ! grep -q "camera_auto_detect=1" /boot/config.txt; then
+        msg "\nAdd camera_auto_detect=1 to /boot/config.txt ...\n"
+        echo "camera_auto_detect=1" >> /boot/config.txt
     fi
 }
 
@@ -244,7 +242,7 @@ detect_existing_webcamd() {
                     msg "Stopping webcamd.service ..."
                     sudo systemctl stop webcamd.service &> /dev/null
                     status_msg "Stopping webcamd.service ..." "0"
-                    
+
                     msg "\nDisabling webcamd.service ...\r"
                     sudo systemctl disable webcamd.service &> /dev/null
                     status_msg "Disabling webcamd.service ..." "0"

@@ -33,15 +33,11 @@ is_dietpi() {
     fi
 }
 
-is_buster() {
+is_os_release() {
     if [[ -f /etc/os-release ]]; then
-        grep -cq "buster" /etc/os-release &> /dev/null && echo "1" || echo "0"
-    fi
-}
-
-is_bullseye() {
-    if [[ -f /etc/os-release ]]; then
-        grep -cq "bullseye" /etc/os-release &> /dev/null && echo "1" || echo "0"
+        grep -cq "${1}" /etc/os-release &> /dev/null && echo "1" || echo "0"
+    else
+        echo "0"
     fi
 }
 

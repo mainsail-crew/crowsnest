@@ -35,7 +35,7 @@ set_gpu_mem() {
         mem_split=256
     fi
     if [[ "$(is_raspios)" = "1" ]] &&
-    [[ "$(is_bullseye)" = "1" ]] &&
+    [[ "$(is_os_release "bullseye")" = "1" ]] &&
     [[ -n "$(command -v raspi-config)" ]]; then
         if sudo raspi-config nonint do_memory_split "${mem_split}" ;then
             status_msg "Trying to set minimum GPU Memory to ${mem_split} MB ..." "0"

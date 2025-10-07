@@ -52,7 +52,7 @@ main() {
 
     [[ -n "${BASE_USER}" ]] || BASE_USER="${SUDO_USER}"
 
-    if [[ "$(is_buster)" = "1" ]]; then
+    if [[ "$(is_os_release "buster")" = "1" ]]; then
         not_supported_msg
         exit 1
     fi
@@ -153,7 +153,7 @@ main() {
 
     add_group_video
 
-    if [[ "$(is_bullseye)" = "1" ]] && [[ "${CN_INSTALL_CS}" = "1" ]]; then
+    if [[ "$(is_os_release "bullseye")" = "1" ]] && [[ "${CN_INSTALL_CS}" = "1" ]]; then
         msg "\nBullseye detected!"
         msg "Using legacy-bullseye branch of camera-streamer for Bullseye ...\n"
         CROWSNEST_CAMERA_STREAMER_REPO_BRANCH="legacy-bullseye"

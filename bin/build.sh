@@ -112,7 +112,7 @@ clone_cstreamer() {
         printf "%s already exist ... [SKIPPED]\n" "${CSTREAMER_PATH}"
         return
     fi
-    if [[ "$(is_bullseye)" = "1" ]]; then
+    if [[ "$(is_os_release "bullseye")" = "1" ]]; then
         printf "\nBullseye detected!\n"
         printf "Using legacy-bullseye branch of camera-streamer for Bullseye ...\n\n"
         CROWSNEST_CAMERA_STREAMER_REPO_BRANCH="legacy-bullseye"
