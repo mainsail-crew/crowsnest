@@ -114,8 +114,8 @@ clone_cstreamer() {
     fi
     if [[ "$(is_bullseye)" = "1" ]]; then
         printf "\nBullseye detected!\n"
-        printf "Using master branch of camera-streamer for Bullseye ...\n\n"
-        CROWSNEST_CAMERA_STREAMER_REPO_BRANCH="master"
+        printf "Using legacy-bullseye branch of camera-streamer for Bullseye ...\n\n"
+        CROWSNEST_CAMERA_STREAMER_REPO_BRANCH="legacy-bullseye"
     fi
     git clone "${CROWSNEST_CAMERA_STREAMER_REPO_SHIP}" \
         -b "${CROWSNEST_CAMERA_STREAMER_REPO_BRANCH}" \
