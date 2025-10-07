@@ -34,8 +34,9 @@ is_dietpi() {
 }
 
 is_os_release() {
-    if [[ -f /etc/os-release ]]; then
-        grep -cq "${1}" /etc/os-release &> /dev/null && echo "1" || echo "0"
+    if [[ -f /etc/os-release ]] &&
+    grep -cq "${1}" /etc/os-release &> /dev/null; then
+        echo "1"
     else
         echo "0"
     fi
