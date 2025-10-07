@@ -45,12 +45,6 @@ is_bullseye() {
     fi
 }
 
-is_bookworm() {
-    if [[ -f /etc/os-release ]]; then
-        grep -cq "bookworm" /etc/os-release &> /dev/null && echo "1" || echo "0"
-    fi
-}
-
 is_raspberry_pi() {
     if [[ -f /proc/device-tree/model ]] &&
     grep -q "Raspberry" /proc/device-tree/model; then
