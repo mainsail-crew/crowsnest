@@ -153,10 +153,10 @@ main() {
 
     add_group_video
 
-    if [[ "$(is_bookworm)" = "1" ]] && [[ "${CN_INSTALL_CS}" = "1" ]]; then
-        msg "\nBookworm detected!"
-        msg "Using main branch of camera-streamer for Bookworm ...\n"
-        CROWSNEST_CAMERA_STREAMER_REPO_BRANCH="main"
+    if [[ "$(is_bullseye)" = "1" ]] && [[ "${CN_INSTALL_CS}" = "1" ]]; then
+        msg "\nBullseye detected!"
+        msg "Using master branch of camera-streamer for Bullseye ...\n"
+        CROWSNEST_CAMERA_STREAMER_REPO_BRANCH="master"
     fi
 
     build_apps

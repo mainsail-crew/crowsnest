@@ -44,7 +44,7 @@ if [[ -z "${CROWSNEST_CAMERA_STREAMER_REPO_SHIP}" ]]; then
     CROWSNEST_CAMERA_STREAMER_REPO_SHIP="https://github.com/mryel00/camera-streamer.git"
 fi
 if [[ -z "${CROWSNEST_CAMERA_STREAMER_REPO_BRANCH}" ]]; then
-    CROWSNEST_CAMERA_STREAMER_REPO_BRANCH="master"
+    CROWSNEST_CAMERA_STREAMER_REPO_BRANCH="main"
 fi
 
 
@@ -112,10 +112,10 @@ clone_cstreamer() {
         printf "%s already exist ... [SKIPPED]\n" "${CSTREAMER_PATH}"
         return
     fi
-    if [[ "$(is_bookworm)" = "1" ]]; then
-        printf "\nBookworm detected!\n"
-        printf "Using main branch of camera-streamer for Bookworm ...\n\n"
-        CROWSNEST_CAMERA_STREAMER_REPO_BRANCH="main"
+    if [[ "$(is_bullseye)" = "1" ]]; then
+        printf "\nBullseye detected!\n"
+        printf "Using master branch of camera-streamer for Bullseye ...\n\n"
+        CROWSNEST_CAMERA_STREAMER_REPO_BRANCH="master"
     fi
     git clone "${CROWSNEST_CAMERA_STREAMER_REPO_SHIP}" \
         -b "${CROWSNEST_CAMERA_STREAMER_REPO_BRANCH}" \
@@ -137,7 +137,7 @@ clean_apps() {
     for app in "${ALL_PATHS[@]}"; do
         if [[ ! -d "${app}" ]]; then
             printf "'%s' does not exist! Clean ... [SKIPPED]\n" "${app}"
-        else 
+        else
             printf "\nRunning 'make clean' in %s ... \n" "${app}"
             pushd "${app}" &> /dev/null || exit 1
             make clean
