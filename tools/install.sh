@@ -155,8 +155,8 @@ main() {
 
     if [[ "$(is_os_release "bullseye")" = "1" ]] && [[ "${CN_INSTALL_CS}" = "1" ]]; then
         msg "\nBullseye detected!"
-        msg "Using legacy-bullseye branch of camera-streamer for Bullseye ...\n"
-        CROWSNEST_CAMERA_STREAMER_REPO_BRANCH="legacy-bullseye"
+        msg "Using legacy/bullseye branch of camera-streamer for Bullseye ...\n"
+        CROWSNEST_CAMERA_STREAMER_REPO_BRANCH="legacy/bullseye"
     fi
 
     build_apps
