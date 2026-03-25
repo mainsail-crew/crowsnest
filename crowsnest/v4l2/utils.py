@@ -118,11 +118,15 @@ def frmtype2s(type) -> str:
 
 
 def fract2sec(fract: raw.v4l2_fract) -> str:
-    return "%.3f" % round(fract.numerator / fract.denominator, 3)
+    if fract.denominator == 0:
+        return "0.000"
+    return f"{fract.numerator / fract.denominator:.3f}"
 
 
 def fract2fps(fract: raw.v4l2_fract) -> str:
-    return "%.3f" % round(fract.denominator / fract.numerator, 3)
+    if fract.numerator == 0:
+        return "0.000"
+    return f"{fract.denominator / fract.numerator:.3f}"
 
 
 def frmsize_to_str(frmsize: raw.v4l2_frmsizeenum) -> str:
