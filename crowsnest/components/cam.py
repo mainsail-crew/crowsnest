@@ -33,7 +33,7 @@ class Cam(Section):
             path="crowsnest.components.streamer",
         )
         if component is None or not isinstance(component, Streamer):
-            self.log_error(f"Tried to load a component that is not a Streamer!")
+            self.log_error("Tried to load a component that is not a Streamer!")
             return
         self.streamer: Streamer = component
 
@@ -44,7 +44,7 @@ class Cam(Section):
 
     async def execute(self, lock: asyncio.Lock) -> Optional[asyncio.subprocess.Process]:
         if self.streamer is None:
-            print("No streamer loaded")
+            self.log_error("No streamer loaded!")
             return
         try:
             await lock.acquire()
