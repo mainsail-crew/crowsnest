@@ -67,6 +67,10 @@ def name2var(name: str) -> str:
     return re.sub("[^0-9a-zA-Z]+", "_", name).lower()
 
 
+def flags2str(dict_flags: dict, flags: int) -> str:
+    return ", ".join(v for k, v in dict_flags.items() if k and (flags & k))
+
+
 def ctrlflags2str(flags: int) -> str:
     dict_flags = {
         constants.V4L2_CTRL_FLAG_GRABBED: "grabbed",
@@ -83,7 +87,7 @@ def ctrlflags2str(flags: int) -> str:
         constants.V4L2_CTRL_FLAG_DYNAMIC_ARRAY: "dynamic-array",
         0: None,
     }
-    return dict_flags.get(flags)
+    return flags2str(dict_flags, flags)
 
 
 def fmtflags2str(flags: int) -> str:
@@ -98,7 +102,7 @@ def fmtflags2str(flags: int) -> str:
         constants.V4L2_FMT_FLAG_CSC_QUANTIZATION: "csc-quantization",
         constants.V4L2_FMT_FLAG_CSC_XFER_FUNC: "csc-xfer-func",
     }
-    return dict_flags.get(flags)
+    return flags2str(dict_flags, flags)
 
 
 def fcc2s(val: int) -> str:
