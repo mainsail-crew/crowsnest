@@ -8,6 +8,7 @@
 ####
 
 import asyncio
+import os
 import textwrap
 from abc import ABC, abstractmethod
 from configparser import SectionProxy
@@ -72,7 +73,7 @@ class Streamer(Section, ABC):
 
 
 def load_all_streamers() -> None:
-    streamer_path = "crowsnest/components/streamer"
+    streamer_path = os.path.dirname(__file__)
     streamer_files = [
         f
         for f in listdir(streamer_path)
