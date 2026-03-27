@@ -24,29 +24,29 @@ class Libcamera(camera.Camera):
         ctrls = {}
         try:
             from libcamera import CameraManager, Rectangle
-
-            def rectangle_to_tuple(rectangle):
-                return (rectangle.x, rectangle.y, rectangle.width, rectangle.height)
-
-            libcam_cm = CameraManager.singleton()
-            cam = next((cam for cam in libcam_cm.cameras if cam.id == self.path), None)
-            if cam is None:
-                return ctrls
-            for k, v in cam.controls.items():
-                if isinstance(v.min, Rectangle):
-                    ctrls[k.name] = {
-                        "min": rectangle_to_tuple(v.min),
-                        "max": rectangle_to_tuple(v.max),
-                        "default": rectangle_to_tuple(v.default),
-                    }
-                else:
-                    ctrls[k.name] = {
-                        "min": v.min,
-                        "max": v.max,
-                        "default": v.default,
-                    }
         except ImportError:
-            pass
+            return ctrls
+
+        def rectangle_to_tuple(rectangle):
+            return (rectangle.x, rectangle.y, rectangle.width, rectangle.height)
+
+        libcam_cm = CameraManager.singleton()
+        cam = next((cam for cam in libcam_cm.cameras if cam.id == self.path), None)
+        if cam is None:
+            return ctrls
+        for k, v in cam.controls.items():
+            if isinstance(v.min, Rectangle):
+                ctrls[k.name] = {
+                    "min": rectangle_to_tuple(v.min),
+                    "max": rectangle_to_tuple(v.max),
+                    "default": rectangle_to_tuple(v.default),
+                }
+            else:
+                ctrls[k.name] = {
+                    "min": v.min,
+                    "max": v.max,
+                    "default": v.default,
+                }
         return ctrls
 
     def _get_formats(self, libcamera_output: str) -> list:
