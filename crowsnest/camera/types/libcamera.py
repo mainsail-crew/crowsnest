@@ -29,22 +29,22 @@ class Libcamera(camera.Camera):
                 return (rectangle.x, rectangle.y, rectangle.width, rectangle.height)
 
             libcam_cm = CameraManager.singleton()
-            for cam in libcam_cm.cameras:
-                if cam.id != self.path:
-                    continue
-                for k, v in cam.controls.items():
-                    if isinstance(v.min, Rectangle):
-                        ctrls[k.name] = {
-                            "min": rectangle_to_tuple(v.min),
-                            "max": rectangle_to_tuple(v.max),
-                            "default": rectangle_to_tuple(v.default),
-                        }
-                    else:
-                        ctrls[k.name] = {
-                            "min": v.min,
-                            "max": v.max,
-                            "default": v.default,
-                        }
+            cam = next((cam for cam in libcam_cm.cameras if cam.id == self.path), None)
+            if cam is None:
+                return ctrls
+            for k, v in cam.controls.items():
+                if isinstance(v.min, Rectangle):
+                    ctrls[k.name] = {
+                        "min": rectangle_to_tuple(v.min),
+                        "max": rectangle_to_tuple(v.max),
+                        "default": rectangle_to_tuple(v.default),
+                    }
+                else:
+                    ctrls[k.name] = {
+                        "min": v.min,
+                        "max": v.max,
+                        "default": v.default,
+                    }
         except ImportError:
             pass
         return ctrls

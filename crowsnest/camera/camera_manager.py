@@ -15,10 +15,7 @@ _cameras: List[Camera] = []
 
 
 def get_cam_by_path(path: str) -> Optional[Camera]:
-    for camera in _cameras:
-        if camera.path_equals(path):
-            return camera
-    return None
+    return next((cam for cam in _cameras if cam.path_equals(path)), None)
 
 
 def init_camera_type(obj: Camera) -> List[Camera]:

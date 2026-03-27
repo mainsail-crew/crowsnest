@@ -100,13 +100,16 @@ class UVC(camera.Camera):
             return avail_uvc
 
         avail_by_id = get_avail_uvc("/dev/v4l/by-id/")
-        avail_uvc_cameras = {}
-        for dev_path, by_path in get_avail_uvc("/dev/v4l/by-path/").items():
-            if "usb" in by_path:
-                avail_uvc_cameras[dev_path] = {
-                    "by_path": by_path,
-                    "by_id": avail_by_id.get(dev_path, None),
-                }
+
+        avail_uvc_cameras = {
+            dev_path: {
+                "by_path": by_path,
+                "by_id": avail_by_id.get(dev_path, None),
+            }
+            for dev_path, by_path in get_avail_uvc("/dev/v4l/by-path").items()
+            if "usb" in by_path
+        }
+
         return [
             UVC(dev_path, other=other_paths)
             for dev_path, other_paths in avail_uvc_cameras.items()
