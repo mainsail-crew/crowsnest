@@ -38,14 +38,14 @@ class Spyglass(Streamer):
             int(device)
             device_option = "camera_num"
         except ValueError:
-            device_option = "--device"
+            device_option = "device"
 
         streamer_args = [
-            f"{device_option}=" + device,
-            "--bindaddress=" + host,
-            "--port=" + str(port),
-            "--fps=" + str(fps),
-            "--resolution=" + str(res),
+            f"--{device_option}={device}",
+            f"--bindaddress={host}",
+            f"--port={port}",
+            f"--fps={fps}",
+            f"--resolution={res}",
             "--stream_url=/?action=stream",
             "--snapshot_url=/?action=snapshot",
         ]
@@ -56,15 +56,15 @@ class Spyglass(Streamer):
             self.log_quiet(f"Handling done by {self.keyword}", postfix=postfix)
             self.log_quiet(f"Trying to set: {v4l2ctl}", postfix=postfix)
             for ctrl in v4l2ctl.split(","):
-                streamer_args += [f"--controls={ctrl.strip()}"]
+                streamer_args.append(f"--controls={ctrl.strip()}")
 
         # custom flags
-        streamer_args += self.parameters["custom_flags"].split()
+        streamer_args.extend(self.parameters["custom_flags"].split())
 
         venv_path = ""
         if "run.py" in self.binary_path:
-            venv_path = Spyglass.binary_paths[0] + "/.venv/bin/python3" + " "
-        cmd = venv_path + self.binary_path + " " + " ".join(streamer_args)
+            venv_path = f"{Spyglass.binary_paths[0]}/.venv/bin/python3 "
+        cmd = f"{venv_path}{self.binary_path} " + " ".join(streamer_args)
         log_pre = f"{self.keyword} "
 
         self.log_debug(f"Parameters: {' '.join(streamer_args)}", prefix=log_pre)

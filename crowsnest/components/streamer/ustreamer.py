@@ -42,35 +42,28 @@ class Ustreamer(Streamer):
             return None
 
         streamer_args = [
-            "--host",
-            host,
-            "--port",
-            str(port),
-            "--resolution",
-            str(res),
-            "--desired-fps",
-            str(fps),
+            f"--host {host}",
+            f"--port {port}",
+            f"--resolution {res}",
+            f"--desired-fps {fps}",
             # webroot & allow crossdomain requests
-            "--allow-origin",
-            "*",
-            "--static",
-            '"resources/ustreamer-www"',
+            "--allow-origin *",
+            '--static "resources/ustreamer-www"',
         ]
 
         if self._is_device_legacy():
-            streamer_args += [
-                "--format",
-                "MJPEG",
-                "--device-timeout",
-                "5",
-                "--buffers",
-                "3",
-            ]
+            streamer_args.extend(
+                [
+                    "--format MJPEG",
+                    "--device-timeout 5",
+                    "--buffers 3",
+                ]
+            )
             self._blockyfix()
         else:
-            streamer_args += ["--device", device, "--device-timeout", "2"]
+            streamer_args.extend([f"--device {device}", "--device-timeout 2"])
             if self.cam.has_mjpg_hw_encoder():
-                streamer_args += ["--format", "MJPEG", "--encoder", "HW"]
+                streamer_args.extend(["--format MJPEG", "--encoder HW"])
 
         v4l2ctl = self.parameters["v4l2ctl"]
         if v4l2ctl:

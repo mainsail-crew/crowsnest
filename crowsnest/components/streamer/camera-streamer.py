@@ -42,15 +42,15 @@ class Camera_Streamer(Streamer):
             self.log_warning(f"Make sure the camera is connected and working.")
 
         streamer_args = [
-            "--camera-path=" + device,
-            "--http-listen=" + host,
-            "--http-port=" + str(port),
-            "--camera-fps=" + str(fps),
-            "--camera-width=" + width,
-            "--camera-height=" + height,
-            "--camera-snapshot.height=" + height,
-            "--camera-video.height=" + height,
-            "--camera-stream.height=" + height,
+            f"--camera-path={device}",
+            f"--http-listen={host}",
+            f"--http-port={port}",
+            f"--camera-fps={fps}",
+            f"--camera-width={width}",
+            f"--camera-height={height}",
+            f"--camera-snapshot.height={height}",
+            f"--camera-video.height={height}",
+            f"--camera-stream.height={height}",
             "--camera-auto_reconnect=1",
         ]
 
@@ -60,19 +60,19 @@ class Camera_Streamer(Streamer):
             self.log_quiet(f"Handling done by {self.keyword}", postfix=postfix)
             self.log_quiet(f"Trying to set: {v4l2ctl}", postfix=postfix)
             for ctrl in v4l2ctl.split(","):
-                streamer_args += [f"--camera-options={ctrl.strip()}"]
+                streamer_args.append(f"--camera-options={ctrl.strip()}")
 
         if isinstance(cam, camera.Libcamera):
-            streamer_args += ["--camera-type=libcamera", "--camera-format=YUYV"]
+            streamer_args.extend(["--camera-type=libcamera", "--camera-format=YUYV"])
         elif isinstance(cam, (camera.UVC, camera.Legacy)):
-            streamer_args += ["--camera-type=v4l2"]
+            streamer_args.append("--camera-type=v4l2")
             if cam.has_mjpg_hw_encoder():
-                streamer_args += ["--camera-format=MJPEG"]
+                streamer_args.append("--camera-format=MJPEG")
 
         # custom flags
-        streamer_args += self.parameters["custom_flags"].split()
+        streamer_args.extend(self.parameters["custom_flags"].split())
 
-        cmd = self.binary_path + " " + " ".join(streamer_args)
+        cmd = f"{self.binary_path} " + " ".join(streamer_args)
         log_pre = f"{self.keyword} "
 
         self.log_debug(f"Parameters: {' '.join(streamer_args)}", prefix=log_pre)
