@@ -62,10 +62,8 @@ class Camera_Streamer(Streamer):
             for ctrl in v4l2ctl.split(","):
                 streamer_args += [f"--camera-options={ctrl.strip()}"]
 
-        # if device.startswith('/base') and 'i2c' in device:
         if isinstance(cam, camera.Libcamera):
             streamer_args += ["--camera-type=libcamera", "--camera-format=YUYV"]
-        # elif device.startswith('/dev/video') or device.startswith('/dev/v4l'):
         elif isinstance(cam, (camera.UVC, camera.Legacy)):
             streamer_args += ["--camera-type=v4l2"]
             if cam.has_mjpg_hw_encoder():
