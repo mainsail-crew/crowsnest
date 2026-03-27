@@ -52,10 +52,7 @@ class UVC(camera.Camera):
         return message[:-1]
 
     def has_mjpg_hw_encoder(self) -> bool:
-        for fmt in self.formats.keys():
-            if "Motion-JPEG" in fmt:
-                return True
-        return False
+        return any("Motion-JPEG" in fmt for fmt in self.formats.keys())
 
     def get_controls_string(self) -> str:
         message = ""
