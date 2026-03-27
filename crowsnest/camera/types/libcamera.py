@@ -27,26 +27,21 @@ class Libcamera(camera.Camera):
         except ImportError:
             return ctrls
 
-        def rectangle_to_tuple(rectangle):
-            return (rectangle.x, rectangle.y, rectangle.width, rectangle.height)
+        def parse_value(rectangle):
+            if isinstance(rectangle, Rectangle):
+                return (rectangle.x, rectangle.y, rectangle.width, rectangle.height)
+            return rectangle
 
         libcam_cm = CameraManager.singleton()
         cam = next((cam for cam in libcam_cm.cameras if cam.id == self.path), None)
         if cam is None:
             return ctrls
         for k, v in cam.controls.items():
-            if isinstance(v.min, Rectangle):
-                ctrls[k.name] = {
-                    "min": rectangle_to_tuple(v.min),
-                    "max": rectangle_to_tuple(v.max),
-                    "default": rectangle_to_tuple(v.default),
-                }
-            else:
-                ctrls[k.name] = {
-                    "min": v.min,
-                    "max": v.max,
-                    "default": v.default,
-                }
+            ctrls[k.name] = {
+                "min": parse_value(v.min),
+                "max": parse_value(v.max),
+                "default": parse_value(v.default),
+            }
         return ctrls
 
     def _get_formats(self, libcamera_output: str) -> list:
