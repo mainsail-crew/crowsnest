@@ -25,11 +25,12 @@ class Camera_Streamer(Streamer):
             self.log_warning("Mode 'camera-streamer' is not supported on Pi5/CM5!")
             self.log_warning(f"Please change the mode of this section.")
             return None
+
+        host = "127.0.0.1"
         if self.parameters["no_proxy"]:
             host = "0.0.0.0"
             self.log_info("Set to 'no_proxy' mode! Using 0.0.0.0!")
-        else:
-            host = "127.0.0.1"
+
         port = self.parameters["port"]
         width, height = self.parameters["resolution"]
 

@@ -20,11 +20,11 @@ class Spyglass(Streamer):
     binary_paths = ["bin/spyglass"]
 
     async def execute(self, lock: asyncio.Lock) -> asyncio.subprocess.Process:
+        host = "127.0.0.1"
         if self.parameters["no_proxy"]:
             host = "0.0.0.0"
             self.log_info("Set to 'no_proxy' mode! Using 0.0.0.0!")
-        else:
-            host = "127.0.0.1"
+
         port = self.parameters["port"]
         res = "x".join(self.parameters["resolution"])
         fps = self.parameters["max_fps"]
@@ -36,7 +36,7 @@ class Spyglass(Streamer):
 
         try:
             int(device)
-            device_option = "--camera_num"
+            device_option = "camera_num"
         except ValueError:
             device_option = "--device"
 

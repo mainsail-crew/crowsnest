@@ -24,11 +24,11 @@ class Ustreamer(Streamer):
     binary_paths = ["bin/ustreamer"]
 
     async def execute(self, lock: asyncio.Lock) -> Optional[asyncio.subprocess.Process]:
+        host = "127.0.0.1"
         if self.parameters["no_proxy"]:
             host = "0.0.0.0"
             self.log_info("Set to 'no_proxy' mode! Using 0.0.0.0!")
-        else:
-            host = "127.0.0.1"
+
         port = self.parameters["port"]
         res = "x".join(self.parameters["resolution"])
         fps = self.parameters["max_fps"]
