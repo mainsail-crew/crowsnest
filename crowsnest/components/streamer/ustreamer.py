@@ -70,7 +70,7 @@ class Ustreamer(Streamer):
             self._set_v4l2_ctrls(v4l2ctl.split(","))
 
         # custom flags
-        streamer_args += self.parameters["custom_flags"].split()
+        streamer_args.extend(self.parameters["custom_flags"].split())
 
         cmd = self.binary_path + " " + " ".join(streamer_args)
         log_pre = f"{self.keyword} "
@@ -87,11 +87,10 @@ class Ustreamer(Streamer):
             lock.release()
 
         await asyncio.sleep(0.5)
-        for ctl in v4l2ctl.split(","):
-            if "focus_absolute" in ctl:
-                focus_absolute = ctl.split("=")[1].strip()
-                self._brokenfocus(focus_absolute)
-                break
+        ctl = next((ctl for ctl in v4l2ctl.split(",") if "focus_absolute" in ctl), None)
+        if ctl is not None:
+            focus_absolute = ctl.split("=")[1].strip()
+            self._brokenfocus(focus_absolute)
 
         return process
 
