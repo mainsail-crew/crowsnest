@@ -134,15 +134,9 @@ def grep(path: str, search: str) -> str:
 
 
 def log_level_converter(log_level: str) -> str:
-    log_level = log_level.lower()
-    if log_level == "quiet":
-        return "QUIET"
-    elif log_level == "debug":
-        return "DEBUG"
-    elif log_level == "dev":
-        return "DEV"
-    else:
-        return "INFO"
+    if log_level.lower() in ["quiet", "debug", "dev"]:
+        return log_level.upper()
+    return "INFO"
 
 
 def resolution_converter(resolution: str) -> tuple[str, str]:
