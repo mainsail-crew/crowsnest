@@ -128,7 +128,7 @@ def check_uptime_and_sleep(sleep_time):
 async def main():
     parser = argparse.ArgumentParser(
         prog="Crowsnest",
-        description="Crowsnest - A webcam daemon for Raspberry Pi OS distributions like MainsailOS",
+        description="Crowsnest - A webcam daemon for Debian based distributions",
     )
     config = configparser.ConfigParser(
         inline_comment_prefixes="#",
