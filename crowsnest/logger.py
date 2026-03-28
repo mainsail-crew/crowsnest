@@ -26,7 +26,6 @@ def setup_logging(log_path, filemode="a", log_level=logging.INFO):
     # Create log directory if it does not exist.
     os.makedirs(os.path.dirname(log_path), exist_ok=True)
 
-    # Change DEBUG to DEB and add custom logging level.
     logging.addLevelName(DEV, "DEV")
     logging.addLevelName(DEBUG, "DEBUG")
     logging.addLevelName(QUIET, "QUIET")
@@ -37,7 +36,6 @@ def setup_logging(log_path, filemode="a", log_level=logging.INFO):
     )
 
     # WatchedFileHandler for log file. This handler will reopen the file if it is moved or deleted.
-    # filehandler = logging.handlers.WatchedFileHandler(log_path, mode=filemode, encoding='utf-8')
     filehandler = logging.handlers.RotatingFileHandler(
         log_path,
         mode=filemode,
