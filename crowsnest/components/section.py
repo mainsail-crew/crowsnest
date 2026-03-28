@@ -60,21 +60,24 @@ class Section(ABC):
 
     def __getattr__(self, name):
         """Dynamically handle log method calls (e.g., log_info, log_debug)."""
-        if name.startswith("log_"):
-            log_function = getattr(logger, name, None)
+        if not name.startswith("log_"):
+            raise AttributeError(
+                f"'{type(self).__name__}' object has no attribute '{name}'"
+            )
 
-            if callable(log_function):
+        log_function = getattr(logger, name, None)
 
-                @functools.wraps(log_function)
-                def log_wrapper(msg, prefix="", postfix=""):
-                    formatted_msg = f"{prefix}{self.section}{postfix}: {msg}"
-                    log_function(formatted_msg)
+        if not callable(log_function):
+            raise AttributeError(
+                f"'{type(self).__name__}' object has no attribute '{name}'"
+            )
 
-                return log_wrapper
+        @functools.wraps(log_function)
+        def log_wrapper(msg, prefix="", postfix=""):
+            formatted_msg = f"{prefix}{self.section}{postfix}: {msg}"
+            log_function(formatted_msg)
 
-        raise AttributeError(
-            f"'{type(self).__name__}' object has no attribute '{name}'"
-        )
+        return log_wrapper
 
     def log_multiline(self, msg, log_func, prefix="", postfix="", *args):
         logger.log_multiline(
