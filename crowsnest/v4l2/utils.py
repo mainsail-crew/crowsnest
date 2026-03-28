@@ -19,7 +19,7 @@ from . import constants, raw
 def ioctl_safe(fd: int, request: int, arg: ctypes.Structure) -> int:
     try:
         return fcntl.ioctl(fd, request, arg)
-    except OSError as e:
+    except OSError:
         return -1
 
 
@@ -38,14 +38,9 @@ def ioctl_iter(
             fcntl.ioctl(fd, cmd, struct)
             yield struct
         except OSError as e:
-            if e.errno == errno.EINVAL:
-                if ignore_einval:
-                    continue
-                break
-            elif e.errno in (errno.ENOTTY, errno.ENODATA, errno.EIO):
-                break
-            else:
-                break
+            if e.errno == errno.EINVAL and ignore_einval:
+                continue
+            break
 
 
 def v4l2_ctrl_type_to_string(ctrl_type: int) -> str:

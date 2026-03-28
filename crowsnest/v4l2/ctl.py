@@ -135,7 +135,8 @@ def get_query_controls(device_path: str) -> dict[str, raw.v4l2_ext_control]:
 
 def get_dev_ctl(device_path: str) -> Optional[dict]:
     if device_path not in dev_ctls:
-        if not init_device(device_path):
+        init_successfull = init_device(device_path)
+        if not init_successfull:
             return None
     return dev_ctls[device_path]
 
@@ -152,11 +153,13 @@ def get_dev_path_by_name(name: str) -> str:
     """
     prefix = "video"
     for dev in os.listdir("/dev"):
-        if dev.startswith(prefix) and dev[len(prefix) :].isdigit():
-            path = f"/dev/{dev}"
-            card = get_camera_capabilities(path).get("card", "")
-            if name in card:
-                return path
+        is_video_device = dev.startswith(prefix) and dev[len(prefix) :].isdigit()
+        if not is_video_device:
+            continue
+        path = f"/dev/{dev}"
+        card = get_camera_capabilities(path).get("card", "")
+        if name in card:
+            return path
     return ""
 
 
@@ -224,7 +227,6 @@ def set_control(device_path: str, control: str, value: int) -> bool:
 def set_control_with_qc(
     device_path: str, qc: raw.v4l2_query_ext_ctrl, value: int
 ) -> bool:
-    success = False
     fd = None
     try:
         fd = os.open(device_path, os.O_RDWR)
@@ -232,14 +234,13 @@ def set_control_with_qc(
         ctrl.id = qc.id
         ctrl.value = value
         if utils.ioctl_safe(fd, raw.VIDIOC_S_CTRL, ctrl) != -1:
-            success = True
-        return success
+            return True
     except FileNotFoundError:
         pass
     finally:
         if fd is not None:
             os.close(fd)
-    return success
+    return False
 
 
 def get_formats(device_path: str) -> dict:
