@@ -83,7 +83,7 @@ def load_all_streamers() -> None:
         streamer_name = streamer_file.strip(".py")
         try:
             tup = utils.load_streamer(
-                streamer_name, path=streamer_path.replace("/", ".")
+                streamer_name, path="crowsnest.components.streamer"
             )
             if tup is None:
                 continue
