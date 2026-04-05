@@ -35,7 +35,6 @@ def setup_logging(log_path, filemode="a", log_level=logging.INFO):
         "[%(asctime)s] %(message)s", datefmt="%d/%m/%y %H:%M:%S"
     )
 
-    # WatchedFileHandler for log file. This handler will reopen the file if it is moved or deleted.
     filehandler = logging.handlers.RotatingFileHandler(
         log_path,
         mode=filemode,
