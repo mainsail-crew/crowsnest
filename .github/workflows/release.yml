@@ -10,7 +10,6 @@ on:
 
 jobs:
   update-default-branch:
-    needs: ['push-version-number']
     runs-on: ubuntu-latest
     steps:
       - name: Checkout master
