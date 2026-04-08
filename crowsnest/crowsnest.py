@@ -15,6 +15,7 @@ import configparser
 import signal
 import time
 import traceback
+from logging.handlers import RotatingFileHandler
 
 from crowsnest import logger, logging_helper, utils, watchdog
 from crowsnest.components.crowsnest import Crowsnest
@@ -166,8 +167,11 @@ async def main():
         logger.log_error("Something went terribly wrong!")
         exit(1)
 
-    if crowsnest.parameters["delete_log"]:
+    if crowsnest.parameters["rollover_on_start"]:
         logger.logger.handlers.clear()
+        for h in logger.logger.handlers:
+            if isinstance(h, RotatingFileHandler):
+                h.doRollover()
         logger.setup_logging(args.log_path, "w")
         logging_helper.log_initial()
 

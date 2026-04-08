@@ -24,7 +24,7 @@ class Crowsnest(Section):
         self.parameters.update(
             {
                 "log_level": section.getloglevel("log_level", "INFO"),
-                "delete_log": section.getboolean("delete_log", False),
+                "rollover_on_start": section.getboolean("rollover_on_start", False),
                 "no_proxy": section.getboolean("no_proxy", False),
             }
         )
