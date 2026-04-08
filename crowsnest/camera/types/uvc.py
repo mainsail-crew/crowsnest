@@ -35,9 +35,7 @@ class UVC(camera.Camera):
                 cur_sec = name
                 self.control_values[cur_sec] = {}
                 continue
-            self.control_values[cur_sec][name] = v4l2.ctl.parse_qc_of_path(
-                self.path, qc
-            )
+            self.control_values[cur_sec][name] = parsed_qc
         self.formats = v4l2.ctl.get_formats(self.path)
 
     def get_formats_string(self) -> str:
