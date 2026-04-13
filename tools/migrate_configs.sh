@@ -131,7 +131,7 @@ migrate_crudini() {
     crudini --del "${moonraker_cfg}" "update_manager crowsnest"
 
     log_info "Migrate delete_log option with sed..."
-    sed -i -E 's/(delete_log:)[[:space:]]*([^ #]*)[[:space:]]*(#.*)*/rollover_on_start: \2 # Creates a backup and clears the log on every restart, if set to true/' "${cfg}"
+    sed -i -E 's/(delete_log:)[[:space:]]*([^ #]*)[[:space:]]*(#.*)*/rollover_on_start: \2 # Creates a backup and clears the log on every restart, if set to true/' "${crowsnest_cfg}"
 }
 
 cleanup_legacy_comments() {
