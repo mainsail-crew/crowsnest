@@ -177,19 +177,6 @@ remove_log_files() {
     fi
 }
 
-remove_logrotate() {
-    local logrotate_conf
-    logrotate_conf="/etc/logrotate.d/crowsnest"
-    if [[ ! -f "${logrotate_conf}" ]]; then
-        status_msg "Removing Logrotate Rule ..." "2"
-        msg "\t==> File does not exist!"
-        return 0
-    fi
-    if [[ -f "${logrotate_conf}" ]]; then
-        sudo rm -f /etc/logrotate.d/crowsnest || return 1
-    fi
-}
-
 get_path() {
     local cn_base_path
     cn_base_path="$(
@@ -253,12 +240,6 @@ main() {
     remove_service_file
 
     remove_env_file
-
-    if remove_logrotate; then
-        status_msg "Removing Logrotate Rule ..." "0"
-    else
-        status_msg "Removing Logrotate Rule ..." "1"
-    fi
 
     remove_log_files
 
