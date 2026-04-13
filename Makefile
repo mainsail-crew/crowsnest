@@ -35,7 +35,7 @@ help: ## Shows this help
 
 update: ## Update crowsnest (fetches and pulls repository changes)
 	@git fetch && git pull
-	@bash -c 'tools/libs/manage_apps.sh --reinstall'
+	@sudo bash -c 'tools/libs/manage_apps.sh --reinstall'
 
 report: ## Generate report.txt
 	@if [ -f ~/report.txt ]; then rm -f ~/report.txt; fi
