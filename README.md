@@ -37,7 +37,7 @@ So, this will be the 'lookout point' for your printer.
 
 ## Support
 
-Please read carefully on [how to configure](https://crowsnest.mainsail.xyz/) crowsnest to your needs! Check out the [FAQ](https://crowsnest.mainsail.xyz/) section for first aid or join our [Discord](https://discord.gg/mainsail) server if you need further help. For some topics that are not covered in the documentation, just read below.
+Please read carefully on [how to configure](https://docs.mainsail.xyz/crowsnest/configuration/cam-section/) crowsnest to your needs! Check out the [help](https://docs.mainsail.xyz/getting-help/) section for first aid or join our [Discord](https://discord.gg/mainsail) server if you need further help. For some topics that are not covered in the documentation, just read below.
 
 _**PS: Do not open issues that are based on misconfiguration! This makes it harder for me to keep track of problems in my code.**_
 
@@ -45,10 +45,9 @@ _**PS: Do not open issues that are based on misconfiguration! This makes it hard
 
 ## Documentation
 
-We have decided to move crowsnest's documentation to a new location.\
-Please go to [https://crowsnest.mainsail.xyz/](https://crowsnest.mainsail.xyz/)
+You can find our docs at [https://docs.mainsail.xyz/crowsnest/](https://docs.mainsail.xyz/crowsnest/)
 
-If there is something in our documentation that is not covered, is described in a way that is misunderstood, or simply is missing, please let us know!
+If there is something in our documentation that is not covered, is described in a way that is misunderstood, or simply is missing, please let us know [here](https://github.com/mainsail-crew/docs/)!
 
 ---
 
@@ -106,7 +105,7 @@ The Raspberry Pi 5 has only [ustreamer](https://github.com/pikvm/ustreamer) supp
 
 ## How to support us
 
-Buy [KwadFan](https://github.com/KwadFan) a coffee at [ko-fi.com](https://ko-fi.com/KwadFan) or [support the mainsail project](https://docs.mainsail.xyz/about/sponsors#support-mainsail)
+Buy [KwadFan](https://github.com/KwadFan) a coffee at [ko-fi.com](https://ko-fi.com/KwadFan) or [support the mainsail project](https://docs.mainsail.xyz/sponsors/)
 
 Please consider hitting the :star: button in the upper right hand corner to show some love for this project.
 
@@ -121,7 +120,7 @@ Please see [README.md](./custompios/README.md) in the module folder for more inf
 
 ## What 'Backends' does crowsnest use?
 
-Please see the according [FAQ](https://crowsnest.mainsail.xyz/faq/backends-from-crowsnest) section in our documentation.
+Please see the according [backends](https://docs.mainsail.xyz/crowsnest/faq/backends/) section in our documentation.
 
 ---
 
