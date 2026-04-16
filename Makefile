@@ -45,6 +45,7 @@ update: ## Update crowsnest (fetches and pulls repository changes)
 	${MAKE} build
 
 upgrade: ## Upgrade crowsnest from v4 to v5
+	@sudo -v || (printf "Sudo privileges required for upgrade\n" && exit 1)
 	@printf "Backup crowsnest.conf and moonraker.conf, then migrate them ...\n"
 	@MIGRATED_PATH="$$(bash -c 'tools/migrate_configs.sh')"; \
 	if [ -n "$$MIGRATED_PATH" ]; then \
