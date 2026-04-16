@@ -62,7 +62,7 @@ find_config() {
         base_user="$(whoami)"
     fi
     local user_home
-    user_home=$(eval echo "~${base_user}")
+    user_home="/home/${base_user}"
 
     local found_config
     found_config=$(find "${user_home}" -maxdepth 4 -type d -name "crowsnest" -prune -o -type f -name "${CROWSNEST_CFG_NAME}" -print | head -n 1)
