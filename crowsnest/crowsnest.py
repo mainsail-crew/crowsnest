@@ -168,11 +168,9 @@ async def main():
         exit(1)
 
     if crowsnest.parameters["rollover_on_start"]:
-        logger.logger.handlers.clear()
         for h in logger.logger.handlers:
             if isinstance(h, RotatingFileHandler):
                 h.doRollover()
-        logger.setup_logging(args.log_path, "w")
         logging_helper.log_initial()
 
     logger.set_log_level(crowsnest.parameters["log_level"])
