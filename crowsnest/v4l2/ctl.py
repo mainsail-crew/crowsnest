@@ -68,7 +68,7 @@ def parse_qc_of_path(device_path: str, qc: raw.v4l2_query_ext_ctrl) -> dict:
         fd = os.open(device_path, os.O_RDWR)
         controls = parse_qc(fd, qc)
         return controls
-    except FileNotFoundError:
+    except OSError:
         return {}
     finally:
         if fd is not None:
@@ -98,7 +98,7 @@ def init_device(device_path: str) -> bool:
             }
             qc.id |= next_fl
         return True
-    except FileNotFoundError:
+    except OSError:
         return False
     finally:
         if fd is not None:
@@ -126,7 +126,7 @@ def get_query_controls(device_path: str) -> dict[str, raw.v4l2_ext_control]:
             query_controls[name] = copy.deepcopy(qc)
             qc.id |= next_fl
         return query_controls
-    except FileNotFoundError:
+    except OSError:
         return {}
     finally:
         if fd is not None:
@@ -180,7 +180,7 @@ def get_camera_capabilities(device_path: str) -> dict:
             "capabilities": cap.capabilities,
         }
         return cap_dict
-    except FileNotFoundError:
+    except OSError:
         return {}
     finally:
         if fd is not None:
@@ -208,7 +208,7 @@ def get_control_cur_value_with_qc(
         ctrl.id = qc.id
         utils.ioctl_safe(fd, raw.VIDIOC_G_CTRL, ctrl)
         return ctrl.value
-    except FileNotFoundError:
+    except OSError:
         return None
     finally:
         if fd is not None:
@@ -235,7 +235,7 @@ def set_control_with_qc(
         ctrl.value = value
         if utils.ioctl_safe(fd, raw.VIDIOC_S_CTRL, ctrl) != -1:
             return True
-    except FileNotFoundError:
+    except OSError:
         pass
     finally:
         if fd is not None:
@@ -274,7 +274,7 @@ def get_formats(device_path: str) -> dict:
                 ):
                     formats[format_str][size_str].append(utils.frmival_to_str(interval))
         return formats
-    except FileNotFoundError:
+    except OSError:
         return {}
     finally:
         if fd is not None:
