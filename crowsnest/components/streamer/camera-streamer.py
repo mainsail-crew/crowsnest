@@ -11,7 +11,9 @@ import asyncio
 from configparser import SectionProxy
 from typing import Optional
 
-from ... import camera, logger, utils
+from crowsnest import logging_helper
+
+from ... import camera, utils
 from .streamer import Streamer
 
 
@@ -38,8 +40,8 @@ class Camera_Streamer(Streamer):
         device = self.parameters["device"]
         cam = camera.camera_manager.get_cam_by_path(device)
         if cam is None:
-            self.log_warning(f"Device '{device}' not found in discovered cameras.")
-            self.log_warning(f"Make sure the camera is connected and working.")
+            logging_helper.log_camera_not_found(self)
+            return None
 
         streamer_args = [
             f"--camera-path={device}",

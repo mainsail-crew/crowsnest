@@ -12,6 +12,7 @@ import re
 from configparser import SectionProxy
 from typing import Optional
 
+from crowsnest import logging_helper
 from crowsnest.camera.types.uvc import UVC
 
 from ... import camera, logger, utils
@@ -35,10 +36,7 @@ class Ustreamer(Streamer):
         device = self.parameters["device"]
         self.cam = camera.camera_manager.get_cam_by_path(device)
         if not isinstance(self.cam, UVC):
-            self.log_warning(
-                "Wrong camera type or device not found. Make sure the device path "
-                "is correct and points to a camera supported by ustreamer!"
-            )
+            logging_helper.log_camera_not_found(self, wrong_cam_type=True)
             return None
 
         streamer_args = [

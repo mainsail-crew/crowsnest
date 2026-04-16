@@ -9,6 +9,10 @@
 
 import asyncio
 from configparser import SectionProxy
+from typing import Optional
+
+from crowsnest import logging_helper
+from crowsnest.camera.types.libcamera import Libcamera
 
 from ... import camera, utils
 from .streamer import Streamer
@@ -19,7 +23,7 @@ class Spyglass(Streamer):
     binary_names = ["run.py", "spyglass"]
     binary_paths = ["bin/spyglass"]
 
-    async def execute(self, lock: asyncio.Lock) -> asyncio.subprocess.Process:
+    async def execute(self, lock: asyncio.Lock) -> Optional[asyncio.subprocess.Process]:
         host = "127.0.0.1"
         if self.parameters["no_proxy"]:
             host = "0.0.0.0"
@@ -30,9 +34,9 @@ class Spyglass(Streamer):
         fps = self.parameters["max_fps"]
         device = self.parameters["device"]
         cam = camera.camera_manager.get_cam_by_path(device)
-        if cam is None:
-            self.log_warning(f"Device '{device}' not found in discovered cameras.")
-            self.log_warning(f"Make sure the camera is connected and working.")
+        if not isinstance(cam, Libcamera):
+            logging_helper.log_camera_not_found(self, wrong_cam_type=True)
+            return None
 
         try:
             int(device)

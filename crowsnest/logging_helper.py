@@ -172,3 +172,14 @@ def log_camera_ctrls(cam: camera.Camera) -> None:
     logger.log_multiline(
         cam.get_controls_string(), logger.log_info_silent, logger.indentation
     )
+
+
+def log_camera_not_found(streamer: Streamer, wrong_cam_type: bool = False):
+    if wrong_cam_type:
+        first_sentence = "Wrong camera type or device not found."
+    else:
+        first_sentence = "Device not found."
+    streamer.log_warning(
+        f"{first_sentence} Make sure the device path is correct "
+        f"and points to a camera supported by {streamer.keyword}!"
+    )
