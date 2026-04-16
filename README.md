@@ -36,7 +36,7 @@ So, this will be the 'lookout point' for your printer.
 
 ## Support
 
-Please read carefully on [how to configure](https://crowsnest.mainsail.xyz/) crowsnest to your needs! Check out the [FAQ](https://crowsnest.mainsail.xyz/) section for first aid or join our [Discord](https://discord.gg/mainsail) server if you need further help. For some topics that are not covered in the documentation, just read below.
+Please read carefully on [how to configure](https://docs.mainsail.xyz/crowsnest/configuration/cam-section/) crowsnest to your needs! Check out the [help](https://docs.mainsail.xyz/getting-help/) section for first aid or join our [Discord](https://discord.gg/mainsail) server if you need further help. For some topics that are not covered in the documentation, just read below.
 
 _**PS: Do not open issues that are based on misconfiguration! The issue tracker is only there to track actual bugs in the code and feature requests.**_
 
@@ -44,9 +44,9 @@ _**PS: Do not open issues that are based on misconfiguration! The issue tracker 
 
 ## Documentation
 
-The crowsnest's documentation can be found at [https://crowsnest.mainsail.xyz/](https://crowsnest.mainsail.xyz/)
+You can find our docs at [https://docs.mainsail.xyz/crowsnest/](https://docs.mainsail.xyz/crowsnest/)
 
-If there is something in our documentation that is not covered, is described in a way that is misunderstood, or simply is missing, please let us know!
+If there is something in our documentation that is not covered, is described in a way that is misunderstood, or simply is missing, please let us know [here](https://github.com/mainsail-crew/docs/)!
 
 ---
 
@@ -72,7 +72,7 @@ Non Debian based images are not officially supported and never will be.
 
 ## How to support us
 
-[Support the mainsail project](https://docs.mainsail.xyz/about/sponsors#support-mainsail)
+[Support the mainsail project](https://docs.mainsail.xyz/sponsors)
 
 Please consider hitting the :star: button in the upper right hand corner to show some love for this project.
 
@@ -80,7 +80,7 @@ Please consider hitting the :star: button in the upper right hand corner to show
 
 ## What 'Backends' does crowsnest use?
 
-Please see the according [FAQ](https://crowsnest.mainsail.xyz/faq/backends) section in our documentation.
+Please see the according [backends](https://docs.mainsail.xyz/crowsnest/faq/backends/) section in our documentation.
 
 ---
 
