@@ -43,7 +43,6 @@ def initial_parse_config(config_path, config):
 
 
 async def start_sections(config):
-    global sect_exec_tasks
     sect_objs = []
     sect_exec_tasks = set()
 
