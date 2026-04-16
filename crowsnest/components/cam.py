@@ -62,6 +62,8 @@ class Cam(Section):
             self.log_multiline(traceback.format_exc().strip(), logger.log_error)
             self.log_error(f"Start of {self.parameters['mode']} failed!")
         finally:
+            if self.streamer.parameters["device"] in watchdog.configured_devices:
+                watchdog.configured_devices.remove(self.streamer.parameters["device"])
             watchdog.configured_devices.remove(self.streamer.parameters["device"])
             if lock.locked():
                 lock.release()
