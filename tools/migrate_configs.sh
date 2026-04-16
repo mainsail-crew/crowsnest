@@ -88,7 +88,6 @@ backup_config() {
 
 migrate_crudini() {
     local crowsnest_cfg="$1"
-    local moonraker_cfg="$2"
     local val
 
     log_info "Using crudini for migration..."
