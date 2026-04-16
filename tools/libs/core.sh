@@ -55,7 +55,7 @@ install_service_file() {
         rm -f "${target_dir}/crowsnest.service"
     fi
     cp -f "${service_file}" "${target_dir}"
-    sed -i 's|%USER%|'"${BASE_USER}"'|g;s|%ENV%|'"${CROWSNEST_ENV_PATH}/crowsnest.env"'|g;s|%PYTHON_VENV%|'"${VENV}"'|g' \
+    sed -i 's|%USER%|'"${BASE_USER}"'|g;s|%ENV%|'"${CROWSNEST_ENV_PATH}/crowsnest.env"'|g;s|%PYTHON_VENV%|'"${CROWSNEST_VENV_PATH}"'|g' \
     "${target_dir}/crowsnest.service"
     [[ -f "${target_dir}/crowsnest.service" ]] &&
     grep -q "${BASE_USER}" "${target_dir}/crowsnest.service" || return 1
