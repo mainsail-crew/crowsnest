@@ -80,7 +80,7 @@ def load_all_streamers() -> None:
         if isfile(join(streamer_path, f)) and f.endswith(".py")
     ]
     for streamer_file in streamer_files:
-        streamer_name = streamer_file.strip(".py")
+        streamer_name = streamer_file.removesuffix(".py")
         try:
             tup = utils.load_streamer(
                 streamer_name, path="crowsnest.components.streamer"
