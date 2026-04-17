@@ -31,6 +31,9 @@ add_update_entry() {
         if [[ -f "/tmp/moonraker.conf" ]]; then
             sudo rm -f /tmp/moonraker.conf
         fi
+        if [[ $(tail -c1 "${moonraker_conf}" | wc -l) -eq 0 ]]; then
+            echo "" >> "${moonraker_conf}"
+        fi
         sudo -u "${BASE_USER}" \
         cp "${moonraker_conf}" "${moonraker_conf}.backup" &&
         cat "${moonraker_conf}" "${moonraker_update}" > /tmp/moonraker.conf &&

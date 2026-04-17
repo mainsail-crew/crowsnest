@@ -20,91 +20,16 @@ set -Ee
 # set -x
 
 ## Funcs
-get_os_version() {
-    if [[ -n "${1}" ]]; then
-        grep -c "${1}" /etc/os-release &> /dev/null && echo "1" || echo "0"
-    fi
-}
-
 get_host_arch() {
     uname -m
 }
 
-test_load_module() {
-    if modprobe -n "${1}" &> /dev/null; then
-        echo 1
-    else
-        echo 0
-    fi
-}
-
-shallow_cs_dependencies_check() {
-    msg "Checking for camera-streamer dependencies ...\n"
-
-    msg "Checking if device is a Raspberry Pi ...\n"
-    if [[ "$(is_raspberry_pi)" = "0" ]]; then
-        status_msg "Checking if device is a Raspberry Pi ..." "3"
-        msg "This device is not a Raspberry Pi therefore camera-streamer cannot be installed ..."
-        return 1
-    fi
-    status_msg "Checking if device is a Raspberry Pi ..." "0"
-
-    msg "Checking if device is not a Raspberry Pi 5 ...\n"
-    if [[ "$(is_pi5)" = "1" ]]; then
-        status_msg "Checking if device is not a Raspberry Pi 5 ..." "3"
-        msg "This device is a Raspberry Pi 5 therefore camera-streamer cannot be installed ..."
-        return 1
-    fi
-    status_msg "Checking if device is not a Raspberry Pi 5 ..." "0"
-
-    msg "Checking for required kernel module ...\n"
-    SHALLOW_CHECK_MODULESLIST="bcm2835_codec"
-    if [[ "$(test_load_module ${SHALLOW_CHECK_MODULESLIST})" = "0" ]]; then
-        status_msg "Checking for required kernel module ..." "3"
-        msg "Not all required kernel modules for camera-streamer can be loaded ..."
-        return 1
-    fi
-    status_msg "Checking for required kernel module ..." "0"
-
-    msg "Checking for required packages ...\n"
-    # Update the number below if you update SHALLOW_CHECK_PKGLIST
-    SHALLOW_CHECK_PKGLIST="^(libavformat-dev|libavutil-dev|libavcodec-dev|liblivemedia-dev|libcamera-dev|libcamera-apps-lite)$"
-    if [[ $(apt-cache search --names-only "${SHALLOW_CHECK_PKGLIST}" | wc -l) -lt 6 ]]; then
-        status_msg "Checking for required packages ..." "3"
-        msg "Not all required packages for camera-streamer can be installed ..."
-        return 1
-    fi
-    status_msg "Checking for required packages ..." "0"
-
-    status_msg "Checking for camera-streamer dependencies ..." "0"
-    return 0
-}
-
-link_pkglist_rpi() {
-    sudo -u "${BASE_USER}" ln -sf "${SRC_DIR}/libs/pkglist-rpi.sh" "${SRC_DIR}/pkglist.sh" &> /dev/null || return 1
-}
-
-link_pkglist_generic() {
-    sudo -u "${BASE_USER}" ln -sf "${SRC_DIR}/libs/pkglist-generic.sh" "${SRC_DIR}/pkglist.sh" &> /dev/null || return 1
-}
-
-run_apt_update() {
-    apt-get -q --allow-releaseinfo-change update
-}
-
-source_pkglist_file() {
-    # shellcheck disable=SC1091
-    . "${SRC_DIR}/pkglist.sh"
-}
-
 install_dependencies() {
-    local dep
-    local -a pkg
-    pkg=()
-    for dep in ${PKGLIST}; do
-        pkg+=("${dep}")
-    done
-    apt-get --yes --no-install-recommends install "${pkg[@]}" || return 1
+    local pkgs=("${PKGLIST[@]}")
+    if [[ "$(use_pi_specifics)" = "1" ]]; then
+        pkgs+=("${PKGLIST_PI[@]}")
+    fi
+    apt-get --yes --no-install-recommends install "${pkgs[@]}" || return 1
 }
 
 create_filestructure() {
@@ -115,27 +40,10 @@ create_filestructure() {
             else
                 status_msg "Created ${dir} ..." "1"
             fi
-        fi
-        if [[ -d "${dir}" ]]; then
+        else
             msg "Directory ${dir} already exists ..." "0"
         fi
     done || return 1
-}
-
-link_main_executable() {
-    local crowsnest_main_bin_path crowsnest_src_bin_path
-    crowsnest_main_bin_path="/usr/local/bin"
-    crowsnest_src_bin_path="${PWD}/crowsnest"
-
-    if [[ -f "${crowsnest_main_bin_path}/crowsnest" ]]; then
-        rm -f "${crowsnest_main_bin_path}/crowsnest"
-    fi
-    if [[ -f "${crowsnest_src_bin_path}" ]]; then
-        ln -sf "${crowsnest_src_bin_path}" "${crowsnest_main_bin_path}"
-    else
-        msg "File ${crowsnest_src_bin_path} does not exist!"
-        return 1
-    fi
 }
 
 install_service_file() {
@@ -147,19 +55,10 @@ install_service_file() {
         rm -f "${target_dir}/crowsnest.service"
     fi
     cp -f "${service_file}" "${target_dir}"
-    sed -i 's|%USER%|'"${BASE_USER}"'|g;s|%ENV%|'"${CROWSNEST_ENV_PATH}/crowsnest.env"'|g' \
+    sed -i 's|%USER%|'"${BASE_USER}"'|g;s|%ENV%|'"${CROWSNEST_ENV_PATH}/crowsnest.env"'|g;s|%PYTHON_VENV%|'"${CROWSNEST_VENV_PATH}"'|g' \
     "${target_dir}/crowsnest.service"
     [[ -f "${target_dir}/crowsnest.service" ]] &&
     grep -q "${BASE_USER}" "${target_dir}/crowsnest.service" || return 1
-}
-
-add_sleep_to_crowsnest_env() {
-    local service_file
-    env_file="${CROWSNEST_ENV_PATH}/crowsnest.env"
-
-    if [[ -f "${env_file}" ]]; then
-        sed -i 's/\(CROWSNEST_ARGS="[^"]*\)"/\1 -s"/' "${env_file}"
-    fi
 }
 
 install_env_file() {
@@ -168,18 +67,9 @@ install_env_file() {
     env_target="${CROWSNEST_ENV_PATH}/crowsnest.env"
     sudo -u "${BASE_USER}" cp -f "${env_file}" "${env_target}"
     sed -i "s|%CONFPATH%|${CROWSNEST_CONFIG_PATH}|" "${env_target}"
+    sed -i "s|%LOGPATH%|${CROWSNEST_LOG_PATH}|" "${env_target}"
     [[ -f "${env_target}" ]] &&
-    grep -q "${CROWSNEST_CONFIG_PATH}" "${env_target}" || return 1
-}
-
-install_logrotate_conf() {
-    local logrotatefile logpath
-    logrotatefile="${PWD}/resources/logrotate_crowsnest"
-    logpath="${CROWSNEST_LOG_PATH}/crowsnest.log"
-    cp -rf "${logrotatefile}" /etc/logrotate.d/crowsnest
-    sed -i "s|%LOGPATH%|${logpath}|g" /etc/logrotate.d/crowsnest
-    [[ -f "/etc/logrotate.d/crowsnest" ]] &&
-    grep -q "${logpath}" "/etc/logrotate.d/crowsnest" || return 1
+    grep -q "${CROWSNEST_CONFIG_PATH}" "${env_target}" && grep -q "${CROWSNEST_LOG_PATH}" "${env_target}" || return 1
 }
 
 backup_crowsnest_conf() {
@@ -195,12 +85,9 @@ backup_crowsnest_conf() {
 install_crowsnest_conf() {
     local conf_template
     conf_template="${PWD}/resources/crowsnest.conf"
-    logpath="${CROWSNEST_LOG_PATH}/crowsnest.log"
     backup_crowsnest_conf
     sudo -u "${BASE_USER}" cp -rf "${conf_template}" "${CROWSNEST_CONFIG_PATH}"
-    sed -i "s|%LOGPATH%|${logpath}|g" "${CROWSNEST_CONFIG_PATH}/crowsnest.conf"
-    [[ -f "${CROWSNEST_CONFIG_PATH}/crowsnest.conf" ]] &&
-    grep -q "${logpath}" "${CROWSNEST_CONFIG_PATH}/crowsnest.conf" || return 1
+    [[ -f "${CROWSNEST_CONFIG_PATH}/crowsnest.conf" ]] || return 1
 }
 
 enable_service() {

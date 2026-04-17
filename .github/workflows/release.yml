@@ -9,26 +9,34 @@ on:
         required: true
 
 jobs:
-  update-master-branch:
+  update-default-branch:
     runs-on: ubuntu-latest
     steps:
-      - uses: everlytic/branch-merge@1.1.5
+      - name: Checkout master
+        uses: actions/checkout@v6
         with:
-          github_token: ${{ secrets.PAT }}
-          source_ref: 'develop'
-          target_branch: 'master'
-          commit_message_template: '[Automated] Merged {source_ref} into target {target_branch}'
+          ref: 'v5'
+          token: ${{ secrets.PAT }}
+          fetch-depth: 0
+
+      - name: Fast-forward merge from develop
+        shell: bash
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git merge --ff-only origin/develop
+          git push origin v5
 
   release:
-    needs: [ 'update-master-branch' ]
+    needs: [ 'update-default-branch' ]
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
       - name: Fetch repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
-          ref: 'master'
+          ref: 'v5'
           fetch-depth: 0
 
       - name: Get latest tag
@@ -58,9 +66,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
-          ref: 'master'
+          ref: 'v5'
           token: ${{ secrets.PAT }}
           fetch-depth: 0
 
@@ -78,14 +86,26 @@ jobs:
         env:
           OUTPUT: ${{ github.workspace }}/CHANGELOG.md
 
-      - uses: stefanzweifel/git-auto-commit-action@v4
+      - uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_message: 'docs(changelog): update changelog'
           file_pattern: CHANGELOG.md
 
-      - uses: everlytic/branch-merge@1.1.5
+  update-develop-branch:
+    needs: ['update-changelog']
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout master
+        uses: actions/checkout@v6
         with:
-          github_token: ${{ secrets.PAT }}
-          source_ref: 'master'
-          target_branch: 'develop'
-          commit_message_template: '[Automated] Merged {source_ref} into target {target_branch}'
+          ref: 'develop'
+          token: ${{ secrets.PAT }}
+          fetch-depth: 0
+
+      - name: Fast-forward merge from v5
+        shell: bash
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git merge --ff-only origin/v5
+          git push origin develop

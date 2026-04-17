@@ -25,11 +25,10 @@ CN_CONFIG_ROOTPATH="/home/${CN_CONFIG_USER}/printer_data"
 CN_CONFIG_CONFIGPATH="${CN_CONFIG_ROOTPATH}/config"
 CN_CONFIG_LOGPATH="${CN_CONFIG_ROOTPATH}/logs"
 CN_CONFIG_ENVPATH="${CN_CONFIG_ROOTPATH}/systemd"
+CN_PYTHON_VENVPATH="/home/${CN_CONFIG_USER}/crowsnest-env"
 CN_MOONRAKER_CONFIG_PATH="${CN_CONFIG_CONFIGPATH}/moonraker.conf"
 CN_USTREAMER_REPO="https://github.com/pikvm/ustreamer.git"
-CN_USTREAMER_BRANCH="v6.36"
-CN_CAMERA_STREAMER_REPO="https://github.com/mryel00/camera-streamer.git"
-CN_CAMERA_STREAMER_BRANCH="main"
+CN_USTREAMER_BRANCH="master"
 
 ### Messages
 header_msg() {
@@ -87,6 +86,13 @@ env_path_msg() {
     echo -e "Please specify path to service environment file (crowsnest.env)\n"
     echo -e "\t\e[34mNOTE:\e[0m File names are hardcoded! Also skip trailing backslash!"
     echo -e "\tDefault: \e[32m${CN_CONFIG_ENVPATH}\e[0m\n"
+}
+
+venv_path_msg() {
+    header_msg
+    echo -e "Please specify path to python virtual environment \n"
+    echo -e "\t\e[34mNOTE:\e[0m File names are hardcoded! Also skip trailing backslash!"
+    echo -e "\tDefault: \e[32m${CN_PYTHON_VENVPATH}\e[0m\n"
 }
 
 add_moonraker_entry_msg() {
@@ -156,8 +162,6 @@ create_config_header() {
     echo -e "BASE_USER=\"${CN_CONFIG_USER}\"";
     echo -e "CROWSNEST_USTREAMER_REPO_SHIP=\"${CN_USTREAMER_REPO}\"";
     echo -e "CROWSNEST_USTREAMER_REPO_BRANCH=\"${CN_USTREAMER_BRANCH}\""
-    echo -e "CROWSNEST_CAMERA_STREAMER_REPO_SHIP=\"${CN_CAMERA_STREAMER_REPO}\"";
-    echo -e "CROWSNEST_CAMERA_STREAMER_REPO_BRANCH=\"${CN_CAMERA_STREAMER_BRANCH}\""
     } >> "${CN_CONFIG_CONFIGFILE}"
 }
 
@@ -225,6 +229,22 @@ specify_env_path() {
     fi
 }
 
+specify_venv_path() {
+    local reply
+    venv_path_msg
+    default_path_msg
+    read -erp "Please enter path: " -i "${CN_PYTHON_VENVPATH}" reply
+    if [[ -z "${reply}" ]]; then
+        echo -e "CROWSNEST_VENV_PATH=\"${CN_PYTHON_VENVPATH}\"" >> \
+        "${CN_CONFIG_CONFIGFILE}"
+        return 0
+    fi
+    if [[ -n "${reply}" ]]; then
+        echo -e "CROWSNEST_VENV_PATH=\"${reply}\"" >> "${CN_CONFIG_CONFIGFILE}"
+        return 0
+    fi
+}
+
 add_moonraker_entry() {
     local reply
     add_moonraker_entry_msg
@@ -258,6 +278,7 @@ main() {
     specify_config_path
     specify_log_path
     specify_env_path
+    specify_venv_path
     add_moonraker_entry
     goodbye_msg
 }

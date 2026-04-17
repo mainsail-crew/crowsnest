@@ -12,8 +12,7 @@ Description=crowsnest - Multi Webcam/Streamer Control Deamon
 Documentation=https://github.com/mainsail-crew/crowsnest
 After=udev.service network-online.target nss-lookup.target
 Wants=udev.service network-online.target
-Before=nginx.service
-StartLimitBurst=10
+StartLimitBurst=3
 StartLimitIntervalSec=180
 
 [Install]
@@ -25,6 +24,6 @@ User=%USER%
 RemainAfterExit=Yes
 WorkingDirectory=/home/%USER%/crowsnest
 EnvironmentFile=%ENV%
-ExecStart=/usr/local/bin/crowsnest $CROWSNEST_ARGS
+ExecStart=%PYTHON_VENV%/bin/python3 $CROWSNEST_ARGS
 Restart=on-failure
-RestartSec=5
+RestartSec=30

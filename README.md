@@ -10,7 +10,7 @@
 
 # crowsnest
 
-A wrapper script for webcam streaming on Raspberry Pi OS Lite images like [MainsailOS](https://github.com/mainsail-crew/MainsailOS). Mainly written in bash.
+A wrapper script for webcam streaming on Debian based images, especially for Raspberry Pi OS Lite images like [MainsailOS](https://github.com/mainsail-crew/MainsailOS). Mainly written in Python.
 
 -   [Why is it called crowsnest?](#why-is-it-called-crowsnest)
 -   [Support](#support)
@@ -18,7 +18,6 @@ A wrapper script for webcam streaming on Raspberry Pi OS Lite images like [Mains
 -   [Compatibility](#compatibility)
 -   [Contribute](#contribute)
 -   [How to support us?](#how-to-support-us)
--   [CustomPiOS-module](#custompios-module)
 -   [What 'Backends' does crowsnest use](#what-backends-does-crowsnest-use)
 -   [Credits](#credits)
 
@@ -39,7 +38,7 @@ So, this will be the 'lookout point' for your printer.
 
 Please read carefully on [how to configure](https://docs.mainsail.xyz/crowsnest/configuration/cam-section/) crowsnest to your needs! Check out the [help](https://docs.mainsail.xyz/getting-help/) section for first aid or join our [Discord](https://discord.gg/mainsail) server if you need further help. For some topics that are not covered in the documentation, just read below.
 
-_**PS: Do not open issues that are based on misconfiguration! This makes it harder for me to keep track of problems in my code.**_
+_**PS: Do not open issues that are based on misconfiguration! The issue tracker is only there to track actual bugs in the code and feature requests.**_
 
 ---
 
@@ -53,68 +52,29 @@ If there is something in our documentation that is not covered, is described in 
 
 ## Compatibility
 
-Tested on the following distributions:
+To be able to use all features and streamers you need a Raspberry Pi with a Raspberry Pi OS based image with at least Python 3.10.
 
-**Legend:** \
-Tested and work as intended: :heavy_check_mark: \
-Tested and/or did not work: :x: \
-Should work but not tested: :question: \
-Not available: :heavy_minus_sign:
+For other systems we recommend Debian based images, as they come with `bash` and the `apt` package manager that we rely on for installation.
 
-|         Operating System          |  X86 Architecture  |     ARM Architecture                        |
-| :-------------------------------: | :----------------: | :-----------------------------------------: |
-|     Raspberry Pi OS (buster)      | :heavy_minus_sign: |   :x: ([Hint](#hint-buster))                       |
-|    Raspberry Pi OS (bullseye)     | :heavy_minus_sign: |    :heavy_check_mark:                       |
-|    Raspberry Pi OS (bookworm)     | :heavy_minus_sign: | :heavy_check_mark: ([Hint](#hint-bookworm)) |
-|        MainsailOS (<0.7.1)        | :heavy_minus_sign: |   :x: ([Hint](#hint-buster))                       |
-|        MainsailOS (>1.0.0)        | :heavy_minus_sign: | :heavy_check_mark: (rpi)                    |
-|              Armbian              |     :question:     |    :heavy_check_mark:                       |
-|              DietPi               |     :question:     |    :heavy_check_mark: (rpi)                 |
-|        Ubuntu Server 20.04        | :heavy_check_mark: |        :question:                           |
-|      Ubuntu Server 22.04 LTS      | :heavy_check_mark: | :heavy_check_mark: (rpi)                    |
-|      Ubuntu Server 23.10          |     :question:     | :heavy_check_mark: (rpi)                    |
-| Linux Mint 21 (codename: vanessa) | :heavy_check_mark: |        :question:                           |
-|    Archlinux (and derivatives)    |        :x:         |           :x:                               |
-|           Alpine Linux            |        :x:         |           :x:                               |
-
-_If you test that on other distributions, feel free to open a Pull Request to enhance documentation._
-
-#### Hint Buster
-
-OS images that are based on Debian 10 (codename 'buster') are no longer supported with Crowsnest version 4 (current `master` branch)!
-
-Please use the `legacy/v3` branch for these OS types.\
-See the [README.md](https://github.com/mainsail-crew/crowsnest/tree/legacy/v3) of this branch for usage instructions.
-
-#### Hint Bookworm
-
-Raspberry Pi OS images that are based on Debian 12 (codename 'bookworm') currently use a different branch of [camera-streamer](https://github.com/ayufan/camera-streamer)!
-The Raspberry Pi 5 has only [ustreamer](https://github.com/pikvm/ustreamer) support! This is due to the missing JPEG and H264 Hardware encoders.
+Non Debian based images are not officially supported and never will be.
 
 ---
 
 ## Contribute
 
-1. Create an Issue related to your topic.
-2. Prepare an _tested_ Pull Request against the `develop` branch
+1. Create an [Issue](https://github.com/mainsail-crew/crowsnest/issues) related to your topic.
+2. Prepare a _tested_ Pull Request against the `develop` branch
     - Please use commits formatted according to [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
     - Make sure you do not ignore the code formatting as provided by the [_.editorconfig_](.editorconfig) of this repo
-3. Be patient. Every PR has to go through some sort of "internal gates" before it reaches the master branch, unless an immediate response is crucial.
+3. Be patient. Every PR has to go through some sort of "internal gates" before it reaches the current default branch, unless an immediate response is crucial.
 
 ---
 
 ## How to support us
 
-Buy [KwadFan](https://github.com/KwadFan) a coffee at [ko-fi.com](https://ko-fi.com/KwadFan) or [support the mainsail project](https://docs.mainsail.xyz/sponsors/)
+[Support the mainsail project](https://docs.mainsail.xyz/sponsors)
 
 Please consider hitting the :star: button in the upper right hand corner to show some love for this project.
-
----
-
-## CustomPIOS Module
-
-I have decided to provide a [CustomPiOS Module](https://github.com/guysoft/CustomPiOS) to make it easier to integrate with other distributions like MainsailOS or similar. \
-Please see [README.md](./custompios/README.md) in the module folder for more information.
 
 ---
 
@@ -126,15 +86,12 @@ Please see the according [backends](https://docs.mainsail.xyz/crowsnest/faq/back
 
 ## Credits
 
-I want to give a huge shoutout to [_lixxbox_](https://github.com/lixxbox) and [_alexz_](https://github.com/zellneralex) from the [mainsail-crew](https://github.com/orgs/mainsail-crew/people). \
+A huge thank you to [_KwadFan_](https://github.com/KwadFan/) for the [original bash implementation](https://github.com/mainsail-crew/v4), and a huge shoutout to [_lixxbox_](https://github.com/lixxbox) and [_alexz_](https://github.com/zellneralex) from the [mainsail-crew](https://github.com/orgs/mainsail-crew/people), who gave KwadFan ideas for improvements and tested the original code. \
 Without these guys it simply were not possible to get that done.
-
-They both mentioned improvements and tested a heck out of there machines to get this all functioning well. \
-Thank you, mates :) Proud to be a part of.
 
 Thanks to [Pedro Lamas](https://github.com/pedrolamas), for the ISSUE_TEMPLATES.
 
-Thanks to [ayufan](https://github.com/ayufan) for keep going on camera-streamer, even I stressed him to get rid of some bugs ;)
+Thanks to [ayufan](https://github.com/ayufan) for helping with the original camera-streamer implementation.
 
 ---
 

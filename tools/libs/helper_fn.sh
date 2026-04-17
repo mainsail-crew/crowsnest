@@ -62,9 +62,13 @@ is_pi5() {
     fi
 }
 
-is_speederpad() {
-    if grep -q "Ubuntu 20.04." /etc/os-release &&
-    [[ "$(uname -rm)" = "4.9.191 aarch64" ]]; then
+run_apt_update() {
+    apt-get -q --allow-releaseinfo-change update
+}
+
+use_pi_specifics() {
+    if [[ "$(is_raspios)" = "1" ]] ||
+    [[ "$(is_dietpi)" = "1" ]]; then
         echo "1"
     else
         echo "0"

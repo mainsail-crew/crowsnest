@@ -82,11 +82,6 @@ welcome_msg() {
     sleep 1
 }
 
-config_msg() {
-    msg "\nConfig file not found!\n\tUsing defaults ..."
-    msg "\tThis uses paths located in 'printer_data' of your home folder."
-}
-
 goodbye_msg() {
     msg "\nInstallation \e[32msuccessful\e[0m.\n"
     msg "\t\e[33mReboot your machine for the changes to take effect!\e[0m\n"

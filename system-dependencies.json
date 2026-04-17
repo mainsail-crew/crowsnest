@@ -1,0 +1,9 @@
+{
+    "debian": [
+        "python3-libcamera; vendor == 'raspberry-pi' and distro_version >= '11'",
+        "mainsail-ustreamer; distro_version >= '11'",
+        "mainsail-spyglass; vendor == 'raspberry-pi' and distro_version >= '11'",
+        "mainsail-camera-streamer-generic; vendor != 'raspberry-pi' and distro_version >= '11'",
+        "mainsail-camera-streamer-raspi; vendor == 'raspberry-pi' and distro_version >= '11'"
+    ]
+}

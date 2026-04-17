@@ -99,34 +99,6 @@ get_os_info() {
     fi
 }
 
-### Import config
-import_config() {
-    ## Source config if present
-    if [[ -s tools/.config ]]; then
-        # shellcheck disable=SC1091
-        source tools/.config
-        return 0
-    else
-        echo -e "\[31mNo .config found!\e[0m"
-        return 0
-    fi
-}
-
-is_raspberry_pi() {
-    if [[ -f /proc/device-tree/model ]] &&
-    grep -q "Raspberry" /proc/device-tree/model; then
-        echo "1"
-    else
-        echo "0"
-    fi
-}
-
-# get_val <pathtocfg> <section> <parameter>
-# spits out value
-get_val() {
-    crudini --get "${1}" "${2}" "${3}" 2> /dev/null
-}
-
 host_info() {
     grep "model name" /proc/cpuinfo | head -1 | awk -F': ' '{print $2}'
 }
