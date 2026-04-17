@@ -2,6 +2,15 @@
 # Changelog
 All notable changes to Crowsnest will be documented in this file.
 
+## [4.2.0](https://github.com/mainsail-crew/crowsnest/releases/tag/v4.2.0) - 2026-04-17
+### Features
+
+- Add upgrade script for v5 migration ([#323](https://github.com/mainsail-crew/crowsnest/pull/323))
+
+### Documentation
+
+- Update README for new docs ([#326](https://github.com/mainsail-crew/crowsnest/pull/326))
+
 ## [4.1.17](https://github.com/mainsail-crew/crowsnest/releases/tag/v4.1.17) - 2025-10-07
 ### Bug Fixes and Improvements
 
