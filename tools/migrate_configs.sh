@@ -162,7 +162,7 @@ migrate_crudini "${CROWSNEST_CFG_PATH}" "${MOONRAKER_CFG_PATH}"
 cleanup_legacy_comments "${CROWSNEST_CFG_PATH}"
 cleanup_moonraker_config "${MOONRAKER_CFG_PATH}"
 
-mv "${CROWSNEST_CFG_PATH}" "${MIGRATED_TEMP}"
+cp "${CROWSNEST_CFG_PATH}" "${MIGRATED_TEMP}"
 
 log_info "Migration complete."
 
