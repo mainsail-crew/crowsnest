@@ -64,7 +64,6 @@ class Cam(Section):
         finally:
             if self.streamer.parameters["device"] in watchdog.configured_devices:
                 watchdog.configured_devices.remove(self.streamer.parameters["device"])
-            watchdog.configured_devices.remove(self.streamer.parameters["device"])
             if lock.locked():
                 lock.release()
 
