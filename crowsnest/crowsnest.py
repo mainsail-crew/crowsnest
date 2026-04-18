@@ -42,6 +42,17 @@ def initial_parse_config(config_path, config):
     return crowsnest
 
 
+async def task_watchdog(pending):
+    while pending:
+        done, pending = await asyncio.wait(pending, return_when=asyncio.FIRST_COMPLETED)
+
+        for task in done:
+            name = task.get_name()
+            exit_code = task.result()
+
+            logger.log_info(f"{name} exited with code {exit_code}")
+
+
 async def start_sections(config):
     sect_objs = []
     sect_exec_tasks = set()
@@ -79,7 +90,10 @@ async def start_sections(config):
         if sect_objs:
             lock = asyncio.Lock()
             for section_object in sect_objs:
-                task = asyncio.create_task(section_object.execute(lock))
+                task = asyncio.create_task(
+                    section_object.execute(lock),
+                    name=f"[{section_object.section_name} {section_object.name}]",
+                )
                 sect_exec_tasks.add(task)
 
             # Lets sect_exec_tasks finish first
@@ -89,9 +103,7 @@ async def start_sections(config):
         else:
             logger.log_quiet("No Service started! Exiting ...")
 
-        for task in sect_exec_tasks:
-            if task is not None:
-                await task
+        await task_watchdog(sect_exec_tasks)
     except Exception as e:
         logger.log_multiline(traceback.format_exc().strip(), logger.log_error)
     finally:
