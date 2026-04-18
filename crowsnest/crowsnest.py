@@ -48,8 +48,12 @@ async def task_watchdog(pending):
         for task in done:
             name = task.get_name()
             exit_code = task.result()
-            if exit_code is not None:
-                logger.log_info(f"{name} exited with code {exit_code}")
+            if exit_code is None:
+                continue
+            log_fn = logger.log_info
+            if exit_code > 0:
+                log_fn = logger.log_error
+            log_fn(f"{name} exited with code {exit_code}")
 
 
 async def start_sections(config):
