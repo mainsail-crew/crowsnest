@@ -58,9 +58,11 @@ class Cam(Section):
                 await process.wait()
             else:
                 self.log_error(f"Start of {self.parameters['mode']} failed!")
+            return process.returncode
         except Exception:
             self.log_multiline(traceback.format_exc().strip(), logger.log_error)
             self.log_error(f"Start of {self.parameters['mode']} failed!")
+            return None
         finally:
             if self.streamer.parameters["device"] in watchdog.configured_devices:
                 watchdog.configured_devices.remove(self.streamer.parameters["device"])

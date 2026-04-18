@@ -45,12 +45,11 @@ def initial_parse_config(config_path, config):
 async def task_watchdog(pending):
     while pending:
         done, pending = await asyncio.wait(pending, return_when=asyncio.FIRST_COMPLETED)
-
         for task in done:
             name = task.get_name()
             exit_code = task.result()
-
-            logger.log_info(f"{name} exited with code {exit_code}")
+            if exit_code is not None:
+                logger.log_info(f"{name} exited with code {exit_code}")
 
 
 async def start_sections(config):
