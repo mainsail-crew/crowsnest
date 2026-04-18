@@ -65,6 +65,11 @@ class Spyglass(Streamer):
         # custom flags
         streamer_args.extend(self.parameters["custom_flags"].split())
 
+        if utils.is_pi5():
+            self.log_info("Pi5 detected! Disabling WebRTC due to high cpu usage!")
+            pi5_args = ["--disable_webrtc", "--use_sw_jpg_encoding"]
+            streamer_args.extend(pi5_args)
+
         venv_path = ""
         if "run.py" in self.binary_path:
             venv_path = f"{Spyglass.binary_paths[0]}/.venv/bin/python3 "
