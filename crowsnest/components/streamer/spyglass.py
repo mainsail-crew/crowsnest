@@ -84,6 +84,18 @@ class Spyglass(Streamer):
 
         return process
 
+    def check_config_section(self, config_section: SectionProxy) -> bool:
+        height, width = self.parameters["resolution"]
+        custom_flags = self.parameters["custom_flags"].split()
+        sw_encoding = "-sw" in custom_flags or "--use-sw-encoding" in custom_flags
+        check_res = not utils.is_pi5() and not sw_encoding
+        if check_res and int(height) > 1920 and int(width) > 1080:
+            self.log_warn(
+                "Potential crash detected. Please reduce resolution to 1920x1080 or "
+                "lower to stay within hardware constraints."
+            )
+        super().check_config_section(config_section)
+
 
 def load_streamer() -> tuple[list[str], list[str]]:
     return Spyglass.binary_names, Spyglass.binary_paths
