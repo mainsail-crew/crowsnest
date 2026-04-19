@@ -52,7 +52,7 @@ jobs:
           args: ${{ steps.latest_tag.outputs.TAG_NAME }}..HEAD
 
       - name: Create release and upload build
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         id: create-release
         with:
           name: v${{ github.event.inputs.version }}
