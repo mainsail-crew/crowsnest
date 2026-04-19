@@ -34,6 +34,7 @@ PKGLIST_PI=("python3-libcamera")
 
 main() {
     . "${SRC_DIR}/libs/helper_fn.sh"
+    . "${SRC_DIR}/libs/multi_instance.sh"
     . "${SRC_DIR}/libs/config.sh"
     . "${SRC_DIR}/libs/manage_apps.sh"
     . "${SRC_DIR}/libs/core.sh"
