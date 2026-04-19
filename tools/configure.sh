@@ -41,7 +41,7 @@ welcome_msg() {
     echo -e "This will guide you through install configuration"
     echo -e "After successful configuration use\n"
     echo -e "\t\e[32msudo make install\e[0m\n"
-    echo -e "to install crowsnest ..."
+    echo -e "to install crowsnest if not done already ..."
 }
 
 abort_msg() {
