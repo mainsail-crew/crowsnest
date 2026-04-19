@@ -26,7 +26,7 @@ check_multi_instance(){
     multi_instance_message "${instances[*]}"
     if [[ -d "/home/${BASE_USER}/crowsnest" ]]; then
       pushd "/home/${BASE_USER}/crowsnest" &> /dev/null || exit 1
-      if ! sudo -u ${BASE_USER} make config ;then
+      if ! sudo -u "${BASE_USER}" make config ;then
         msg "Something went wrong! Please try again..."
         if [[ -f "${SRC_DIR}/.config" ]]; then
           rm -f "${SRC_DIR}/.config"
