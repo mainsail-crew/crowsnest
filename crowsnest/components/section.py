@@ -55,7 +55,9 @@ class Section(ABC):
         self.parameters: dict[str, Any] = {}
 
     @abstractmethod
-    async def execute(self, lock: asyncio.Lock) -> Optional[asyncio.subprocess.Process]:
+    async def execute(
+        self, lock: asyncio.Lock
+    ) -> Optional[asyncio.subprocess.Process | int]:
         raise NotImplementedError("If you see this, something went wrong!!!")
 
     def __getattr__(self, name):

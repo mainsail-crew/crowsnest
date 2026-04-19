@@ -42,7 +42,9 @@ class Cam(Section):
             return False
         return self.streamer.initialized
 
-    async def execute(self, lock: asyncio.Lock) -> Optional[asyncio.subprocess.Process]:
+    async def execute(
+        self, lock: asyncio.Lock
+    ) -> Optional[asyncio.subprocess.Process | int]:
         if self.streamer is None:
             self.log_error("No streamer loaded!")
             return
@@ -54,18 +56,19 @@ class Cam(Section):
             )
             watchdog.configured_devices.append(self.streamer.parameters["device"])
             process = await self.streamer.execute(lock)
-            if process:
+            if process is not None:
                 await process.wait()
-            else:
-                self.log_error(f"Start of {self.parameters['mode']} failed!")
+                return process.returncode
         except Exception:
             self.log_multiline(traceback.format_exc().strip(), logger.log_error)
-            self.log_error(f"Start of {self.parameters['mode']} failed!")
         finally:
             if self.streamer.parameters["device"] in watchdog.configured_devices:
                 watchdog.configured_devices.remove(self.streamer.parameters["device"])
             if lock.locked():
                 lock.release()
+
+        self.log_error(f"Start of {self.parameters['mode']} failed!")
+        return None
 
 
 def load_component(name: str, config_section: SectionProxy) -> Cam:
