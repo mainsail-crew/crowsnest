@@ -2,6 +2,13 @@
 # Changelog
 All notable changes to Crowsnest will be documented in this file.
 
+## [5.0.1](https://github.com/mainsail-crew/crowsnest/releases/tag/v5.0.1) - 2026-04-19
+### Bug Fixes and Improvements
+
+- **spyglass**: Add warning about crash with resolution above 1080p ([#329](https://github.com/mainsail-crew/crowsnest/pull/329))
+- Fix early exiting sections not logging anything ([#330](https://github.com/mainsail-crew/crowsnest/pull/330))
+- Fix multi-instance installations ([#331](https://github.com/mainsail-crew/crowsnest/pull/331))
+
 ## [4.2.0](https://github.com/mainsail-crew/crowsnest/releases/tag/v4.2.0) - 2026-04-17
 ### Features
 
