@@ -2,6 +2,11 @@
 # Changelog
 All notable changes to Crowsnest will be documented in this file.
 
+## [5.0.2](https://github.com/mainsail-crew/crowsnest/releases/tag/v5.0.2) - 2026-04-20
+### Bug Fixes and Improvements
+
+- Fix typing error for Bullseye ([#334](https://github.com/mainsail-crew/crowsnest/pull/334))
+
 ## [5.0.1](https://github.com/mainsail-crew/crowsnest/releases/tag/v5.0.1) - 2026-04-19
 ### Bug Fixes and Improvements
 
