@@ -11,7 +11,7 @@ import asyncio
 import functools
 from abc import ABC, abstractmethod
 from configparser import SectionProxy
-from typing import Any, Optional
+from typing import Any, Union
 
 from .. import logger
 
@@ -57,7 +57,7 @@ class Section(ABC):
     @abstractmethod
     async def execute(
         self, lock: asyncio.Lock
-    ) -> Optional[asyncio.subprocess.Process | int]:
+    ) -> Union[asyncio.subprocess.Process, int, None]:
         raise NotImplementedError("If you see this, something went wrong!!!")
 
     def __getattr__(self, name):
