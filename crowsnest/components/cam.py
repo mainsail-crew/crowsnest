@@ -10,7 +10,7 @@
 import asyncio
 import traceback
 from configparser import SectionProxy
-from typing import Optional
+from typing import Union
 
 from .. import logger, utils, watchdog
 from .section import Section
@@ -44,7 +44,7 @@ class Cam(Section):
 
     async def execute(
         self, lock: asyncio.Lock
-    ) -> Optional[asyncio.subprocess.Process | int]:
+    ) -> Union[asyncio.subprocess.Process, int, None]:
         if self.streamer is None:
             self.log_error("No streamer loaded!")
             return
