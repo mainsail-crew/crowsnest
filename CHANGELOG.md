@@ -2,6 +2,11 @@
 # Changelog
 All notable changes to Crowsnest will be documented in this file.
 
+## [5.0.3](https://github.com/mainsail-crew/crowsnest/releases/tag/vv5.0.3) - 2026-04-22
+### Bug Fixes and Improvements
+
+- **spyglass**: Fix cli parameters ([#336](https://github.com/mainsail-crew/crowsnest/pull/336))
+
 ## [5.0.2](https://github.com/mainsail-crew/crowsnest/releases/tag/v5.0.2) - 2026-04-20
 ### Bug Fixes and Improvements
 
