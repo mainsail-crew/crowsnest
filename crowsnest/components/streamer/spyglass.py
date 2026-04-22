@@ -40,9 +40,9 @@ class Spyglass(Streamer):
 
         try:
             int(device)
-            device_option = "camera_num"
+            device_option = "camera-num"
         except ValueError:
-            device_option = "device"
+            device_option = "device-path"
 
         streamer_args = [
             f"--{device_option}={device}",
@@ -50,8 +50,8 @@ class Spyglass(Streamer):
             f"--port={port}",
             f"--fps={fps}",
             f"--resolution={res}",
-            "--stream_url=/?action=stream",
-            "--snapshot_url=/?action=snapshot",
+            "--stream-url=/?action=stream",
+            "--snapshot-url=/?action=snapshot",
         ]
 
         v4l2ctl = self.parameters["v4l2ctl"]
