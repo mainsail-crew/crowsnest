@@ -85,7 +85,7 @@ class Libcamera(camera.Camera):
         if not cmd:
             return []
         libcam_cmd = f"{cmd} --list-cameras"
-        libcam = utils.execute_shell_command(libcam_cmd, strip=False)
+        libcam = utils.execute_shell_command(libcam_cmd, strip=False, check=False)
         cams = [Libcamera(path) for path in re.findall(r"\((/base.*?)\)", libcam)]
         for cam in cams:
             cam.formats = cam._get_formats(libcam)
