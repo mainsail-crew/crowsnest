@@ -83,13 +83,19 @@ async def execute_command(
     return process, stdout_task, stderr_task
 
 
-def execute_shell_command(command: str, strip: bool = True) -> str:
+def execute_shell_command(command: str, strip: bool = True, check: bool = True) -> str:
     try:
-        output = subprocess.check_output(shlex.split(command)).decode("utf-8")
+        output = subprocess.run(
+            shlex.split(command),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            text=True,
+            check=check,
+        ).stdout
         if strip:
             output = output.strip()
         return output
-    except subprocess.CalledProcessError as e:
+    except subprocess.CalledProcessError:
         return ""
 
 
