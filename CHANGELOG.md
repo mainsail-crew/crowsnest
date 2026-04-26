@@ -2,7 +2,12 @@
 # Changelog
 All notable changes to Crowsnest will be documented in this file.
 
-## [5.0.3](https://github.com/mainsail-crew/crowsnest/releases/tag/vv5.0.3) - 2026-04-22
+## [5.0.4](https://github.com/mainsail-crew/crowsnest/releases/tag/v5.0.4) - 2026-04-26
+### Bug Fixes and Improvements
+
+- Fix execute_shell_command for rpicam edge case ([#337](https://github.com/mainsail-crew/crowsnest/pull/337))
+
+## [5.0.3](https://github.com/mainsail-crew/crowsnest/releases/tag/v5.0.3) - 2026-04-22
 ### Bug Fixes and Improvements
 
 - **spyglass**: Fix cli parameters ([#336](https://github.com/mainsail-crew/crowsnest/pull/336))
