@@ -9,12 +9,13 @@
 
 import os
 from abc import ABC, abstractmethod
+from collections import defaultdict
 
 
 class Camera(ABC):
     def __init__(self, path: str, *args, **kwargs) -> None:
         self.path = path
-        self.control_values = {}
+        self.control_values = defaultdict(dict)
         self.formats = {}
 
     def path_equals(self, path: str) -> bool:
