@@ -33,7 +33,6 @@ class UVC(camera.Camera):
             parsed_qc = v4l2.ctl.parse_qc_of_path(self.path, qc)
             if not parsed_qc:
                 cur_sec = name
-                self.control_values[cur_sec] = {}
                 continue
             self.control_values[cur_sec][name] = parsed_qc
         self.formats = v4l2.ctl.get_formats(self.path)
@@ -55,7 +54,8 @@ class UVC(camera.Camera):
     def get_controls_string(self) -> str:
         message = ""
         for section, controls in self.control_values.items():
-            message += f"{section}:\n"
+            if section != "":
+                message += f"{section}:\n"
             for control, data in controls.items():
                 line = f"{control} ({data['type']})"
                 line += max(0, 35 - len(line)) * " " + ":"
