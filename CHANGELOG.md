@@ -2,6 +2,11 @@
 # Changelog
 All notable changes to Crowsnest will be documented in this file.
 
+## [5.0.5](https://github.com/mainsail-crew/crowsnest/releases/tag/v5.0.5) - 2026-04-30
+### Bug Fixes and Improvements
+
+- **uvc**: Fix crash if class for camera controls is missing ([#338](https://github.com/mainsail-crew/crowsnest/pull/338))
+
 ## [5.0.4](https://github.com/mainsail-crew/crowsnest/releases/tag/v5.0.4) - 2026-04-26
 ### Bug Fixes and Improvements
 
