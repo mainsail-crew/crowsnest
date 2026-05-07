@@ -41,7 +41,7 @@ def parse_qc(fd: int, qc: raw.v4l2_query_ext_ctrl) -> dict:
     if qc.type in (
         constants.V4L2_CTRL_TYPE_MENU,
         constants.V4L2_CTRL_TYPE_INTEGER_MENU,
-    ):
+    ) and qc.minimum > 0:
         controls["menu"] = {}
         for menu in utils.ioctl_iter(
             fd,
