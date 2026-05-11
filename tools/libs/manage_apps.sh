@@ -90,11 +90,12 @@ build_ustreamer() {
 }
 
 install_apt_sources() {
-    local id version_id
+    local id version_id variant apt_url src_ext key_path
 
     id=$(grep '^ID=' /etc/os-release | cut -d'=' -f2 | cut -d'"' -f2)
     version_id=$(grep '^VERSION_ID=' /etc/os-release | cut -d'=' -f2 | cut -d'"' -f2)
     variant="generic"
+    apt_url="https://apt.mainsail.xyz"
 
     if [[ "$(is_raspios)" = "1" || "$(is_dietpi)" = "1" ]]; then
         variant="rpi"
@@ -102,16 +103,18 @@ install_apt_sources() {
     fi
 
     if [[ "${id}" = "debian" ]] && [[ "${version_id}" = "11" ]]; then
-        curl -s --compressed "https://apt.mainsail.xyz/mainsail.gpg.key" | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/mainsail.gpg > /dev/null
-        curl -s --compressed --fail -o /etc/apt/sources.list.d/mainsail.list "https://apt.mainsail.xyz/mainsail-${id}-${version_id}-${variant}.list"
+        src_ext="list"
+        key_path="/etc/apt/trusted.gpg.d/mainsail.asc"
+    else
+        src_ext="sources"
+        key_path="/usr/share/keyrings/mainsail.asc"
+    fi
+
+    if curl -s --compressed --fail -o "/etc/apt/sources.list.d/mainsail.${src_ext}" "${apt_url}/mainsail-${id}-${version_id}-${variant}.${src_ext}"; then
+        curl -s --compressed -o "${key_path}" "${apt_url}/mainsail.gpg.key"
         echo "1"
     else
-        if curl -s --compressed --fail -o /etc/apt/sources.list.d/mainsail.sources "https://apt.mainsail.xyz/mainsail-${id}-${version_id}-${variant}.sources"; then
-            curl -s --compressed "https://apt.mainsail.xyz/mainsail.gpg.key" | gpg --dearmor | sudo tee /usr/share/keyrings/mainsail.gpg > /dev/null
-            echo "1"
-        else
-            echo "0"
-        fi
+        echo "0"
     fi
 }
 
