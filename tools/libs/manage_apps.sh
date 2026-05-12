@@ -116,9 +116,9 @@ install_apt_sources() {
         echo "1"
     else
         rm -rf "${apt_source}" "${key_path}"
-        msg "Warning: Either we do not provide an apt source for your OS or the download of some component failed."
+        msg "Warning: Either we do not provide an APT source for your OS or the download of some component failed."
         msg "Compiling ustreamer locally!"
-        msg "Please check out the docs at ... for more informations on supported OS."
+        msg "Please check out the docs at https://docs.mainsail.xyz/crowsnest/faq/apt/ for more informations on the APT repository."
         echo "0"
     fi
 }
