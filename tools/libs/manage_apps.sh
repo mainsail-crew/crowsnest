@@ -110,8 +110,8 @@ install_apt_sources() {
         key_path="/etc/apt/keyrings/mainsail.asc"
     fi
 
-    if curl -s --compressed --fail -o "/etc/apt/sources.list.d/mainsail.${src_ext}" "${apt_url}/mainsail-${id}-${version_id}-${variant}.${src_ext}"; then
-        curl -s --compressed -o "${key_path}" "${apt_url}/mainsail.gpg.key"
+    if curl -s --compressed --fail -o "/etc/apt/sources.list.d/mainsail.${src_ext}" "${apt_url}/mainsail-${id}-${version_id}-${variant}.${src_ext}" &&
+    curl -s --compressed --fail -o "${key_path}" "${apt_url}/mainsail.gpg.key"; then
         echo "1"
     else
         echo "0"
