@@ -96,6 +96,7 @@ install_apt_sources() {
     version_id=$(grep '^VERSION_ID=' /etc/os-release | cut -d'=' -f2 | cut -d'"' -f2)
     variant="generic"
     apt_url="https://apt.mainsail.xyz"
+    apt_source="/etc/apt/sources.list.d/mainsail.${src_ext}"
 
     if [[ "$(is_raspios)" = "1" || "$(is_dietpi)" = "1" ]]; then
         variant="rpi"
@@ -110,10 +111,14 @@ install_apt_sources() {
         key_path="/etc/apt/keyrings/mainsail.asc"
     fi
 
-    if curl -s --compressed --fail -o "/etc/apt/sources.list.d/mainsail.${src_ext}" "${apt_url}/mainsail-${id}-${version_id}-${variant}.${src_ext}" &&
+    if curl -s --compressed --fail -o "${apt_source}" "${apt_url}/mainsail-${id}-${version_id}-${variant}.${src_ext}" &&
     curl -s --compressed --fail -o "${key_path}" "${apt_url}/mainsail.gpg.key"; then
         echo "1"
     else
+        rm -rf "${apt_source}" "${key_path}"
+        msg "Warning: Either we do not provide an apt source for your OS or the download of some component failed."
+        msg "Compiling ustreamer locally!"
+        msg "Please check out the docs at ... for more informations on supported OS."
         echo "0"
     fi
 }
