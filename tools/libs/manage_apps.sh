@@ -103,13 +103,14 @@ install_apt_sources() {
 
     src_ext="sources"
     key_path="/etc/apt/keyrings/mainsail.asc"
-    apt_url="https://apt.mainsail.xyz"
-    apt_source="/etc/apt/sources.list.d/mainsail.${src_ext}"
 
     if [[ "${id}" = "debian" ]] && [[ "${version_id}" = "11" ]]; then
         src_ext="list"
         key_path="/etc/apt/trusted.gpg.d/mainsail.asc"
     fi
+
+    apt_url="https://apt.mainsail.xyz"
+    apt_source="/etc/apt/sources.list.d/mainsail.${src_ext}"
 
     if curl -s --compressed --fail -o "${apt_source}" "${apt_url}/mainsail-${id}-${version_id}-${variant}.${src_ext}" &&
     curl -s --compressed --fail -o "${key_path}" "${apt_url}/mainsail.gpg.key"; then
