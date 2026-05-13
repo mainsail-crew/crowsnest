@@ -95,20 +95,20 @@ install_apt_sources() {
     id=$(grep '^ID=' /etc/os-release | cut -d'=' -f2 | cut -d'"' -f2)
     version_id=$(grep '^VERSION_ID=' /etc/os-release | cut -d'=' -f2 | cut -d'"' -f2)
     variant="generic"
-    apt_url="https://apt.mainsail.xyz"
-    apt_source="/etc/apt/sources.list.d/mainsail.${src_ext}"
 
     if [[ "$(is_raspios)" = "1" || "$(is_dietpi)" = "1" ]]; then
         variant="rpi"
         id="debian"
     fi
 
+    src_ext="sources"
+    key_path="/etc/apt/keyrings/mainsail.asc"
+    apt_url="https://apt.mainsail.xyz"
+    apt_source="/etc/apt/sources.list.d/mainsail.${src_ext}"
+
     if [[ "${id}" = "debian" ]] && [[ "${version_id}" = "11" ]]; then
         src_ext="list"
         key_path="/etc/apt/trusted.gpg.d/mainsail.asc"
-    else
-        src_ext="sources"
-        key_path="/etc/apt/keyrings/mainsail.asc"
     fi
 
     if curl -s --compressed --fail -o "${apt_source}" "${apt_url}/mainsail-${id}-${version_id}-${variant}.${src_ext}" &&
