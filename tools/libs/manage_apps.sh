@@ -117,9 +117,6 @@ install_apt_sources() {
         echo "1"
     else
         rm -rf "${apt_source}" "${key_path}"
-        msg "Warning: Either we do not provide an APT source for your OS or the download of some component failed."
-        msg "Compiling ustreamer locally!"
-        msg "Please check out the docs at https://docs.mainsail.xyz/crowsnest/faq/apt/ for more informations on the APT repository."
         echo "0"
     fi
 }
@@ -153,7 +150,8 @@ install_venv() {
 install_apps() {
     msg "Setup Mainsail apt repository ..."
     if [[ "$(install_apt_sources)" = "0" ]]; then
-        msg "We do not support your Distro with the Mainsail apt repository."
+        msg "Warning: Either we do not provide an APT source for your OS or the download of some component failed."
+        msg "Please check out the docs at https://docs.mainsail.xyz/crowsnest/faq/apt/ for more informations on the APT repository."
         msg "Trying to install ustreamer manually."
         msg "Installing build dependencies ..."
         apt-get --yes --no-install-recommends install "${PKGLIST_USTREAMER[@]}" || return 1
