@@ -80,6 +80,7 @@ def ctrlflags2str(flags: int) -> str:
         constants.V4L2_CTRL_FLAG_EXECUTE_ON_WRITE: "execute-on-write",
         constants.V4L2_CTRL_FLAG_MODIFY_LAYOUT: "modify-layout",
         constants.V4L2_CTRL_FLAG_DYNAMIC_ARRAY: "dynamic-array",
+        constants.V4L2_CTRL_FLAG_HAS_WHICH_MIN_MAX: "has-min-max",
         0: None,
     }
     return flags2str(dict_flags, flags)

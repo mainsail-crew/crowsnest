@@ -20,8 +20,12 @@ def parse_qc(fd: int, qc: raw.v4l2_query_ext_ctrl) -> dict:
     """
     Parses the query control to an easy to use dictionary
     """
-    if qc.type == constants.V4L2_CTRL_TYPE_CTRL_CLASS:
+    if (
+        qc.type == constants.V4L2_CTRL_TYPE_CTRL_CLASS
+        or qc.flags & constants.V4L2_CTRL_FLAG_DISABLED
+    ):
         return {}
+
     controls = {}
     controls["type"] = utils.v4l2_ctrl_type_to_string(qc.type)
     if qc.type in (constants.V4L2_CTRL_TYPE_INTEGER, constants.V4L2_CTRL_TYPE_MENU):
