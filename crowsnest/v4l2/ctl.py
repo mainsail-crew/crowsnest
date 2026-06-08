@@ -16,15 +16,14 @@ from . import constants, raw, utils
 dev_ctls: dict[str, dict[str, dict[str, (raw.v4l2_ext_control, str)]]] = {}
 
 
-def parse_qc(fd: int, qc: raw.v4l2_query_ext_ctrl) -> dict:
+def parse_qc(fd: int, qc: raw.v4l2_query_ext_ctrl) -> dict | None:
     """
     Parses the query control to an easy to use dictionary
     """
-    if (
-        qc.type == constants.V4L2_CTRL_TYPE_CTRL_CLASS
-        or qc.flags & constants.V4L2_CTRL_FLAG_DISABLED
-    ):
+    if qc.type == constants.V4L2_CTRL_TYPE_CTRL_CLASS:
         return {}
+    if qc.flags & constants.V4L2_CTRL_FLAG_DISABLED:
+        return None
 
     controls = {}
     controls["type"] = utils.v4l2_ctrl_type_to_string(qc.type)
@@ -63,7 +62,7 @@ def parse_qc(fd: int, qc: raw.v4l2_query_ext_ctrl) -> dict:
     return controls
 
 
-def parse_qc_of_path(device_path: str, qc: raw.v4l2_query_ext_ctrl) -> dict:
+def parse_qc_of_path(device_path: str, qc: raw.v4l2_query_ext_ctrl) -> dict | None:
     """
     Parses the query control to an easy to use dictionary
     """

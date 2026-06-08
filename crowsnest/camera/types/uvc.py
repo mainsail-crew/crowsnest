@@ -30,10 +30,15 @@ class UVC(camera.Camera):
 
         cur_sec = ""
         for name, qc in self.query_controls.items():
-            parsed_qc = v4l2.ctl.parse_qc_of_path(self.path, qc)
+            parsed_qc: dict | None = v4l2.ctl.parse_qc_of_path(self.path, qc)
+
+            if parsed_qc is None:
+                continue
+
             if not parsed_qc:
                 cur_sec = name
                 continue
+
             self.control_values[cur_sec][name] = parsed_qc
         self.formats = v4l2.ctl.get_formats(self.path)
 
