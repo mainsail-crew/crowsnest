@@ -1,0 +1,22 @@
+on:
+  pull_request:
+    branches:
+      - 'develop'
+    paths:
+      - '**.py'
+      - '.github/workflows/python-compat.yml'
+
+name: 'Python Compatibility'
+
+jobs:
+  python39-compat:
+    name: Check Python 3.9 compatibility
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch Repository
+        uses: actions/checkout@v6
+
+      - name: Check Python 3.9 compatibility (ruff)
+        uses: astral-sh/ruff-action@v4
+        with:
+          args: 'check crowsnest --target-version py39 --select FA102'
