@@ -9,34 +9,15 @@ on:
         required: true
 
 jobs:
-  update-default-branch:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout master
-        uses: actions/checkout@v6
-        with:
-          ref: 'v5'
-          token: ${{ secrets.PAT }}
-          fetch-depth: 0
-
-      - name: Fast-forward merge from develop
-        shell: bash
-        run: |
-          git config user.name github-actions
-          git config user.email github-actions@github.com
-          git merge --ff-only origin/develop
-          git push origin v5
-
   release:
-    needs: [ 'update-default-branch' ]
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
       - name: Fetch repo
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
-          ref: 'v5'
+          ref: 'develop'
           fetch-depth: 0
 
       - name: Get latest tag
@@ -44,6 +25,7 @@ jobs:
         shell: bash
         run: |
           echo "TAG_NAME=$(git describe --tags $(git rev-list --tags --max-count=1))" >> $GITHUB_OUTPUT
+
       - name: Generate a changelog
         uses: orhun/git-cliff-action@v4
         id: generate-changelog
@@ -66,9 +48,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
-          ref: 'v5'
+          ref: 'develop'
           token: ${{ secrets.PAT }}
           fetch-depth: 0
 
@@ -77,6 +59,7 @@ jobs:
         shell: bash
         run: |
           echo "TAG_NAME=$(git describe --tags $(git rev-list --tags --max-count=1))" >> $GITHUB_OUTPUT
+
       - name: Generate a changelog
         uses: orhun/git-cliff-action@v4
         id: git-cliff
@@ -91,21 +74,20 @@ jobs:
           commit_message: 'docs(changelog): update changelog'
           file_pattern: CHANGELOG.md
 
-  update-develop-branch:
-    needs: ['update-changelog']
+  update-default-branch:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout master
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
-          ref: 'develop'
+          ref: 'v5'
           token: ${{ secrets.PAT }}
           fetch-depth: 0
 
-      - name: Fast-forward merge from v5
+      - name: Fast-forward merge from develop
         shell: bash
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
-          git merge --ff-only origin/v5
-          git push origin develop
+          git merge --ff-only origin/develop
+          git push origin v5
