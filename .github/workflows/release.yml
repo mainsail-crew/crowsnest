@@ -33,7 +33,7 @@ jobs:
           config: ./cliff-release.toml
           args: ${{ steps.latest_tag.outputs.TAG_NAME }}..HEAD
 
-      - name: Create release and upload build
+      - name: Create release
         uses: softprops/action-gh-release@v3
         id: create-release
         with:
@@ -74,7 +74,7 @@ jobs:
           commit_message: 'docs(changelog): update changelog'
           file_pattern: CHANGELOG.md
 
-  update-default-branch:
+  update-release-branch:
     needs: 'update-changelog'
     runs-on: ubuntu-latest
     steps:
