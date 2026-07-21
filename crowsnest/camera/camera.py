@@ -7,16 +7,23 @@
 #### This File is distributed under GPLv3
 ####
 
+from __future__ import annotations
+
 import os
 from abc import ABC, abstractmethod
 from collections import defaultdict
+from collections.abc import Sequence
+from typing import Any, Generic, TypeVar
+
+CameraT = TypeVar("CameraT", bound=Camera)
+FormatsT = TypeVar("FormatsT")
 
 
-class Camera(ABC):
+class Camera(ABC, Generic[FormatsT]):
     def __init__(self, path: str, *args, **kwargs) -> None:
-        self.path = path
-        self.control_values = defaultdict(dict)
-        self.formats = {}
+        self.path: str = path
+        self.control_values: dict[str, dict[str, Any]] = defaultdict(dict)
+        self.formats: FormatsT
 
     def path_equals(self, path: str) -> bool:
         return self.path == os.path.realpath(path)
@@ -29,7 +36,7 @@ class Camera(ABC):
     def get_controls_string(self) -> str:
         pass
 
-    @staticmethod
+    @classmethod
     @abstractmethod
-    def init_camera_type() -> list:
+    def init_camera_type(cls: type[CameraT]) -> Sequence[CameraT]:
         pass

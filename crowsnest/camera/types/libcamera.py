@@ -7,27 +7,31 @@
 #### This File is distributed under GPLv3
 ####
 
+from __future__ import annotations
+
 import re
 import shutil
+from collections.abc import Sequence
+from typing import Any
 
 from ... import utils
 from .. import camera
 
 
-class Libcamera(camera.Camera):
-    def __init__(self, path, *args, **kwargs) -> None:
+class Libcamera(camera.Camera[list[str]]):
+    def __init__(self, path: str, *args, **kwargs) -> None:
         super().__init__(path, *args, **kwargs)
         self.control_values = self._get_controls()
         self.formats = []
 
-    def _get_controls(self) -> dict:
-        ctrls = {}
+    def _get_controls(self) -> dict[str, dict[str, Any]]:
+        ctrls: dict[str, dict[str, Any]] = {}
         try:
-            from libcamera import CameraManager, Rectangle
+            from libcamera import CameraManager, Rectangle # pyright: ignore[reportAttributeAccessIssue]
         except ImportError:
             return ctrls
 
-        def parse_value(rectangle):
+        def parse_value(rectangle: Any) -> Any:
             if isinstance(rectangle, Rectangle):
                 return (rectangle.x, rectangle.y, rectangle.width, rectangle.height)
             return rectangle
@@ -44,13 +48,13 @@ class Libcamera(camera.Camera):
             }
         return ctrls
 
-    def _get_formats(self, libcamera_output: str) -> list:
+    def _get_formats(self, libcamera_output: str) -> list[str]:
         resolutions = re.findall(
             rf"{self.path}.*?:.*?: (.*?)(?=\n\n|\n *')",
             libcamera_output,
             flags=re.DOTALL,
         )
-        res = []
+        res: list[str] = []
         if resolutions:
             res = [r.strip() for r in resolutions[0].split("\n")]
         return res
@@ -76,17 +80,17 @@ class Libcamera(camera.Camera):
             message += str_first + str_indent + str_second + "\n"
         return message.strip()
 
-    def get_type_str(self, obj) -> str:
+    def get_type_str(self, obj: Any) -> str:
         return str(type(obj)).split("'")[1]
 
-    @staticmethod
-    def init_camera_type() -> list:
+    @classmethod
+    def init_camera_type(cls) -> Sequence[Libcamera]:
         cmd = shutil.which("rpicam-hello") or shutil.which("libcamera-hello")
         if not cmd:
             return []
         libcam_cmd = f"{cmd} --list-cameras"
         libcam = utils.execute_shell_command(libcam_cmd, strip=False, check=False)
-        cams = [Libcamera(path) for path in re.findall(r"\((/base.*?)\)", libcam)]
+        cams: list[Libcamera] = [Libcamera(path) for path in re.findall(r"\((/base.*?)\)", libcam)]
         for cam in cams:
             cam.formats = cam._get_formats(libcam)
         return cams
