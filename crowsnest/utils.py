@@ -17,12 +17,13 @@ from configparser import SectionProxy
 from typing import Any, Callable, Optional
 
 from . import logger
+from .logger import LogFunc
 
 
 # Dynamically import functions
 # Requires module to have a function with function_name
 def load_function(
-    function_name: str, module_name: str, path="crowsnest.components"
+    function_name: str, module_name: str, path: str = "crowsnest.components"
 ) -> Callable[..., Any]:
     module = importlib.import_module(f"{path}.{module_name}")
     return getattr(module, function_name)
@@ -32,28 +33,36 @@ def load_component(
     module_name: str,
     name: str,
     config_section: SectionProxy,
-    path="crowsnest.components",
+    path: str = "crowsnest.components",
 ) -> Optional[Any]:
     try:
         return load_function("load_component", module_name, path)(name, config_section)
     except (ModuleNotFoundError, AttributeError) as e:
+        name_attr = getattr(e, "name", str(e))
         logger.log_error(
-            f"Failed to load module '{module_name}' from '{path}' ({e.name})"
+            f"Failed to load module '{module_name}' from '{path}' ({name_attr})"
         )
     return None
 
 
-def load_streamer(module_name: str, path="crowsnest.components") -> Optional[Any]:
+def load_streamer(
+    module_name: str, path: str = "crowsnest.components"
+) -> Optional[Any]:
     try:
         return load_function("load_streamer", module_name, path)()
     except (ModuleNotFoundError, AttributeError) as e:
+        name_attr = getattr(e, "name", str(e))
         logger.log_error(
-            f"Failed to load streamer '{module_name}' from '{path}' ({e.name})"
+            f"Failed to load streamer '{module_name}' from '{path}' ({name_attr})"
         )
     return None
 
 
-async def log_subprocess_output(stream, log_func, line_prefix=""):
+async def log_subprocess_output(
+    stream: asyncio.StreamReader,
+    log_func: LogFunc,
+    line_prefix: str = "",
+) -> None:
     line = await stream.readline()
     while line:
         l = line.decode("utf-8").strip()
@@ -63,15 +72,17 @@ async def log_subprocess_output(stream, log_func, line_prefix=""):
 
 async def execute_command(
     command: str,
-    info_log_func=logger.log_debug,
-    error_log_func=logger.log_error,
-    info_log_pre="",
-    error_log_pre="",
-):
+    info_log_func: LogFunc = logger.log_debug,
+    error_log_func: LogFunc = logger.log_error,
+    info_log_pre: str = "",
+    error_log_pre: str = "",
+) -> tuple[asyncio.subprocess.Process, "asyncio.Task[None]", "asyncio.Task[None]"]:
     args = shlex.split(command)
     process = await asyncio.create_subprocess_exec(
         *args, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
     )
+    assert process.stdout is not None
+    assert process.stderr is not None
 
     stdout_task = asyncio.create_task(
         log_subprocess_output(process.stdout, info_log_func, info_log_pre)

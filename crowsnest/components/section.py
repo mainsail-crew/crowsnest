@@ -11,9 +11,10 @@ import asyncio
 import functools
 from abc import ABC, abstractmethod
 from configparser import SectionProxy
-from typing import Any, Union
+from typing import Any, Callable, Union
 
 from .. import logger
+from ..logger import LogFunc
 
 
 class Section(ABC):
@@ -60,7 +61,7 @@ class Section(ABC):
     ) -> Union[asyncio.subprocess.Process, int, None]:
         raise NotImplementedError("If you see this, something went wrong!!!")
 
-    def __getattr__(self, name):
+    def __getattr__(self, name: str) -> Callable[..., None]:
         """Dynamically handle log method calls (e.g., log_info, log_debug)."""
         if not name.startswith("log_"):
             raise AttributeError(
@@ -75,13 +76,20 @@ class Section(ABC):
             )
 
         @functools.wraps(log_function)
-        def log_wrapper(msg, prefix="", postfix=""):
+        def log_wrapper(msg: str, prefix: str = "", postfix: str = "") -> None:
             formatted_msg = f"{prefix}{self.section}{postfix}: {msg}"
             log_function(formatted_msg)
 
         return log_wrapper
 
-    def log_multiline(self, msg, log_func, prefix="", postfix="", *args):
+    def log_multiline(
+        self,
+        msg: str,
+        log_func: LogFunc,
+        prefix: str = "",
+        postfix: str = "",
+        *args,
+    ) -> None:
         logger.log_multiline(
             msg, log_func, line_prefix=f"{prefix}{self.section}{postfix}", *args
         )
