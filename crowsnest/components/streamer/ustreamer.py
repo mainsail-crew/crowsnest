@@ -20,9 +20,9 @@ from .streamer import Streamer
 
 
 class Ustreamer(Streamer):
-    keyword = "ustreamer"
-    binary_names = ["ustreamer.bin", "ustreamer"]
-    binary_paths = ["bin/ustreamer"]
+    keyword: str = "ustreamer"
+    binary_names: list[str] = ["ustreamer.bin", "ustreamer"]
+    binary_paths: list[str] = ["bin/ustreamer"]
 
     async def execute(self, lock: asyncio.Lock) -> Optional[asyncio.subprocess.Process]:
         host = "127.0.0.1"
@@ -34,10 +34,11 @@ class Ustreamer(Streamer):
         res = "x".join(self.parameters["resolution"])
         fps = self.parameters["max_fps"]
         device = self.parameters["device"]
-        self.cam = camera.camera_manager.get_cam_by_path(device)
-        if not isinstance(self.cam, UVC):
+        cam = camera.camera_manager.get_cam_by_path(device)
+        if not isinstance(cam, UVC):
             logging_helper.log_camera_not_found(self, wrong_cam_type=True)
             return None
+        self.cam: UVC = cam
 
         streamer_args = [
             f"--host {host}",
@@ -70,6 +71,7 @@ class Ustreamer(Streamer):
         # custom flags
         streamer_args.extend(self.parameters["custom_flags"].split())
 
+        assert self.binary_path is not None
         cmd = self.binary_path + " " + " ".join(streamer_args)
         log_pre = f"{self.keyword} "
 
@@ -92,14 +94,14 @@ class Ustreamer(Streamer):
 
         return process
 
-    def _custom_log(self, msg: str, prefix=""):
+    def _custom_log(self, msg: str, prefix: str = "", **kwargs) -> None:
         if msg.endswith("==="):
             msg = msg[:-28]
         else:
             msg = re.sub(r"-- (.*?) \[.*?\] --", r"\1", msg)
         self.log_debug(msg, prefix)
 
-    def _set_v4l2_ctrl(self, ctrl: str, postfix="") -> None:
+    def _set_v4l2_ctrl(self, ctrl: str, postfix: str = "") -> None:
         try:
             c = ctrl.split("=")[0].strip().lower()
             v = int(ctrl.split("=")[1].strip())
@@ -144,7 +146,7 @@ class Ustreamer(Streamer):
                 f"Value is now: {self.cam.get_current_control_value('focus_absolute')}"
             )
 
-    def _blockyfix(self):
+    def _blockyfix(self) -> None:
         """
         This function is to set bitrate on legacy raspicams.
         If legacy raspicams set to variable bitrate, they tend to show

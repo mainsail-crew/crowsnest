@@ -16,13 +16,17 @@ import signal
 import time
 import traceback
 from logging.handlers import RotatingFileHandler
+from types import FrameType
+from typing import Optional, Set
 
 from crowsnest import logger, logging_helper, utils, watchdog
 from crowsnest.components.crowsnest import Crowsnest
 from crowsnest.components.streamer.streamer import Streamer
 
 
-def initial_parse_config(config_path, config):
+def initial_parse_config(
+    config_path: str, config: configparser.ConfigParser
+) -> Crowsnest:
     try:
         config.read(config_path)
     except configparser.Error as e:
@@ -42,7 +46,7 @@ def initial_parse_config(config_path, config):
     return crowsnest
 
 
-async def task_watchdog(pending):
+async def task_watchdog(pending: Set[asyncio.Task[Optional[int]]]) -> None:
     while pending:
         done, pending = await asyncio.wait(pending, return_when=asyncio.FIRST_COMPLETED)
         for task in done:
@@ -56,9 +60,9 @@ async def task_watchdog(pending):
             log_fn(f"{name} exited with code {exit_code}")
 
 
-async def start_sections(config):
-    sect_objs = []
-    sect_exec_tasks = set()
+async def start_sections(config: configparser.ConfigParser) -> None:
+    sect_objs: list = []
+    sect_exec_tasks: Set[asyncio.Task[Optional[int]]] = set()
 
     # Catches SIGINT and SIGTERM to exit gracefully and cancel all tasks
     signal.signal(signal.SIGINT, exit_gracefully)
@@ -79,15 +83,15 @@ async def start_sections(config):
 
             log_prefix = f"[{section}]: "
             section_name = " ".join(section_header[1:])
-            logger.log_quiet(f"Parse configuration ...", log_prefix)
+            logger.log_quiet("Parse configuration ...", log_prefix)
             component = utils.load_component(
                 section_keyword, section_name, config[section]
             )
             if component is not None and component.initialized:
                 sect_objs.append(component)
-                logger.log_quiet(f"Configuration looks good. Continue ...", log_prefix)
+                logger.log_quiet("Configuration looks good. Continue ...", log_prefix)
             else:
-                logger.log_error(f"Failed to parse config! Skipping ...", log_prefix)
+                logger.log_error("Failed to parse config! Skipping ...", log_prefix)
 
         logger.log_quiet("Try to start configured Cams / Services ...")
         if sect_objs:
@@ -107,7 +111,7 @@ async def start_sections(config):
             logger.log_quiet("No Service started! Exiting ...")
 
         await task_watchdog(sect_exec_tasks)
-    except Exception as e:
+    except Exception:
         logger.log_multiline(traceback.format_exc().strip(), logger.log_error)
     finally:
         for task in sect_exec_tasks:
@@ -119,28 +123,28 @@ async def start_sections(config):
         logger.log_quiet("Goodbye...")
 
 
-def exit_gracefully(signum, frame):
+def exit_gracefully(signum: int, frame: Optional[FrameType]) -> None:
     # We just log the exit
     # Childs will get same signal and trigger the except/finally block
     logger.log_quiet(f"Received signal {signum}. Shutting down...")
 
 
-def check_uptime_and_sleep(sleep_time):
+def check_uptime_and_sleep(sleep_time: int) -> None:
     if sleep_time <= 0:
         return
     try:
-        with open("/proc/uptime", "r") as f:
+        with open("/proc/uptime") as f:
             uptime_seconds = float(f.readline().split()[0])
 
         if uptime_seconds < 120:
             time.sleep(sleep_time)
-    except (IOError, ValueError):
+    except (OSError, ValueError):
         logger.log_error(
             "Couldn't properly read /proc/uptime! Skipping sleep! Please report this!"
         )
 
 
-async def main():
+async def main() -> None:
     parser = argparse.ArgumentParser(
         prog="Crowsnest",
         description="Crowsnest - A webcam daemon for Debian based distributions",

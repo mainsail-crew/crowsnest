@@ -17,7 +17,7 @@ lost_devices: list[str] = []
 running = True
 
 
-def crowsnest_watchdog():
+def crowsnest_watchdog() -> None:
     global configured_devices, lost_devices
     prefix = "Watchdog: "
 
@@ -32,7 +32,7 @@ def crowsnest_watchdog():
             logger.log_quiet(f"Device '{device}' returned.", prefix)
 
 
-async def run_watchdog():
+async def run_watchdog() -> None:
     global running
     while running:
         crowsnest_watchdog()

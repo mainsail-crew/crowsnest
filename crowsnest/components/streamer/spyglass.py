@@ -19,9 +19,9 @@ from .streamer import Streamer
 
 
 class Spyglass(Streamer):
-    keyword = "spyglass"
-    binary_names = ["run.py", "spyglass"]
-    binary_paths = ["bin/spyglass"]
+    keyword: str = "spyglass"
+    binary_names: list[str] = ["run.py", "spyglass"]
+    binary_paths: list[str] = ["bin/spyglass"]
 
     async def execute(self, lock: asyncio.Lock) -> Optional[asyncio.subprocess.Process]:
         host = "127.0.0.1"
@@ -65,6 +65,7 @@ class Spyglass(Streamer):
         # custom flags
         streamer_args.extend(self.parameters["custom_flags"].split())
 
+        assert self.binary_path is not None
         venv_path = ""
         if "run.py" in self.binary_path:
             venv_path = f"{Spyglass.binary_paths[0]}/.venv/bin/python3 "

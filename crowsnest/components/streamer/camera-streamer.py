@@ -18,9 +18,9 @@ from .streamer import Streamer
 
 
 class Camera_Streamer(Streamer):
-    keyword = "camera-streamer"
-    binary_names = ["camera-streamer"]
-    binary_paths = ["bin/camera-streamer"]
+    keyword: str = "camera-streamer"
+    binary_names: list[str] = ["camera-streamer"]
+    binary_paths: list[str] = ["bin/camera-streamer"]
 
     async def execute(self, lock: asyncio.Lock) -> Optional[asyncio.subprocess.Process]:
         if utils.is_pi5():
