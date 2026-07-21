@@ -15,7 +15,7 @@ This module contains of Python port of the macros available in
 """
 
 if TYPE_CHECKING:
-    IOCParamSize = Union[int, str, Type[ctypes._CData]]
+    IOCParamSize = Union[int, str, Type[ctypes._CData]]  # pyright: ignore[reportGeneralTypeIssues]
 
 _IOC_NRBITS = 8
 _IOC_TYPEBITS = 8

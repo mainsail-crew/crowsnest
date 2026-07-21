@@ -9,11 +9,13 @@
 
 import copy
 import os
-from typing import Optional, Union
+from typing import Optional, Union, cast
 
 from . import constants, raw, utils
 
-dev_ctls: dict[str, dict[str, dict[str, (raw.v4l2_ext_control, str)]]] = {}
+dev_ctls: dict[
+    str, dict[str, dict[str, Union[raw.v4l2_query_ext_ctrl, dict, None]]]
+] = {}
 
 
 def parse_qc(fd: int, qc: raw.v4l2_query_ext_ctrl) -> Union[dict, None]:
@@ -108,7 +110,7 @@ def init_device(device_path: str) -> bool:
             os.close(fd)
 
 
-def get_query_controls(device_path: str) -> dict[str, raw.v4l2_ext_control]:
+def get_query_controls(device_path: str) -> dict[str, raw.v4l2_query_ext_ctrl]:
     """
     Initialize a given device
     """
@@ -190,11 +192,14 @@ def get_camera_capabilities(device_path: str) -> dict:
             os.close(fd)
 
 
-def get_control_cur_value(device_path: str, control: str) -> int:
+def get_control_cur_value(device_path: str, control: str) -> Optional[int]:
     """
     Get the current value of a control of a given device
     """
-    qc: raw.v4l2_query_ext_ctrl = dev_ctls[device_path][utils.name2var(control)]["qc"]
+    qc = cast(
+        raw.v4l2_query_ext_ctrl,
+        dev_ctls[device_path][utils.name2var(control)]["qc"],
+    )
     return get_control_cur_value_with_qc(device_path, qc)
 
 
@@ -223,7 +228,7 @@ def set_control(device_path: str, control: str, value: int) -> bool:
     Set the value of a control of a given device
     """
     key = utils.name2var(control)
-    qc: raw.v4l2_query_ext_ctrl = dev_ctls[device_path][key]["qc"]
+    qc = cast(raw.v4l2_query_ext_ctrl, dev_ctls[device_path][key]["qc"])
     return set_control_with_qc(device_path, qc, value)
 
 
