@@ -1,0 +1,46 @@
+name: Pull Request
+
+on:
+  pull_request:
+    branches: [ develop ]
+
+jobs:
+  type-check:
+    name: Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version-file: 'pyproject.toml'
+          cache: 'pip'
+
+      - name: Install Dependencies
+        run: pip install basedpyright
+
+      - name: Run Basedpyright
+        run: basedpyright
+
+  format-check:
+    name: Format Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Run Ruff format check
+        uses: astral-sh/ruff-action@v4.1.0
+        with:
+          args: "format --check"
+
+  lint-check:
+    name: Lint Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Run Ruff check
+        uses: astral-sh/ruff-action@v4.1.0
+        with:
+          args: 'check'
