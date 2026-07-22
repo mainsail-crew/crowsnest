@@ -1,0 +1,20 @@
+# This file contains a list of Git commit hashes that should be hidden from the
+# regular Git history.
+#
+# This should be limited to commits that are just automated mass reformating or
+# normalizations, like Ruff or line ending changes, or refactors that only
+# relocate code. No actual logical code changes should be in these commits.
+#
+# If in doubt, it should not be added here.
+#
+# Since this file uses commit hashes, a second commit is needed to hide prior
+# commits. Commit hashes *must* use the full 40-character notation.
+#
+# To apply the ignore list in your local Git client, you must run:
+#
+#   git config blame.ignoreRevsFile .git-blame-ignore-revs
+#
+# This file is automatically used by GitHub's blame view.
+
+# style: format code (#355)
+1f9e261058a58386dac46acc402df2bdbd71dd14
