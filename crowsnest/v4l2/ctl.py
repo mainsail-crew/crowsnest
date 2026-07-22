@@ -64,7 +64,9 @@ def parse_qc(fd: int, qc: raw.v4l2_query_ext_ctrl) -> Union[dict, None]:
     return controls
 
 
-def parse_qc_of_path(device_path: str, qc: raw.v4l2_query_ext_ctrl) -> Union[dict, None]:
+def parse_qc_of_path(
+    device_path: str, qc: raw.v4l2_query_ext_ctrl
+) -> Union[dict, None]:
     """
     Parses the query control to an easy to use dictionary
     """

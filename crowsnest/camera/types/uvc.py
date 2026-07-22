@@ -54,7 +54,7 @@ class UVC(camera.Camera[dict[str, dict[str, list[str]]]]):
             for res, fps_list in data.items():
                 message += f"{indent}{res}\n"
                 for fps in fps_list:
-                    message += f"{indent*2}{fps}\n"
+                    message += f"{indent * 2}{fps}\n"
         return message[:-1]
 
     def has_mjpg_hw_encoder(self) -> bool:
