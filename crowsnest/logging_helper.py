@@ -16,7 +16,7 @@ from . import camera, logger, utils
 from .components.streamer.streamer import Streamer, load_all_streamers
 
 
-def log_initial():
+def log_initial() -> None:
     logger.log_quiet(
         "crowsnest - A webcam Service for multiple Cams and Stream Services."
     )
@@ -26,7 +26,7 @@ def log_initial():
     logger.log_quiet("Prepare Startup ...")
 
 
-def log_host_info():
+def log_host_info() -> None:
     logger.log_info("Host Information:")
     log_pre = logger.indentation
 
@@ -39,7 +39,7 @@ def log_host_info():
 
     # Release Version of MainsailOS (if file present)
     try:
-        with open("/etc/mainsailos-release", "r") as file:
+        with open("/etc/mainsailos-release") as file:
             content = file.read()
             logger.log_info_silent(f"Release: {content.strip()}", log_pre)
     except FileNotFoundError:
@@ -80,7 +80,7 @@ def log_host_info():
     logger.log_info_silent(f"Diskspace (avail. / total): {free}G / {total}G", log_pre)
 
 
-def log_streamer():
+def log_streamer() -> None:
     logger.log_info("Found Streamer:")
     load_all_streamers()
     log_pre = logger.indentation
@@ -90,9 +90,9 @@ def log_streamer():
         logger.log_info_silent(f"{bin}: {Streamer.binaries[bin]}", log_pre)
 
 
-def log_config(config_path):
+def log_config(config_path: str) -> None:
     logger.log_info(f"Print Configfile: '{config_path}'")
-    with open(config_path, "r") as file:
+    with open(config_path) as file:
         config_txt = file.read()
         # Remove comments
         config_txt = re.sub(r"#.*$", "", config_txt, flags=re.MULTILINE)
@@ -108,7 +108,7 @@ def log_config(config_path):
         )
 
 
-def log_cams():
+def log_cams() -> None:
     logger.log_info("Detect available Devices")
     libcamera = camera.camera_manager.init_camera_type(camera.Libcamera)
     uvc = camera.camera_manager.init_camera_type(camera.UVC)
@@ -135,9 +135,9 @@ def log_cams():
 
 def log_libcam(cam: camera.Libcamera) -> None:
     logger.log_info(f"Detected 'libcamera' device -> {cam.path}")
-    logger.log_info_silent(f"Advertised Formats:")
+    logger.log_info_silent("Advertised Formats:")
     log_camera_formats(cam)
-    logger.log_info_silent(f"Supported Controls:")
+    logger.log_info_silent("Supported Controls:")
     log_camera_ctrls(cam)
 
 
@@ -148,17 +148,17 @@ def log_uvc_cam(cam: camera.UVC) -> None:
         logger.log_info_silent(f"{cam.path_by_path} -> {cam.path}")
     else:
         logger.log_info_silent(f"{cam.path}")
-    logger.log_info_silent(f"Supported Formats:")
+    logger.log_info_silent("Supported Formats:")
     log_camera_formats(cam)
-    logger.log_info_silent(f"Supported Controls:")
+    logger.log_info_silent("Supported Controls:")
     log_camera_ctrls(cam)
 
 
 def log_legacy_cam(cam: camera.Legacy) -> None:
     logger.log_info(f"Detected 'Raspicam' Device -> {cam.path}")
-    logger.log_info_silent(f"Supported Formats:")
+    logger.log_info_silent("Supported Formats:")
     log_camera_formats(cam)
-    logger.log_info_silent(f"Supported Controls:")
+    logger.log_info_silent("Supported Controls:")
     log_camera_ctrls(cam)
 
 
@@ -174,7 +174,7 @@ def log_camera_ctrls(cam: camera.Camera) -> None:
     )
 
 
-def log_camera_not_found(streamer: Streamer, wrong_cam_type: bool = False):
+def log_camera_not_found(streamer: Streamer, wrong_cam_type: bool = False) -> None:
     if wrong_cam_type:
         first_sentence = "Wrong camera type or device not found."
     else:

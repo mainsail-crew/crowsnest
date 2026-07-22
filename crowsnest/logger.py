@@ -12,6 +12,7 @@ import logging
 import logging.handlers
 import os
 import sys
+from typing import Protocol
 
 DEV = 10
 DEBUG = 15
@@ -22,7 +23,13 @@ indentation = 6 * " "
 logger = logging.getLogger("crowsnest")
 
 
-def setup_logging(log_path, filemode="a", log_level=logging.INFO):
+class LogFunc(Protocol):
+    def __call__(self, msg: str, prefix: str = "", **kwargs) -> None: ...
+
+
+def setup_logging(
+    log_path: str, filemode: str = "a", log_level: int = logging.INFO
+) -> None:
     # Create log directory if it does not exist.
     os.makedirs(os.path.dirname(log_path), exist_ok=True)
 
@@ -54,11 +61,11 @@ def setup_logging(log_path, filemode="a", log_level=logging.INFO):
     logger.setLevel(log_level)
 
 
-def set_log_level(level):
+def set_log_level(level: int) -> None:
     logger.setLevel(level)
 
 
-def log(level, msg, prefix="", **kwargs):
+def log(level: int, msg: str, prefix: str = "", **kwargs) -> None:
     level_prefix = kwargs.pop("level_prefix", "")
     if level_prefix:
         final_msg = f"{level_prefix}: {prefix}{msg}"
@@ -67,15 +74,15 @@ def log(level, msg, prefix="", **kwargs):
     logger.log(level, final_msg, **kwargs)
 
 
-log_quiet = functools.partial(log, QUIET)
-log_info = functools.partial(log, logging.INFO, level_prefix="INFO")
-log_info_silent = functools.partial(log, logging.INFO)
-log_debug = functools.partial(log, DEBUG, level_prefix="DEBUG")
-log_warning = functools.partial(log, logging.WARNING, level_prefix="WARN")
-log_error = functools.partial(log, logging.ERROR, level_prefix="ERROR")
+log_quiet: LogFunc = functools.partial(log, QUIET)
+log_info: LogFunc = functools.partial(log, logging.INFO, level_prefix="INFO")
+log_info_silent: LogFunc = functools.partial(log, logging.INFO)
+log_debug: LogFunc = functools.partial(log, DEBUG, level_prefix="DEBUG")
+log_warning: LogFunc = functools.partial(log, logging.WARNING, level_prefix="WARN")
+log_error: LogFunc = functools.partial(log, logging.ERROR, level_prefix="ERROR")
 
 
-def log_multiline(msg, log_func, *args, **kwargs):
+def log_multiline(msg: str, log_func: LogFunc, *args, **kwargs) -> None:
     lines = msg.split("\n")
     line_prefix = kwargs.pop("line_prefix", "")
     for line in lines:

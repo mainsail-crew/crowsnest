@@ -7,13 +7,16 @@
 #### This File is distributed under GPLv3
 ####
 
+from __future__ import annotations
+
 import os
+from collections.abc import Sequence
 
 from ... import logger, v4l2
 from .. import camera
 
 
-class UVC(camera.Camera):
+class UVC(camera.Camera[dict[str, dict[str, list[str]]]]):
     def __init__(self, path: str, *args, **kwargs) -> None:
         super().__init__(path, *args, **kwargs)
         self.path_by_path = None
@@ -50,7 +53,7 @@ class UVC(camera.Camera):
             for res, fps_list in data.items():
                 message += f"{indent}{res}\n"
                 for fps in fps_list:
-                    message += f"{indent*2}{fps}\n"
+                    message += f"{indent * 2}{fps}\n"
         return message[:-1]
 
     def has_mjpg_hw_encoder(self) -> bool:
@@ -82,15 +85,15 @@ class UVC(camera.Camera):
             self.path, self.query_controls[control], value
         )
 
-    def get_current_control_value(self, control: str) -> int:
+    def get_current_control_value(self, control: str) -> int | None:
         return v4l2.ctl.get_control_cur_value_with_qc(
             self.path, self.query_controls[control]
         )
 
-    @staticmethod
-    def init_camera_type() -> list:
-        def get_avail_uvc(search_path):
-            avail_uvc = {}
+    @classmethod
+    def init_camera_type(cls) -> Sequence[UVC]:
+        def get_avail_uvc(search_path: str) -> dict[str, str]:
+            avail_uvc: dict[str, str] = {}
             if not os.path.exists(search_path):
                 return avail_uvc
             for file in os.listdir(search_path):

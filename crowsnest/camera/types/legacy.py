@@ -7,13 +7,17 @@
 #### This File is distributed under GPLv3
 ####
 
+from __future__ import annotations
+
+from collections.abc import Sequence
+
 from ... import v4l2
 from . import uvc
 
 
 class Legacy(uvc.UVC):
-    @staticmethod
-    def init_camera_type() -> list:
+    @classmethod
+    def init_camera_type(cls) -> Sequence[Legacy]:
         legacy_path = v4l2.ctl.get_dev_path_by_name("mmal")
         if not legacy_path:
             return []

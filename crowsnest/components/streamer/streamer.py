@@ -21,13 +21,13 @@ from ..section import Section
 
 
 class Streamer(Section, ABC):
-    section_name = "cam"
-    binary_names = []
-    binary_paths = []
-    global_no_proxy = False
+    section_name: str = "cam"
+    binary_names: list[str] = []
+    binary_paths: list[str] = []
+    global_no_proxy: bool = False
 
-    binaries = {}
-    missing_bin_txt = textwrap.dedent(
+    binaries: dict[str, Optional[str]] = {}
+    missing_bin_txt: str = textwrap.dedent(
         """\
         '%s' executable not found!
         Please make sure everything is installed correctly and up to date!
@@ -56,9 +56,9 @@ class Streamer(Section, ABC):
             Streamer.binaries[mode] = utils.get_executable(
                 self.binary_names, self.binary_paths
             )
-        self.binary_path = Streamer.binaries[mode]
+        self.binary_path: Optional[str] = Streamer.binaries[mode]
 
-    def check_config_section(self, config_section) -> bool:
+    def check_config_section(self, config_section: SectionProxy) -> bool:
         success = super().check_config_section(config_section)
         if self.binary_path is None:
             self.log_multiline(

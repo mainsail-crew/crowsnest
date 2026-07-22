@@ -11,9 +11,12 @@ import ctypes
 import errno
 import fcntl
 import re
-from typing import Generator
+from collections.abc import Generator
+from typing import TypeVar
 
 from . import constants, raw
+
+_S = TypeVar("_S", bound=ctypes.Structure)
 
 
 def ioctl_safe(fd: int, request: int, arg: ctypes.Structure) -> int:
@@ -26,12 +29,12 @@ def ioctl_safe(fd: int, request: int, arg: ctypes.Structure) -> int:
 def ioctl_iter(
     fd: int,
     cmd: int,
-    struct: ctypes.Structure,
-    start=0,
-    stop=128,
-    step=1,
-    ignore_einval=False,
-) -> Generator[ctypes.Structure, None, None]:
+    struct: _S,
+    start: int = 0,
+    stop: int = 128,
+    step: int = 1,
+    ignore_einval: bool = False,
+) -> Generator[_S, None, None]:
     for i in range(start, stop, step):
         struct.index = i
         try:
@@ -110,7 +113,7 @@ def fcc2s(val: int) -> str:
     return s
 
 
-def frmtype2s(type) -> str:
+def frmtype2s(type: int) -> str:
     types = ["Unknown", "Discrete", "Continuous", "Stepwise"]
     if type >= len(types):
         return "Unknown"
@@ -149,29 +152,21 @@ def frmsize_to_str(frmsize: raw.v4l2_frmsizeenum) -> str:
 def frmival_to_str(frmival: raw.v4l2_frmivalenum) -> str:
     string = f"Interval: {frmtype2s(frmival.type)} "
     if frmival.type == constants.V4L2_FRMIVAL_TYPE_DISCRETE:
-        string += "%ss (%s fps)" % (
-            fract2sec(frmival.discrete),
-            fract2fps(frmival.discrete),
-        )
+        string += f"{fract2sec(frmival.discrete)}s ({fract2fps(frmival.discrete)} fps)"
     elif frmival.type == constants.V4L2_FRMIVAL_TYPE_CONTINUOUS:
-        string += "%ss - %ss (%s-%s fps)" % (
-            fract2sec(frmival.stepwise.min),
-            fract2sec(frmival.stepwise.max),
-            fract2fps(frmival.stepwise.max),
-            fract2fps(frmival.stepwise.min),
+        string += (
+            f"{fract2sec(frmival.stepwise.min)}s - {fract2sec(frmival.stepwise.max)}s "
+            f"({fract2fps(frmival.stepwise.max)}-{fract2fps(frmival.stepwise.min)} fps)"
         )
     elif frmival.type == constants.V4L2_FRMIVAL_TYPE_STEPWISE:
-        string += "%ss - %ss with step %ss (%s-%s fps)" % (
-            fract2sec(frmival.stepwise.min),
-            fract2sec(frmival.stepwise.max),
-            fract2sec(frmival.stepwise.step),
-            fract2fps(frmival.stepwise.max),
-            fract2fps(frmival.stepwise.min),
+        string += (
+            f"{fract2sec(frmival.stepwise.min)}s - {fract2sec(frmival.stepwise.max)}s with step "
+            f"{fract2sec(frmival.stepwise.step)}s ({fract2fps(frmival.stepwise.max)}-{fract2fps(frmival.stepwise.min)} fps)"
         )
     return string
 
 
-def ctl_to_parsed_dict(dev_ctl: raw.v4l2_ext_control) -> dict:
+def ctl_to_parsed_dict(dev_ctl: dict) -> dict:
     values = {}
     cur_sec = ""
     for control, cur_ctl in dev_ctl.items():
