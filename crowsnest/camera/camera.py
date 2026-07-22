@@ -15,7 +15,7 @@ from collections import defaultdict
 from collections.abc import Sequence
 from typing import Any, Generic, TypeVar
 
-CameraT = TypeVar("CameraT", bound=Camera)
+CameraT = TypeVar("CameraT", bound="Camera")
 FormatsT = TypeVar("FormatsT")
 
 

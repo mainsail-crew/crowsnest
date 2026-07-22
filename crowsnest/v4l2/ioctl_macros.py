@@ -7,7 +7,7 @@
 from __future__ import annotations
 
 import ctypes
-from typing import TYPE_CHECKING, Type, Union
+from typing import TYPE_CHECKING, Union
 
 """
 This module contains of Python port of the macros available in
@@ -15,7 +15,7 @@ This module contains of Python port of the macros available in
 """
 
 if TYPE_CHECKING:
-    IOCParamSize = Union[int, str, Type[ctypes._CData]]  # pyright: ignore[reportGeneralTypeIssues]
+    IOCParamSize = Union[int, str, type[ctypes._CData]]  # pyright: ignore[reportGeneralTypeIssues]
 
 _IOC_NRBITS = 8
 _IOC_TYPEBITS = 8

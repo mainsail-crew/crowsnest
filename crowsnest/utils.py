@@ -65,8 +65,8 @@ async def log_subprocess_output(
 ) -> None:
     line = await stream.readline()
     while line:
-        l = line.decode("utf-8").strip()
-        log_func(l, prefix=line_prefix)
+        stripped_line = line.decode("utf-8").strip()
+        log_func(stripped_line, prefix=line_prefix)
         line = await stream.readline()
 
 

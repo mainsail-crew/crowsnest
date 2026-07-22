@@ -152,24 +152,16 @@ def frmsize_to_str(frmsize: raw.v4l2_frmsizeenum) -> str:
 def frmival_to_str(frmival: raw.v4l2_frmivalenum) -> str:
     string = f"Interval: {frmtype2s(frmival.type)} "
     if frmival.type == constants.V4L2_FRMIVAL_TYPE_DISCRETE:
-        string += "%ss (%s fps)" % (
-            fract2sec(frmival.discrete),
-            fract2fps(frmival.discrete),
-        )
+        string += f"{fract2sec(frmival.discrete)}s ({fract2fps(frmival.discrete)} fps)"
     elif frmival.type == constants.V4L2_FRMIVAL_TYPE_CONTINUOUS:
-        string += "%ss - %ss (%s-%s fps)" % (
-            fract2sec(frmival.stepwise.min),
-            fract2sec(frmival.stepwise.max),
-            fract2fps(frmival.stepwise.max),
-            fract2fps(frmival.stepwise.min),
+        string += (
+            f"{fract2sec(frmival.stepwise.min)}s - {fract2sec(frmival.stepwise.max)}s "
+            f"({fract2fps(frmival.stepwise.max)}-{fract2fps(frmival.stepwise.min)} fps)"
         )
     elif frmival.type == constants.V4L2_FRMIVAL_TYPE_STEPWISE:
-        string += "%ss - %ss with step %ss (%s-%s fps)" % (
-            fract2sec(frmival.stepwise.min),
-            fract2sec(frmival.stepwise.max),
-            fract2sec(frmival.stepwise.step),
-            fract2fps(frmival.stepwise.max),
-            fract2fps(frmival.stepwise.min),
+        string += (
+            f"{fract2sec(frmival.stepwise.min)}s - {fract2sec(frmival.stepwise.max)}s with step "
+            f"{fract2sec(frmival.stepwise.step)}s ({fract2fps(frmival.stepwise.max)}-{fract2fps(frmival.stepwise.min)} fps)"
         )
     return string
 

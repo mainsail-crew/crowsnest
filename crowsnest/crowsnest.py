@@ -17,7 +17,7 @@ import time
 import traceback
 from logging.handlers import RotatingFileHandler
 from types import FrameType
-from typing import Optional, Set
+from typing import Optional
 
 from crowsnest import logger, logging_helper, utils, watchdog
 from crowsnest.components.crowsnest import Crowsnest
@@ -46,7 +46,7 @@ def initial_parse_config(
     return crowsnest
 
 
-async def task_watchdog(pending: Set[asyncio.Task[Optional[int]]]) -> None:
+async def task_watchdog(pending: set[asyncio.Task[Optional[int]]]) -> None:
     while pending:
         done, pending = await asyncio.wait(pending, return_when=asyncio.FIRST_COMPLETED)
         for task in done:
@@ -62,7 +62,7 @@ async def task_watchdog(pending: Set[asyncio.Task[Optional[int]]]) -> None:
 
 async def start_sections(config: configparser.ConfigParser) -> None:
     sect_objs: list = []
-    sect_exec_tasks: Set[asyncio.Task[Optional[int]]] = set()
+    sect_exec_tasks: set[asyncio.Task[Optional[int]]] = set()
 
     # Catches SIGINT and SIGTERM to exit gracefully and cancel all tasks
     signal.signal(signal.SIGINT, exit_gracefully)

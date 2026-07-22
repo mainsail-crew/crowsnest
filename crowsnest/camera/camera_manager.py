@@ -8,11 +8,11 @@
 ####
 
 from collections.abc import Sequence
-from typing import List, Optional, TypeVar
+from typing import Optional, TypeVar
 
 from .camera import Camera
 
-_cameras: List[Camera] = []
+_cameras: list[Camera] = []
 
 CameraT = TypeVar("CameraT", bound=Camera)
 
