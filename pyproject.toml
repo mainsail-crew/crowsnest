@@ -1,3 +1,15 @@
+[project]
+requires-python = ">=3.9"
+
+[tool.ruff]
+line-length = 88
+
+[tool.ruff.lint]
+extend-select = ["C90", "I", "UP"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
 [tool.basedpyright]
 pythonVersion = "3.9"
 typeCheckingMode = "standard"
