@@ -1,0 +1,6 @@
+[tool.basedpyright]
+pythonVersion = "3.9"
+typeCheckingMode = "standard"
+include=["crowsnest"]
+
+reportMissingModuleSource=false
