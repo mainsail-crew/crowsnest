@@ -115,7 +115,7 @@ class Ustreamer(Streamer):
     def _set_v4l2_ctrls(self, ctrls: Optional[list[str]] = None) -> None:
         postfix = " V4L2 Control"
         if not ctrls:
-            self.log_quiet(f"No parameters set. Skipped.", postfix=postfix)
+            self.log_quiet("No parameters set. Skipped.", postfix=postfix)
             return
         self.log_quiet(f"Options: {', '.join(ctrls)}", postfix=postfix)
         avail_ctrls = self.cam.get_controls_string()
@@ -139,8 +139,8 @@ class Ustreamer(Streamer):
     def _brokenfocus(self, focus_absolute_conf: str) -> None:
         cur_val = self.cam.get_current_control_value("focus_absolute")
         if cur_val is not None and cur_val != int(focus_absolute_conf):
-            self.log_warning(f"Detected 'brokenfocus' device.")
-            self.log_info(f"Try to set to configured Value.")
+            self.log_warning("Detected 'brokenfocus' device.")
+            self.log_info("Try to set to configured Value.")
             self._set_v4l2_ctrl(f"focus_absolute={focus_absolute_conf}")
             self.log_debug(
                 f"Value is now: {self.cam.get_current_control_value('focus_absolute')}"

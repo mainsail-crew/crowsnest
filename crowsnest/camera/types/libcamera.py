@@ -27,7 +27,10 @@ class Libcamera(camera.Camera[list[str]]):
     def _get_controls(self) -> dict[str, dict[str, Any]]:
         ctrls: dict[str, dict[str, Any]] = {}
         try:
-            from libcamera import CameraManager, Rectangle # pyright: ignore[reportAttributeAccessIssue]
+            from libcamera import (
+                CameraManager,  # pyright: ignore[reportAttributeAccessIssue]
+                Rectangle,  # pyright: ignore[reportAttributeAccessIssue]
+            )
         except ImportError:
             return ctrls
 
@@ -90,7 +93,9 @@ class Libcamera(camera.Camera[list[str]]):
             return []
         libcam_cmd = f"{cmd} --list-cameras"
         libcam = utils.execute_shell_command(libcam_cmd, strip=False, check=False)
-        cams: list[Libcamera] = [Libcamera(path) for path in re.findall(r"\((/base.*?)\)", libcam)]
+        cams: list[Libcamera] = [
+            Libcamera(path) for path in re.findall(r"\((/base.*?)\)", libcam)
+        ]
         for cam in cams:
             cam.formats = cam._get_formats(libcam)
         return cams

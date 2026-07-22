@@ -25,7 +25,7 @@ class Camera_Streamer(Streamer):
     async def execute(self, lock: asyncio.Lock) -> Optional[asyncio.subprocess.Process]:
         if utils.is_pi5():
             self.log_warning("Mode 'camera-streamer' is not supported on Pi5/CM5!")
-            self.log_warning(f"Please change the mode of this section.")
+            self.log_warning("Please change the mode of this section.")
             return None
 
         host = "127.0.0.1"

@@ -140,7 +140,7 @@ def get_executable(names: list[str], paths: list[str]) -> Optional[str]:
 
 def grep(path: str, search: str) -> str:
     try:
-        with open(path, "r") as file:
+        with open(path) as file:
             lines = file.readlines()
             for line in lines:
                 if search in line:

@@ -11,7 +11,8 @@ import ctypes
 import errno
 import fcntl
 import re
-from typing import Generator, TypeVar
+from collections.abc import Generator
+from typing import TypeVar
 
 from . import constants, raw
 
