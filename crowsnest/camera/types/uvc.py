@@ -57,7 +57,7 @@ class UVC(camera.Camera[dict[str, dict[str, list[str]]]]):
         return message[:-1]
 
     def has_mjpg_hw_encoder(self) -> bool:
-        return any("Motion-JPEG" in fmt for fmt in self.formats.keys())
+        return any("Motion-JPEG" in fmt for fmt in self.formats)
 
     def get_controls_string(self) -> str:
         message = ""

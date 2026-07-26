@@ -1,5 +1,3 @@
-#!/usr/bin/python3
-
 #### crowsnest - A webcam Service for multiple Cams and Stream Services.
 ####
 #### Written by Patrick Gehrsitz aka mryel00 <mryel00.github@gmail.com>
@@ -9,15 +7,17 @@
 #### This File is distributed under GPLv3
 ####
 
+from __future__ import annotations
+
 import argparse
 import asyncio
 import configparser
 import signal
+import sys
 import time
 import traceback
 from logging.handlers import RotatingFileHandler
 from types import FrameType
-from typing import Optional
 
 from crowsnest import logger, logging_helper, utils, watchdog
 from crowsnest.components.crowsnest import Crowsnest
@@ -32,13 +32,13 @@ def initial_parse_config(
     except configparser.Error as e:
         logger.log_multiline(e.message, logger.log_error)
         logger.log_error("Failed to parse config! Exiting...")
-        exit(1)
+        sys.exit(1)
     crowsnest = (
         None if not config.has_section("crowsnest") else Crowsnest(config["crowsnest"])
     )
     if crowsnest is None or not crowsnest.initialized:
         logger.log_error("Failed to parse config for '[crowsnest]' section! Exiting...")
-        exit(1)
+        sys.exit(1)
 
     Streamer.global_no_proxy = crowsnest.parameters["no_proxy"]
     # We don't need the section anymore so remove it
@@ -46,7 +46,7 @@ def initial_parse_config(
     return crowsnest
 
 
-async def task_watchdog(pending: set[asyncio.Task[Optional[int]]]) -> None:
+async def task_watchdog(pending: set[asyncio.Task[int | None]]) -> None:
     while pending:
         done, pending = await asyncio.wait(pending, return_when=asyncio.FIRST_COMPLETED)
         for task in done:
@@ -62,7 +62,7 @@ async def task_watchdog(pending: set[asyncio.Task[Optional[int]]]) -> None:
 
 async def start_sections(config: configparser.ConfigParser) -> None:
     sect_objs: list = []
-    sect_exec_tasks: set[asyncio.Task[Optional[int]]] = set()
+    sect_exec_tasks: set[asyncio.Task[int | None]] = set()
 
     # Catches SIGINT and SIGTERM to exit gracefully and cancel all tasks
     signal.signal(signal.SIGINT, exit_gracefully)
@@ -111,7 +111,7 @@ async def start_sections(config: configparser.ConfigParser) -> None:
             logger.log_quiet("No Service started! Exiting ...")
 
         await task_watchdog(sect_exec_tasks)
-    except Exception:
+    except Exception:  # noqa: BLE001
         logger.log_multiline(traceback.format_exc().strip(), logger.log_error)
     finally:
         for task in sect_exec_tasks:
@@ -123,7 +123,7 @@ async def start_sections(config: configparser.ConfigParser) -> None:
         logger.log_quiet("Goodbye...")
 
 
-def exit_gracefully(signum: int, frame: Optional[FrameType]) -> None:
+def exit_gracefully(signum: int, frame: FrameType | None) -> None:
     # We just log the exit
     # Childs will get same signal and trigger the except/finally block
     logger.log_quiet(f"Received signal {signum}. Shutting down...")
@@ -183,7 +183,7 @@ async def main() -> None:
 
     if crowsnest is None:
         logger.log_error("Something went terribly wrong!")
-        exit(1)
+        sys.exit(1)
 
     if crowsnest.parameters["rollover_on_start"]:
         for h in logger.logger.handlers:

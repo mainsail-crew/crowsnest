@@ -7,6 +7,8 @@
 #### This File is distributed under GPLv3
 ####
 
+from __future__ import annotations
+
 import asyncio
 import importlib
 import os
@@ -14,7 +16,7 @@ import shlex
 import shutil
 import subprocess
 from configparser import SectionProxy
-from typing import Any, Callable, Optional
+from typing import Any, Callable
 
 from . import logger
 from .logger import LogFunc
@@ -34,7 +36,7 @@ def load_component(
     name: str,
     config_section: SectionProxy,
     path: str = "crowsnest.components",
-) -> Optional[Any]:
+) -> Any | None:
     try:
         return load_function("load_component", module_name, path)(name, config_section)
     except (ModuleNotFoundError, AttributeError) as e:
@@ -45,9 +47,7 @@ def load_component(
     return None
 
 
-def load_streamer(
-    module_name: str, path: str = "crowsnest.components"
-) -> Optional[Any]:
+def load_streamer(module_name: str, path: str = "crowsnest.components") -> Any | None:
     try:
         return load_function("load_streamer", module_name, path)()
     except (ModuleNotFoundError, AttributeError) as e:
@@ -76,7 +76,7 @@ async def execute_command(
     error_log_func: LogFunc = logger.log_error,
     info_log_pre: str = "",
     error_log_pre: str = "",
-) -> tuple[asyncio.subprocess.Process, "asyncio.Task[None]", "asyncio.Task[None]"]:
+) -> tuple[asyncio.subprocess.Process, asyncio.Task[None], asyncio.Task[None]]:
     args = shlex.split(command)
     process = await asyncio.create_subprocess_exec(
         *args, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
@@ -114,7 +114,7 @@ def bytes_to_gigabytes(value: int) -> int:
     return round(value / 1024**3)
 
 
-def find_file(name: str, path: str) -> Optional[str]:
+def find_file(name: str, path: str) -> str | None:
     for dpath, _, fnames in os.walk(path):
         for fname in fnames:
             if fname == name:
@@ -122,7 +122,7 @@ def find_file(name: str, path: str) -> Optional[str]:
     return None
 
 
-def get_executable(names: list[str], paths: list[str]) -> Optional[str]:
+def get_executable(names: list[str], paths: list[str]) -> str | None:
     if names is None or paths is None:
         return None
     for name in names:

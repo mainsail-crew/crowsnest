@@ -7,9 +7,11 @@
 #### This File is distributed under GPLv3
 ####
 
+from __future__ import annotations
+
 import asyncio
 from configparser import SectionProxy
-from typing import Optional
+from typing import ClassVar
 
 from crowsnest import logging_helper
 from crowsnest.camera.types.libcamera import Libcamera
@@ -20,10 +22,10 @@ from .streamer import Streamer
 
 class Spyglass(Streamer):
     keyword: str = "spyglass"
-    binary_names: list[str] = ["run.py", "spyglass"]
-    binary_paths: list[str] = ["bin/spyglass"]
+    binary_names: ClassVar[list[str]] = ["run.py", "spyglass"]
+    binary_paths: ClassVar[list[str]] = ["bin/spyglass"]
 
-    async def execute(self, lock: asyncio.Lock) -> Optional[asyncio.subprocess.Process]:
+    async def execute(self, lock: asyncio.Lock) -> asyncio.subprocess.Process | None:
         host = "127.0.0.1"
         if self.parameters["no_proxy"]:
             host = "0.0.0.0"

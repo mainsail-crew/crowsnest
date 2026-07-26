@@ -8,6 +8,7 @@
 ####
 
 import ctypes
+from typing import ClassVar
 
 from . import constants, ioctl_macros
 
@@ -56,7 +57,7 @@ class v4l2_queryctrl(ctypes.Structure):
 
 class v4l2_querymenu(ctypes.Structure):
     class UnionNameValue(ctypes.Union):
-        _fields_ = [("name", ctypes.c_char * 32), ("value", ctypes.c_int64)]
+        _fields_: ClassVar = [("name", ctypes.c_char * 32), ("value", ctypes.c_int64)]
 
     _pack_ = True
     _fields_ = [
@@ -72,7 +73,7 @@ class v4l2_ext_control(ctypes.Structure):
     _pack_ = True
 
     class ValueUnion(ctypes.Union):
-        _fields_ = [
+        _fields_: ClassVar = [
             ("value", ctypes.c_int32),
             ("value64", ctypes.c_int64),
             ("string", ctypes.POINTER(ctypes.c_char)),
@@ -95,7 +96,10 @@ class v4l2_ext_control(ctypes.Structure):
 
 class v4l2_ext_controls(ctypes.Structure):
     class UnionControls(ctypes.Union):
-        _fields_ = [("ctrl_class", ctypes.c_uint32), ("which", ctypes.c_uint32)]
+        _fields_: ClassVar = [
+            ("ctrl_class", ctypes.c_uint32),
+            ("which", ctypes.c_uint32),
+        ]
 
     _fields_ = [
         ("union", UnionControls),
@@ -125,7 +129,7 @@ class v4l2_frmsize_stepwise(ctypes.Structure):
 
 class v4l2_frmsizeenum(ctypes.Structure):
     class FrmSize(ctypes.Union):
-        _fields_ = [
+        _fields_: ClassVar = [
             ("discrete", v4l2_frmsize_discrete),
             ("stepwise", v4l2_frmsize_stepwise),
         ]
@@ -150,7 +154,10 @@ class v4l2_frmival_stepwise(ctypes.Structure):
 
 class v4l2_frmivalenum(ctypes.Structure):
     class FrmIval(ctypes.Union):
-        _fields_ = [("discrete", v4l2_fract), ("stepwise", v4l2_frmival_stepwise)]
+        _fields_: ClassVar = [
+            ("discrete", v4l2_fract),
+            ("stepwise", v4l2_frmival_stepwise),
+        ]
 
     _fields_ = [
         ("index", ctypes.c_uint32),
