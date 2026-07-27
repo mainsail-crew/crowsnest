@@ -19,8 +19,8 @@ from .streamer.streamer import Streamer
 
 
 class Cam(Section):
-    section_name = "cam"
-    keyword = "cam"
+    section_name: str = "cam"
+    keyword: str = "cam"
 
     def parse_config_section(
         self, config_section: SectionProxy, *args, **kwargs

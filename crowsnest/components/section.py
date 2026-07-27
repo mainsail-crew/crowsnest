@@ -20,8 +20,8 @@ from ..logger import LogFunc
 
 
 class Section(ABC):
-    section_name = "section"
-    keyword = "section"
+    section_name: str = "section"
+    keyword: str = "section"
 
     # Section looks like this:
     # [<keyword> <name>]
