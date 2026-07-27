@@ -7,9 +7,10 @@
 #### This File is distributed under GPLv3
 ####
 
+from __future__ import annotations
+
 import asyncio
 from configparser import SectionProxy
-from typing import Optional
 
 from .section import Section
 
@@ -29,7 +30,7 @@ class Crowsnest(Section):
             }
         )
 
-    async def execute(self, lock: asyncio.Lock) -> Optional[asyncio.subprocess.Process]:
+    async def execute(self, lock: asyncio.Lock) -> asyncio.subprocess.Process | None:
         raise NotImplementedError("If you see this, something went wrong!!!")
 
 

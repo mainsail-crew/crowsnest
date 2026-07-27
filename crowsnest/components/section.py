@@ -7,11 +7,13 @@
 #### This File is distributed under GPLv3
 ####
 
+from __future__ import annotations
+
 import asyncio
 import functools
 from abc import ABC, abstractmethod
 from configparser import SectionProxy
-from typing import Any, Callable, Union
+from typing import Any, Callable
 
 from .. import logger
 from ..logger import LogFunc
@@ -20,7 +22,6 @@ from ..logger import LogFunc
 class Section(ABC):
     section_name = "section"
     keyword = "section"
-    available_sections = {}
 
     # Section looks like this:
     # [<keyword> <name>]
@@ -58,7 +59,7 @@ class Section(ABC):
     @abstractmethod
     async def execute(
         self, lock: asyncio.Lock
-    ) -> Union[asyncio.subprocess.Process, int, None]:
+    ) -> asyncio.subprocess.Process | int | None:
         raise NotImplementedError("If you see this, something went wrong!!!")
 
     def __getattr__(self, name: str) -> Callable[..., None]:
@@ -71,9 +72,7 @@ class Section(ABC):
         log_function = getattr(logger, name, None)
 
         if not callable(log_function):
-            raise AttributeError(
-                f"'{type(self).__name__}' object has no attribute '{name}'"
-            )
+            raise TypeError(f"'{type(self).__name__}' object has no attribute '{name}'")
 
         @functools.wraps(log_function)
         def log_wrapper(msg: str, prefix: str = "", postfix: str = "") -> None:
@@ -91,7 +90,7 @@ class Section(ABC):
         *args,
     ) -> None:
         logger.log_multiline(
-            msg, log_func, line_prefix=f"{prefix}{self.section}{postfix}", *args
+            msg, log_func, *args, line_prefix=f"{prefix}{self.section}{postfix}"
         )
 
 

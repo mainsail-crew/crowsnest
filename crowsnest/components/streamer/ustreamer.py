@@ -7,10 +7,12 @@
 #### This File is distributed under GPLv3
 ####
 
+from __future__ import annotations
+
 import asyncio
 import re
 from configparser import SectionProxy
-from typing import Optional
+from typing import ClassVar
 
 from crowsnest import logging_helper
 from crowsnest.camera.types.uvc import UVC
@@ -21,10 +23,10 @@ from .streamer import Streamer
 
 class Ustreamer(Streamer):
     keyword: str = "ustreamer"
-    binary_names: list[str] = ["ustreamer.bin", "ustreamer"]
-    binary_paths: list[str] = ["bin/ustreamer"]
+    binary_names: ClassVar[list[str]] = ["ustreamer.bin", "ustreamer"]
+    binary_paths: ClassVar[list[str]] = ["bin/ustreamer"]
 
-    async def execute(self, lock: asyncio.Lock) -> Optional[asyncio.subprocess.Process]:
+    async def execute(self, lock: asyncio.Lock) -> asyncio.subprocess.Process | None:
         host = "127.0.0.1"
         if self.parameters["no_proxy"]:
             host = "0.0.0.0"
@@ -112,7 +114,7 @@ class Ustreamer(Streamer):
                 f"Failed to set parameter: '{ctrl.strip()}'", postfix=postfix
             )
 
-    def _set_v4l2_ctrls(self, ctrls: Optional[list[str]] = None) -> None:
+    def _set_v4l2_ctrls(self, ctrls: list[str] | None = None) -> None:
         postfix = " V4L2 Control"
         if not ctrls:
             self.log_quiet("No parameters set. Skipped.", postfix=postfix)

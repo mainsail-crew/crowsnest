@@ -7,18 +7,18 @@
 #### This File is distributed under GPLv3
 ####
 
+from __future__ import annotations
+
 import copy
 import os
-from typing import Optional, Union, cast
+from typing import cast
 
 from . import constants, raw, utils
 
-dev_ctls: dict[
-    str, dict[str, dict[str, Union[raw.v4l2_query_ext_ctrl, dict, None]]]
-] = {}
+dev_ctls: dict[str, dict[str, dict[str, raw.v4l2_query_ext_ctrl | dict | None]]] = {}
 
 
-def parse_qc(fd: int, qc: raw.v4l2_query_ext_ctrl) -> Union[dict, None]:
+def parse_qc(fd: int, qc: raw.v4l2_query_ext_ctrl) -> dict | None:
     """
     Parses the query control to an easy to use dictionary
     """
@@ -64,9 +64,7 @@ def parse_qc(fd: int, qc: raw.v4l2_query_ext_ctrl) -> Union[dict, None]:
     return controls
 
 
-def parse_qc_of_path(
-    device_path: str, qc: raw.v4l2_query_ext_ctrl
-) -> Union[dict, None]:
+def parse_qc_of_path(device_path: str, qc: raw.v4l2_query_ext_ctrl) -> dict | None:
     """
     Parses the query control to an easy to use dictionary
     """
@@ -140,7 +138,7 @@ def get_query_controls(device_path: str) -> dict[str, raw.v4l2_query_ext_ctrl]:
             os.close(fd)
 
 
-def get_dev_ctl(device_path: str) -> Optional[dict]:
+def get_dev_ctl(device_path: str) -> dict | None:
     if device_path not in dev_ctls:
         init_successfull = init_device(device_path)
         if not init_successfull:
@@ -194,7 +192,7 @@ def get_camera_capabilities(device_path: str) -> dict:
             os.close(fd)
 
 
-def get_control_cur_value(device_path: str, control: str) -> Optional[int]:
+def get_control_cur_value(device_path: str, control: str) -> int | None:
     """
     Get the current value of a control of a given device
     """
@@ -207,7 +205,7 @@ def get_control_cur_value(device_path: str, control: str) -> Optional[int]:
 
 def get_control_cur_value_with_qc(
     device_path: str, qc: raw.v4l2_query_ext_ctrl
-) -> Optional[int]:
+) -> int | None:
     """
     Get the current value of a control of a given device
     """
