@@ -19,7 +19,7 @@ jobs:
           cache: 'pip'
 
       - name: Install Dependencies
-        run: pip install basedpyright
+        run: pip install --group dev
 
       - name: Run Basedpyright
         run: basedpyright
