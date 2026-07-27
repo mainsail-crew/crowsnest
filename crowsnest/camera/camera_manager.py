@@ -7,8 +7,10 @@
 #### This File is distributed under GPLv3
 ####
 
+from __future__ import annotations
+
 from collections.abc import Sequence
-from typing import Optional, TypeVar
+from typing import TypeVar
 
 from .camera import Camera
 
@@ -17,7 +19,7 @@ _cameras: list[Camera] = []
 CameraT = TypeVar("CameraT", bound=Camera)
 
 
-def get_cam_by_path(path: str) -> Optional[Camera]:
+def get_cam_by_path(path: str) -> Camera | None:
     return next((cam for cam in _cameras if cam.path_equals(path)), None)
 
 

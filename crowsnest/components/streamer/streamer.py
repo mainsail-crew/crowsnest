@@ -7,6 +7,8 @@
 #### This File is distributed under GPLv3
 ####
 
+from __future__ import annotations
+
 import asyncio
 import os
 import textwrap
@@ -14,7 +16,7 @@ from abc import ABC, abstractmethod
 from configparser import SectionProxy
 from os import listdir
 from os.path import isfile, join
-from typing import Optional
+from typing import ClassVar
 
 from ... import logger, utils
 from ..section import Section
@@ -22,11 +24,11 @@ from ..section import Section
 
 class Streamer(Section, ABC):
     section_name: str = "cam"
-    binary_names: list[str] = []
-    binary_paths: list[str] = []
+    binary_names: ClassVar[list[str]] = []
+    binary_paths: ClassVar[list[str]] = []
     global_no_proxy: bool = False
 
-    binaries: dict[str, Optional[str]] = {}
+    binaries: ClassVar[dict[str, str | None]] = {}
     missing_bin_txt: str = textwrap.dedent(
         """\
         '%s' executable not found!
@@ -56,7 +58,7 @@ class Streamer(Section, ABC):
             Streamer.binaries[mode] = utils.get_executable(
                 self.binary_names, self.binary_paths
             )
-        self.binary_path: Optional[str] = Streamer.binaries[mode]
+        self.binary_path: str | None = Streamer.binaries[mode]
 
     def check_config_section(self, config_section: SectionProxy) -> bool:
         success = super().check_config_section(config_section)
@@ -68,7 +70,7 @@ class Streamer(Section, ABC):
         return success
 
     @abstractmethod
-    async def execute(self, lock: asyncio.Lock) -> Optional[asyncio.subprocess.Process]:
+    async def execute(self, lock: asyncio.Lock) -> asyncio.subprocess.Process | None:
         raise NotImplementedError("If you see this, something went wrong!!!")
 
 

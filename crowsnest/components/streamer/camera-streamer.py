@@ -7,9 +7,11 @@
 #### This File is distributed under GPLv3
 ####
 
+from __future__ import annotations
+
 import asyncio
 from configparser import SectionProxy
-from typing import Optional
+from typing import ClassVar
 
 from crowsnest import logging_helper
 
@@ -19,10 +21,10 @@ from .streamer import Streamer
 
 class Camera_Streamer(Streamer):
     keyword: str = "camera-streamer"
-    binary_names: list[str] = ["camera-streamer"]
-    binary_paths: list[str] = ["bin/camera-streamer"]
+    binary_names: ClassVar[list[str]] = ["camera-streamer"]
+    binary_paths: ClassVar[list[str]] = ["bin/camera-streamer"]
 
-    async def execute(self, lock: asyncio.Lock) -> Optional[asyncio.subprocess.Process]:
+    async def execute(self, lock: asyncio.Lock) -> asyncio.subprocess.Process | None:
         if utils.is_pi5():
             self.log_warning("Mode 'camera-streamer' is not supported on Pi5/CM5!")
             self.log_warning("Please change the mode of this section.")

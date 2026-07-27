@@ -1,11 +1,18 @@
 [project]
+name = "crowsnest"
 requires-python = ">=3.9"
+
+[dependency-groups]
+dev = [
+    "ruff~=0.16.0",
+    "basedpyright~=1.39.0"
+]
 
 [tool.ruff]
 line-length = 88
 
 [tool.ruff.lint]
-extend-select = ["C90", "I", "UP"]
+extend-select = ["C90"]
 
 [tool.ruff.lint.mccabe]
 max-complexity = 10

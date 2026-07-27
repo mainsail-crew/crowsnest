@@ -18,7 +18,6 @@ running = True
 
 
 def crowsnest_watchdog() -> None:
-    global configured_devices, lost_devices
     prefix = "Watchdog: "
 
     for device in configured_devices:
@@ -33,7 +32,6 @@ def crowsnest_watchdog() -> None:
 
 
 async def run_watchdog() -> None:
-    global running
     while running:
         crowsnest_watchdog()
         await asyncio.sleep(120)

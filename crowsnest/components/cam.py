@@ -7,10 +7,11 @@
 #### This File is distributed under GPLv3
 ####
 
+from __future__ import annotations
+
 import asyncio
 import traceback
 from configparser import SectionProxy
-from typing import Union
 
 from .. import logger, utils, watchdog
 from .section import Section
@@ -44,7 +45,7 @@ class Cam(Section):
 
     async def execute(
         self, lock: asyncio.Lock
-    ) -> Union[asyncio.subprocess.Process, int, None]:
+    ) -> asyncio.subprocess.Process | int | None:
         if self.streamer is None:
             self.log_error("No streamer loaded!")
             return
@@ -59,7 +60,7 @@ class Cam(Section):
             if process is not None:
                 await process.wait()
                 return process.returncode
-        except Exception:
+        except Exception:  # noqa: BLE001
             self.log_multiline(traceback.format_exc().strip(), logger.log_error)
         finally:
             if self.streamer.parameters["device"] in watchdog.configured_devices:
