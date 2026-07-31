@@ -60,7 +60,7 @@ async def task_watchdog(pending: set[asyncio.Task[int | None]]) -> None:
             log_fn(f"{name} exited with code {exit_code}")
 
 
-def _create_section_components(config: configparser.ConfigParser) -> list:
+def _create_section_objects(config: configparser.ConfigParser) -> list:
     sect_objs: list = []
 
     for section in config.sections():
@@ -107,7 +107,7 @@ async def start_sections(config: configparser.ConfigParser) -> None:
     logger.log_quiet("Try to parse configured Cams / Services...")
 
     try:
-        sect_objs = _create_section_components(config)
+        sect_objs = _create_section_objects(config)
 
         logger.log_quiet("Try to start configured Cams / Services ...")
         if sect_objs:
