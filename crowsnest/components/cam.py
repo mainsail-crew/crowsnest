@@ -22,6 +22,12 @@ class Cam(Section):
     section_name: str = "cam"
     keyword: str = "cam"
 
+    def __init__(self, name: str, config_section: SectionProxy) -> None:
+        if name == "":
+            logger.log_error(f"Section [{config_section.name}] is missing a name!")
+            logger.log_error(f"Expected format: [{self.section_name} camera_name]")
+        super().__init__(name, config_section)
+
     def parse_config_section(
         self, config_section: SectionProxy, *args, **kwargs
     ) -> None:

@@ -83,9 +83,19 @@ async def start_sections(config: configparser.ConfigParser) -> None:
 
             log_prefix = f"[{section}]: "
             section_name = " ".join(section_header[1:])
+            if section_name != section_name.strip():
+                logger.log_error(
+                    f"Section name of [{section}] has leading or trailing whitespaces!"
+                )
+                stripped_name = section_name.strip()
+                whitespace = bool(len(stripped_name))
+                logger.log_error(
+                    f"Expected: [{section_header}{whitespace * ' '}{section_name.strip()}"
+                )
+                continue
             logger.log_quiet("Parse configuration ...", log_prefix)
             component = utils.load_component(
-                section_keyword, section_name, config[section]
+                section_keyword, section_name.strip(), config[section]
             )
             if component is not None and component.initialized:
                 sect_objs.append(component)
