@@ -75,7 +75,7 @@ def _create_section_objects(config: configparser.ConfigParser) -> list:
                 f"Section name of [{section}] has leading or trailing whitespaces!"
             )
             stripped_name = section_name.strip()
-            whitespace = bool(len(stripped_name))
+            whitespace = len(stripped_name) > 0
             logger.log_error(
                 f"Expected: [{section_header}{whitespace * ' '}{section_name.strip()}"
             )
