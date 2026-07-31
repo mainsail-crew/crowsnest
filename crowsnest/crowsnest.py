@@ -69,6 +69,7 @@ def _create_section_objects(config: configparser.ConfigParser) -> list:
 
         log_prefix = f"[{section}]: "
         section_name = " ".join(section_header[1:])
+
         if section_name != section_name.strip():
             logger.log_error(
                 f"Section name of [{section}] has leading or trailing whitespaces!"
@@ -79,6 +80,7 @@ def _create_section_objects(config: configparser.ConfigParser) -> list:
                 f"Expected: [{section_header}{whitespace * ' '}{section_name.strip()}"
             )
             continue
+
         logger.log_quiet("Parse configuration ...", log_prefix)
         component = utils.load_component(
             section_keyword, section_name.strip(), config[section]
