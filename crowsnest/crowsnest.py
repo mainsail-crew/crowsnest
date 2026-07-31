@@ -60,8 +60,39 @@ async def task_watchdog(pending: set[asyncio.Task[int | None]]) -> None:
             log_fn(f"{name} exited with code {exit_code}")
 
 
-async def start_sections(config: configparser.ConfigParser) -> None:
+def _create_section_components(config: configparser.ConfigParser) -> list:
     sect_objs: list = []
+
+    for section in config.sections():
+        section_header = section.split(" ")
+        section_keyword = section_header[0]
+
+        log_prefix = f"[{section}]: "
+        section_name = " ".join(section_header[1:])
+        if section_name != section_name.strip():
+            logger.log_error(
+                f"Section name of [{section}] has leading or trailing whitespaces!"
+            )
+            stripped_name = section_name.strip()
+            whitespace = bool(len(stripped_name))
+            logger.log_error(
+                f"Expected: [{section_header}{whitespace * ' '}{section_name.strip()}"
+            )
+            continue
+        logger.log_quiet("Parse configuration ...", log_prefix)
+        component = utils.load_component(
+            section_keyword, section_name.strip(), config[section]
+        )
+        if component is not None and component.initialized:
+            sect_objs.append(component)
+            logger.log_quiet("Configuration looks good. Continue ...", log_prefix)
+        else:
+            logger.log_error("Failed to parse config! Skipping ...", log_prefix)
+
+    return sect_objs
+
+
+async def start_sections(config: configparser.ConfigParser) -> None:
     sect_exec_tasks: set[asyncio.Task[int | None]] = set()
 
     # Catches SIGINT and SIGTERM to exit gracefully and cancel all tasks
@@ -76,32 +107,7 @@ async def start_sections(config: configparser.ConfigParser) -> None:
     logger.log_quiet("Try to parse configured Cams / Services...")
 
     try:
-        for section in config.sections():
-            section_header = section.split(" ")
-            section_object = None
-            section_keyword = section_header[0]
-
-            log_prefix = f"[{section}]: "
-            section_name = " ".join(section_header[1:])
-            if section_name != section_name.strip():
-                logger.log_error(
-                    f"Section name of [{section}] has leading or trailing whitespaces!"
-                )
-                stripped_name = section_name.strip()
-                whitespace = bool(len(stripped_name))
-                logger.log_error(
-                    f"Expected: [{section_header}{whitespace * ' '}{section_name.strip()}"
-                )
-                continue
-            logger.log_quiet("Parse configuration ...", log_prefix)
-            component = utils.load_component(
-                section_keyword, section_name.strip(), config[section]
-            )
-            if component is not None and component.initialized:
-                sect_objs.append(component)
-                logger.log_quiet("Configuration looks good. Continue ...", log_prefix)
-            else:
-                logger.log_error("Failed to parse config! Skipping ...", log_prefix)
+        sect_objs = _create_section_components(config)
 
         logger.log_quiet("Try to start configured Cams / Services ...")
         if sect_objs:
