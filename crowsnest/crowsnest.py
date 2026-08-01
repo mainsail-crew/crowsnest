@@ -12,6 +12,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import configparser
+import re
 import signal
 import sys
 import time
@@ -24,11 +25,24 @@ from crowsnest.components.crowsnest import Crowsnest
 from crowsnest.components.streamer.streamer import Streamer
 
 
+def _clean_header(config_path):
+    with open(config_path) as config:
+        for line in config:
+            if not line.strip().startswith("["):
+                yield re.sub(
+                    r"\[(.*?)\]",
+                    lambda m: f"[{' '.join(m.group(1).split())}]",
+                    line,
+                )
+            else:
+                yield line
+
+
 def initial_parse_config(
     config_path: str, config: configparser.ConfigParser
 ) -> Crowsnest:
     try:
-        config.read(config_path)
+        config.read_file(_clean_header(config_path))
     except configparser.Error as e:
         logger.log_multiline(e.message, logger.log_error)
         logger.log_error("Failed to parse config! Exiting...")
@@ -60,41 +74,8 @@ async def task_watchdog(pending: set[asyncio.Task[int | None]]) -> None:
             log_fn(f"{name} exited with code {exit_code}")
 
 
-def _create_section_objects(config: configparser.ConfigParser) -> list:
-    sect_objs: list = []
-
-    for section in config.sections():
-        section_header = section.split(" ")
-        section_keyword = section_header[0]
-
-        log_prefix = f"[{section}]: "
-        section_name = " ".join(section_header[1:])
-
-        if section_name != section_name.strip():
-            logger.log_error(
-                f"Section name of [{section}] has leading or trailing whitespaces!"
-            )
-            stripped_name = section_name.strip()
-            whitespace = len(stripped_name) > 0
-            logger.log_error(
-                f"Expected: [{section_header}{whitespace * ' '}{section_name.strip()}"
-            )
-            continue
-
-        logger.log_quiet("Parse configuration ...", log_prefix)
-        component = utils.load_component(
-            section_keyword, section_name.strip(), config[section]
-        )
-        if component is not None and component.initialized:
-            sect_objs.append(component)
-            logger.log_quiet("Configuration looks good. Continue ...", log_prefix)
-        else:
-            logger.log_error("Failed to parse config! Skipping ...", log_prefix)
-
-    return sect_objs
-
-
 async def start_sections(config: configparser.ConfigParser) -> None:
+    sect_objs: list = []
     sect_exec_tasks: set[asyncio.Task[int | None]] = set()
 
     # Catches SIGINT and SIGTERM to exit gracefully and cancel all tasks
@@ -109,7 +90,23 @@ async def start_sections(config: configparser.ConfigParser) -> None:
     logger.log_quiet("Try to parse configured Cams / Services...")
 
     try:
-        sect_objs = _create_section_objects(config)
+        for section in config.sections():
+            section_header = section.split(" ")
+            section_object = None
+            section_keyword = section_header[0]
+
+            log_prefix = f"[{section}]: "
+            section_name = " ".join(section_header[1:])
+
+            logger.log_quiet("Parse configuration ...", log_prefix)
+            component = utils.load_component(
+                section_keyword, section_name, config[section]
+            )
+            if component is not None and component.initialized:
+                sect_objs.append(component)
+                logger.log_quiet("Configuration looks good. Continue ...", log_prefix)
+            else:
+                logger.log_error("Failed to parse config! Skipping ...", log_prefix)
 
         logger.log_quiet("Try to start configured Cams / Services ...")
         if sect_objs:
@@ -173,6 +170,7 @@ async def main() -> None:
             "loglevel": utils.log_level_converter,
             "resolution": utils.resolution_converter,
         },
+        strict=False,
     )
 
     parser.add_argument(
