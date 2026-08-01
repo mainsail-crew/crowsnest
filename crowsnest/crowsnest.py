@@ -12,6 +12,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import configparser
+import re
 import signal
 import sys
 import time
@@ -24,11 +25,24 @@ from crowsnest.components.crowsnest import Crowsnest
 from crowsnest.components.streamer.streamer import Streamer
 
 
+def _clean_header(config_path):
+    with open(config_path) as config:
+        for line in config:
+            if line.strip().startswith("["):
+                yield re.sub(
+                    r"\[(.*?)\]",
+                    lambda m: f"[{' '.join(m.group(1).split())}]",
+                    line,
+                )
+            else:
+                yield line
+
+
 def initial_parse_config(
     config_path: str, config: configparser.ConfigParser
 ) -> Crowsnest:
     try:
-        config.read(config_path)
+        config.read_file(_clean_header(config_path))
     except configparser.Error as e:
         logger.log_multiline(e.message, logger.log_error)
         logger.log_error("Failed to parse config! Exiting...")
@@ -155,6 +169,7 @@ async def main() -> None:
             "loglevel": utils.log_level_converter,
             "resolution": utils.resolution_converter,
         },
+        strict=False,
     )
 
     parser.add_argument(
