@@ -28,7 +28,7 @@ from crowsnest.components.streamer.streamer import Streamer
 def _clean_header(config_path):
     with open(config_path) as config:
         for line in config:
-            if not line.strip().startswith("["):
+            if line.strip().startswith("["):
                 yield re.sub(
                     r"\[(.*?)\]",
                     lambda m: f"[{' '.join(m.group(1).split())}]",
