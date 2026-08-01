@@ -97,7 +97,6 @@ async def start_sections(config: configparser.ConfigParser) -> None:
 
             log_prefix = f"[{section}]: "
             section_name = " ".join(section_header[1:])
-
             logger.log_quiet("Parse configuration ...", log_prefix)
             component = utils.load_component(
                 section_keyword, section_name, config[section]
