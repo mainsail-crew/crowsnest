@@ -2,6 +2,27 @@
 # Changelog
 All notable changes to Crowsnest will be documented in this file.
 
+## [5.0.10](https://github.com/mainsail-crew/crowsnest/releases/tag/v5.0.10) - 2026-08-01
+### Bug Fixes and Improvements
+
+- Increase strictness on section names ([#362](https://github.com/mainsail-crew/crowsnest/pull/362))
+
+### Refactor
+
+- Fix and add type hints ([#353](https://github.com/mainsail-crew/crowsnest/pull/353))
+- Refactor to satisfy 0.16.0 `ruff check` ([#358](https://github.com/mainsail-crew/crowsnest/pull/358))
+- Add typing and remove unused variable ([#361](https://github.com/mainsail-crew/crowsnest/pull/361))
+
+### Styling
+
+- Format code ([#355](https://github.com/mainsail-crew/crowsnest/pull/355))
+
+### Other
+
+- **pyproject.toml**: Add dev dependency-group ([#359](https://github.com/mainsail-crew/crowsnest/pull/359))
+- Add ruff config ([#354](https://github.com/mainsail-crew/crowsnest/pull/354))
+- Add .git-blame-ignore-revs ([#357](https://github.com/mainsail-crew/crowsnest/pull/357))
+
 ## [5.0.9](https://github.com/mainsail-crew/crowsnest/releases/tag/v5.0.9) - 2026-06-14
 ### Bug Fixes and Improvements
 
