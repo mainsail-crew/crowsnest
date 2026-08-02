@@ -90,29 +90,30 @@ class UVC(camera.Camera[dict[str, dict[str, list[str]]]]):
             self.path, self.query_controls[control]
         )
 
+    @staticmethod
+    def get_avail_uvc(search_path: str) -> dict[str, str]:
+        avail_uvc: dict[str, str] = {}
+        if not os.path.exists(search_path):
+            return avail_uvc
+        for file in os.listdir(search_path):
+            dev_path = os.path.join(search_path, file)
+            if not os.path.islink(dev_path):
+                continue
+            real_path = os.path.realpath(dev_path)
+            if v4l2.ctl.get_formats(real_path):
+                avail_uvc[real_path] = dev_path
+        return avail_uvc
+
     @classmethod
     def init_camera_type(cls) -> Sequence[UVC]:
-        def get_avail_uvc(search_path: str) -> dict[str, str]:
-            avail_uvc: dict[str, str] = {}
-            if not os.path.exists(search_path):
-                return avail_uvc
-            for file in os.listdir(search_path):
-                dev_path = os.path.join(search_path, file)
-                if not os.path.islink(dev_path):
-                    continue
-                real_path = os.path.realpath(dev_path)
-                if v4l2.ctl.get_formats(real_path):
-                    avail_uvc[real_path] = dev_path
-            return avail_uvc
-
-        avail_by_id = get_avail_uvc("/dev/v4l/by-id/")
+        avail_by_id = cls.get_avail_uvc("/dev/v4l/by-id/")
 
         avail_uvc_cameras = {
             dev_path: {
                 "by_path": by_path,
                 "by_id": avail_by_id.get(dev_path, None),
             }
-            for dev_path, by_path in get_avail_uvc("/dev/v4l/by-path").items()
+            for dev_path, by_path in cls.get_avail_uvc("/dev/v4l/by-path").items()
             if "usb" in by_path
         }
 
