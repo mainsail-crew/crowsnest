@@ -98,8 +98,11 @@ class UVC(camera.Camera[dict[str, dict[str, list[str]]]]):
                 return avail_uvc
             for file in os.listdir(search_path):
                 dev_path = os.path.join(search_path, file)
-                if os.path.islink(dev_path) and dev_path.endswith("index0"):
-                    avail_uvc[os.path.realpath(dev_path)] = dev_path
+                if not os.path.islink(dev_path):
+                    continue
+                real_path = os.path.realpath(dev_path)
+                if v4l2.ctl.get_formats(real_path):
+                    avail_uvc[real_path] = dev_path
             return avail_uvc
 
         avail_by_id = get_avail_uvc("/dev/v4l/by-id/")
