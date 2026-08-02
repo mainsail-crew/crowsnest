@@ -90,8 +90,8 @@ class UVC(camera.Camera[dict[str, dict[str, list[str]]]]):
             self.path, self.query_controls[control]
         )
 
-    @classmethod
-    def get_avail_uvc(cls, search_path: str) -> dict[str, str]:
+    @staticmethod
+    def get_avail_uvc(search_path: str) -> dict[str, str]:
         avail_uvc: dict[str, str] = {}
         if not os.path.exists(search_path):
             return avail_uvc
@@ -106,14 +106,14 @@ class UVC(camera.Camera[dict[str, dict[str, list[str]]]]):
 
     @classmethod
     def init_camera_type(cls) -> Sequence[UVC]:
-        avail_by_id = UVC.get_avail_uvc("/dev/v4l/by-id/")
+        avail_by_id = cls.get_avail_uvc("/dev/v4l/by-id/")
 
         avail_uvc_cameras = {
             dev_path: {
                 "by_path": by_path,
                 "by_id": avail_by_id.get(dev_path, None),
             }
-            for dev_path, by_path in UVC.get_avail_uvc("/dev/v4l/by-path").items()
+            for dev_path, by_path in cls.get_avail_uvc("/dev/v4l/by-path").items()
             if "usb" in by_path
         }
 
