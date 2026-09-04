@@ -69,7 +69,8 @@ class UVC(camera.Camera[dict[str, dict[str, list[str]]]]):
                 line += max(0, 35 - len(line)) * " " + ":"
                 if data["type"] in ("int",):
                     line += f" min={data['min']} max={data['max']} step={data['step']}"
-                line += f" default={data['default']}"
+                if "default" in data:
+                    line += f" default={data['default']}"
                 line += f" value={self.get_current_control_value(control)}"
                 if "flags" in data:
                     line += f" flags={data['flags']}"
