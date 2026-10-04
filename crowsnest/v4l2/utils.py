@@ -57,6 +57,7 @@ def v4l2_ctrl_type_to_string(ctrl_type: int) -> str:
         constants.V4L2_CTRL_TYPE_STRING: "str",
         constants.V4L2_CTRL_TYPE_BITMASK: "bitmask",
         constants.V4L2_CTRL_TYPE_INTEGER_MENU: "intmenu",
+        constants.V4L2_CTRL_TYPE_RECT: "rect",
     }
     return dict_ctrl_type.get(ctrl_type, "unknown")
 
@@ -176,3 +177,8 @@ def ctl_to_parsed_dict(dev_ctl: dict) -> dict:
             continue
         values[cur_sec][control] = cur_ctl["values"]
     return values
+
+
+def int_to_hex_string(val: int) -> str:
+    # Mask with 0xFFFFFFFF to handle negative numbers exactly like C's %x
+    return f"0x{val & 0xFFFFFFFF:08x}"

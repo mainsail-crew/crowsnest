@@ -69,6 +69,15 @@ class v4l2_querymenu(ctypes.Structure):
     _anonymous_ = ("union",)
 
 
+class v4l2_rect(ctypes.Structure):
+    _fields_ = [
+        ("left", ctypes.c_int32),
+        ("top", ctypes.c_int32),
+        ("width", ctypes.c_uint32),
+        ("height", ctypes.c_uint32),
+    ]
+
+
 class v4l2_ext_control(ctypes.Structure):
     _pack_ = True
 
@@ -82,7 +91,8 @@ class v4l2_ext_control(ctypes.Structure):
             ("p_u32", ctypes.POINTER(ctypes.c_uint32)),
             ("p_s32", ctypes.POINTER(ctypes.c_int32)),
             ("p_s64", ctypes.POINTER(ctypes.c_int64)),
-            ("ptr", ctypes.POINTER(None)),
+            ("ptr", ctypes.c_void_p),
+            ("p_rect", ctypes.POINTER(v4l2_rect)),
         ]
 
     _fields_ = [
@@ -187,6 +197,10 @@ class v4l2_query_ext_ctrl(ctypes.Structure):
         ("dim", ctypes.c_uint32 * constants.V4L2_CTRL_MAX_DIMS),
         ("reserved", ctypes.c_uint32 * 32),
     ]
+
+
+def V4L2_CTRL_ID2WHICH(id: int) -> int:
+    return id & 0x0FFF0000
 
 
 VIDIOC_QUERYCAP = ioctl_macros.IOR(ord("V"), 0, v4l2_capability)

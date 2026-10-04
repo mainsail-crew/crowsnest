@@ -10,12 +10,31 @@
 from __future__ import annotations
 
 import copy
+import ctypes
 import os
 from typing import cast
 
 from . import constants, raw, utils
 
 dev_ctls: dict[str, dict[str, dict[str, raw.v4l2_query_ext_ctrl | dict | None]]] = {}
+
+
+def parse_qc_menu(fd: int, qc: raw.v4l2_query_ext_ctrl) -> dict:
+    controls_menu = {}
+    for menu in utils.ioctl_iter(
+        fd,
+        raw.VIDIOC_QUERYMENU,
+        raw.v4l2_querymenu(id=qc.id),
+        qc.minimum,
+        qc.maximum + 1,
+        qc.step,
+        True,
+    ):
+        if qc.type == constants.V4L2_CTRL_TYPE_MENU:
+            controls_menu[menu.index] = menu.name.decode()
+        else:
+            controls_menu[menu.index] = menu.value
+    return controls_menu
 
 
 def parse_qc(fd: int, qc: raw.v4l2_query_ext_ctrl) -> dict | None:
@@ -29,11 +48,21 @@ def parse_qc(fd: int, qc: raw.v4l2_query_ext_ctrl) -> dict | None:
 
     controls = {}
     controls["type"] = utils.v4l2_ctrl_type_to_string(qc.type)
-    if qc.type in (constants.V4L2_CTRL_TYPE_INTEGER, constants.V4L2_CTRL_TYPE_MENU):
+
+    if qc.type in (
+        constants.V4L2_CTRL_TYPE_INTEGER,
+        constants.V4L2_CTRL_TYPE_MENU,
+        constants.V4L2_CTRL_TYPE_STRING,
+    ):
         controls["min"] = qc.minimum
         controls["max"] = qc.maximum
-    if qc.type == constants.V4L2_CTRL_TYPE_INTEGER:
+
+    if qc.type in (
+        constants.V4L2_CTRL_TYPE_INTEGER,
+        constants.V4L2_CTRL_TYPE_STRING,
+    ):
         controls["step"] = qc.step
+
     if qc.type in (
         constants.V4L2_CTRL_TYPE_INTEGER,
         constants.V4L2_CTRL_TYPE_MENU,
@@ -41,26 +70,20 @@ def parse_qc(fd: int, qc: raw.v4l2_query_ext_ctrl) -> dict | None:
         constants.V4L2_CTRL_TYPE_BOOLEAN,
     ):
         controls["default"] = qc.default_value
+
     if qc.flags:
         controls["flags"] = utils.ctrlflags2str(qc.flags)
+
     if qc.type in (
         constants.V4L2_CTRL_TYPE_MENU,
         constants.V4L2_CTRL_TYPE_INTEGER_MENU,
     ):
-        controls["menu"] = {}
-        for menu in utils.ioctl_iter(
-            fd,
-            raw.VIDIOC_QUERYMENU,
-            raw.v4l2_querymenu(id=qc.id),
-            qc.minimum,
-            qc.maximum + 1,
-            qc.step,
-            True,
-        ):
-            if qc.type == constants.V4L2_CTRL_TYPE_MENU:
-                controls["menu"][menu.index] = menu.name.decode()
-            else:
-                controls["menu"][menu.index] = menu.value
+        controls["menu"] = parse_qc_menu(fd, qc)
+
+    if qc.type == constants.V4L2_CTRL_TYPE_BITMASK:
+        controls["max"] = utils.int_to_hex_string(qc.maximum)
+        controls["default"] = utils.int_to_hex_string(qc.default_value)
+
     return controls
 
 
@@ -192,7 +215,7 @@ def get_camera_capabilities(device_path: str) -> dict:
             os.close(fd)
 
 
-def get_control_cur_value(device_path: str, control: str) -> int | None:
+def get_control_cur_value(device_path: str, control: str) -> int | str | None:
     """
     Get the current value of a control of a given device
     """
@@ -205,22 +228,51 @@ def get_control_cur_value(device_path: str, control: str) -> int | None:
 
 def get_control_cur_value_with_qc(
     device_path: str, qc: raw.v4l2_query_ext_ctrl
-) -> int | None:
+) -> int | str | None:
     """
     Get the current value of a control of a given device
     """
     fd = None
+    has_payload = qc.flags & constants.V4L2_CTRL_FLAG_HAS_PAYLOAD
+    ctrl = raw.v4l2_control(id=qc.id)
+    ctrls = raw.v4l2_ext_controls(which=raw.V4L2_CTRL_ID2WHICH(qc.id), count=1)
+    payload_buffer = None
+
+    if has_payload:
+        ext_ctrl = raw.v4l2_ext_control(id=qc.id, size=qc.elems * qc.elem_size)
+
+        payload_buffer = (ctypes.c_uint8 * ext_ctrl.size)()
+        ext_ctrl.ptr = ctypes.cast(payload_buffer, ctypes.c_void_p)
+        ext_ctrl._keep_alive_buffer = payload_buffer
+
+        ctrls.controls = ctypes.pointer(ext_ctrl)
+
     try:
         fd = os.open(device_path, os.O_RDWR)
-        ctrl = raw.v4l2_control()
-        ctrl.id = qc.id
-        utils.ioctl_safe(fd, raw.VIDIOC_G_CTRL, ctrl)
-        return ctrl.value
+        if has_payload:
+            utils.ioctl_safe(fd, raw.VIDIOC_G_EXT_CTRLS, ctrls)
+        else:
+            utils.ioctl_safe(fd, raw.VIDIOC_G_CTRL, ctrl)
     except OSError:
         return None
     finally:
         if fd is not None:
             os.close(fd)
+
+    if qc.type == constants.V4L2_CTRL_TYPE_STRING:
+        if payload_buffer is None:
+            return ""
+        raw_bytes = bytes(payload_buffer)
+        return raw_bytes.decode("utf-8", errors="ignore").rstrip("\x00")
+    elif qc.type == constants.V4L2_CTRL_TYPE_RECT:
+        if payload_buffer is None:
+            return ""
+        rect = ctypes.cast(payload_buffer, ctypes.POINTER(raw.v4l2_rect)).contents
+        return f"({rect.left},{rect.top})/{rect.width}x{rect.height}"
+    elif qc.type == constants.V4L2_CTRL_TYPE_BITMASK:
+        return utils.int_to_hex_string(ctrl.value)
+    else:
+        return ctrl.value
 
 
 def set_control(device_path: str, control: str, value: int) -> bool:

@@ -140,7 +140,11 @@ class Ustreamer(Streamer):
 
     def _brokenfocus(self, focus_absolute_conf: str) -> None:
         cur_val = self.cam.get_current_control_value("focus_absolute")
-        if cur_val is not None and cur_val != int(focus_absolute_conf):
+        if (
+            cur_val is not None
+            and isinstance(cur_val, int)
+            and cur_val != int(focus_absolute_conf)
+        ):
             self.log_warning("Detected 'brokenfocus' device.")
             self.log_info("Try to set to configured Value.")
             self._set_v4l2_ctrl(f"focus_absolute={focus_absolute_conf}")
