@@ -73,12 +73,13 @@ install_env_file() {
 }
 
 backup_crowsnest_conf() {
-    local extension
-    extension="$(date +%Y-%m-%d-%H%M)"
+    local extension filename
     if [[ -f "${CROWSNEST_CONFIG_PATH}/crowsnest.conf" ]]; then
+        extension="$(date +%Y%m%d_%H%M%S)"
+        filename="crowsnest-${extension}.conf"
         msg "Found existing crowsnest.conf in ${CROWSNEST_CONFIG_PATH} ..."
-        msg "\t ==> Creating backup as crowsnest.conf.${extension} ..."
-        sudo -u "${BASE_USER}" mv "${CROWSNEST_CONFIG_PATH}/crowsnest.conf" "${CROWSNEST_CONFIG_PATH}/crowsnest.conf.${extension}"
+        msg "\t ==> Creating backup as ${filename} ..."
+        sudo -u "${BASE_USER}" mv "${CROWSNEST_CONFIG_PATH}/crowsnest.conf" "${CROWSNEST_CONFIG_PATH}/${filename}"
     fi
 }
 
